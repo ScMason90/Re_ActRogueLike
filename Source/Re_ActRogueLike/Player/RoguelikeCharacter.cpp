@@ -50,7 +50,24 @@ void ARoguelikeCharacter::MoveRight(float Value)
 	ControlRot.Roll = 0.0f;
 	
 	FVector RightVector = FRotationMatrix(ControlRot).GetScaledAxis(EAxis::Y);
+	
+	// X - Forward (Red)
+	// Y - Right (Green)
+	// Z - Up (Blue)
+	
 	AddMovementInput(RightVector, Value);
+}
+
+void ARoguelikeCharacter::PrimaryAttack()
+{
+	
+	
+	FTransform SpawnTM = FTransform(GetActorRotation(), GetActorLocation());
+	
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	
+	GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTM, SpawnParams);
 }
 
 // Called every frame
@@ -69,5 +86,8 @@ void ARoguelikeCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 	
 	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
+	
+	PlayerInputComponent->BindAction("PrimaryAttack", IE_Pressed, 
+		this, &ARoguelikeCharacter::PrimaryAttack);
 }
 
