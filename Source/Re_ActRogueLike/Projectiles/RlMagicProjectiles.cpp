@@ -15,6 +15,7 @@ ARlMagicProjectiles::ARlMagicProjectiles()
 	PrimaryActorTick.bCanEverTick = true;
 	
 	SphereComp = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComp"));
+	SphereComp->SetCollisionProfileName("Projectile");
 	RootComponent = SphereComp;
 	
 	EffectComp = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("EffectComp"));

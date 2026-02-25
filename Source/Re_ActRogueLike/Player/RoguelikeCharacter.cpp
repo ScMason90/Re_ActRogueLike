@@ -5,6 +5,7 @@
 
 #include "Camera/CameraComponent.h"
 #include "Components/InputComponent.h"
+#include "Components/SkeletalMeshComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 
@@ -50,7 +51,25 @@ void ARoguelikeCharacter::MoveRight(float Value)
 	ControlRot.Roll = 0.0f;
 	
 	FVector RightVector = FRotationMatrix(ControlRot).GetScaledAxis(EAxis::Y);
+	
+	// X - Forward (Red)
+	// Y - Right (Green)
+	// Z - Up (Blue)
+	
 	AddMovementInput(RightVector, Value);
+}
+
+void ARoguelikeCharacter::PrimaryAttack()
+{
+	FVector SpawnOffset = GetActorForwardVector() * 100.0f, 
+	HandLocation = GetMesh()->GetSocketLocation("ik_hand_l") + SpawnOffset;
+	
+	FTransform SpawnTM = FTransform(GetActorRotation(), HandLocation);
+	
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	
+	GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTM, SpawnParams);
 }
 
 // Called every frame
@@ -69,5 +88,8 @@ void ARoguelikeCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 	
 	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
+	
+	PlayerInputComponent->BindAction("PrimaryAttack", IE_Pressed, 
+		this, &ARoguelikeCharacter::PrimaryAttack);
 }
 
