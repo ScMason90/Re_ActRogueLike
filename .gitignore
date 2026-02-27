@@ -76,3 +76,10 @@ DerivedDataCache/*
 
 # Jet Brain IDE files
 .idea/
+
+# Project Content Folders
+Content/
+
+# Diversion application files
+.diversion/
+.dvignore
