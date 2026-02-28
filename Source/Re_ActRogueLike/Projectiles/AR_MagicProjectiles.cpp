@@ -1,7 +1,7 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "RlMagicProjectiles.h"
+#include "AR_MagicProjectiles.h"
 
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
@@ -9,7 +9,7 @@
 
 
 // Sets default values
-ARlMagicProjectiles::ARlMagicProjectiles()
+AAR_MagicProjectiles::AAR_MagicProjectiles()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -32,10 +32,10 @@ ARlMagicProjectiles::ARlMagicProjectiles()
 	MovementComp->bInitialVelocityInLocalSpace = true;
 	
 	// Register hit event
-	SphereComp->OnComponentHit.AddDynamic(this, &ARlMagicProjectiles::OnActorHit);
+	SphereComp->OnComponentHit.AddDynamic(this, &AAR_MagicProjectiles::OnActorHit);
 }
 
-void ARlMagicProjectiles::OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
+void AAR_MagicProjectiles::OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& HitResult)
 {
 	// Destroy projectile on impact
@@ -43,14 +43,14 @@ void ARlMagicProjectiles::OnActorHit(UPrimitiveComponent* HitComponent, AActor* 
 }
 
 // Called when the game starts or when spawned
-void ARlMagicProjectiles::BeginPlay()
+void AAR_MagicProjectiles::BeginPlay()
 {
 	Super::BeginPlay();
 	
 }
 
 // Called every frame
-void ARlMagicProjectiles::Tick(float DeltaTime)
+void AAR_MagicProjectiles::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 }

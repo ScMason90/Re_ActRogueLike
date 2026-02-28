@@ -4,19 +4,19 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "RlMagicProjectiles.generated.h"
+#include "AR_MagicProjectiles.generated.h"
 
 class USphereComponent;
 class UProjectileMovementComponent;
 class UParticleSystemComponent;
 UCLASS()
-class RE_ACTROGUELIKE_API ARlMagicProjectiles : public AActor
+class RE_ACTROGUELIKE_API AAR_MagicProjectiles : public AActor
 {
 	GENERATED_BODY()
 
 public:
 	// Sets default values for this actor's properties
-	ARlMagicProjectiles();
+	AAR_MagicProjectiles();
 
 protected:
 	// Collision sphere for hit detection

@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "RoguelikeCharacter.generated.h"
+#include "AR_PlayerCharacter.generated.h"
 
 class USpringArmComponent;
 class UCameraComponent;
@@ -12,7 +12,7 @@ class UCameraComponent;
  * 
  */
 UCLASS()
-class RE_ACTROGUELIKE_API ARoguelikeCharacter : public ACharacter
+class RE_ACTROGUELIKE_API AAR_PlayerCharacter : public ACharacter
 {
 	GENERATED_BODY()
 	
@@ -22,7 +22,7 @@ protected:
 
 public:
 	// Sets default values for this character's properties
-	ARoguelikeCharacter();
+	AAR_PlayerCharacter();
 
 protected:
 	UPROPERTY(VisibleAnywhere)

@@ -1,25 +1,25 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "RlExplosiveBarrel.h"
+#include "AR_ExplosiveBarrel.h"
 
 #include "Components/StaticMeshComponent.h"
 #include "Engine/Engine.h"
 #include "PhysicsEngine/RadialForceComponent.h"
 
 
-void ARlExplosiveBarrel::PostInitializeComponents()
+void AAR_ExplosiveBarrel::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 	
 	// Register hit event so the barrel reacts to physics collisions
-	MeshComp->OnComponentHit.AddDynamic(this, &ARlExplosiveBarrel::OnActorHit);
+	MeshComp->OnComponentHit.AddDynamic(this, &AAR_ExplosiveBarrel::OnActorHit);
 	
 	// Ensure the barrel is treated as a physics body
 	MeshComp->SetCollisionObjectType(ECC_PhysicsBody);
 }
 
-void ARlExplosiveBarrel::OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
+void AAR_ExplosiveBarrel::OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, FVector NormalisedImpulse, const FHitResult& Hit)
 {
 	// Apply explosion impulse
@@ -35,7 +35,7 @@ void ARlExplosiveBarrel::OnActorHit(UPrimitiveComponent* HitComponent, AActor* O
 }
 
 // Sets default values
-ARlExplosiveBarrel::ARlExplosiveBarrel()
+AAR_ExplosiveBarrel::AAR_ExplosiveBarrel()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -60,14 +60,14 @@ ARlExplosiveBarrel::ARlExplosiveBarrel()
 }
 
 // Called when the game starts or when spawned
-void ARlExplosiveBarrel::BeginPlay()
+void AAR_ExplosiveBarrel::BeginPlay()
 {
 	Super::BeginPlay();
 	
 }
 
 // Called every frame
-void ARlExplosiveBarrel::Tick(float DeltaTime)
+void AAR_ExplosiveBarrel::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 }

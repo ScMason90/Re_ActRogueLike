@@ -4,12 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "RlExplosiveBarrel.generated.h"
+#include "AR_ExplosiveBarrel.generated.h"
 
 class UStaticMeshComponent;
 class URadialForceComponent;
 UCLASS()
-class RE_ACTROGUELIKE_API ARlExplosiveBarrel : public AActor
+class RE_ACTROGUELIKE_API AAR_ExplosiveBarrel : public AActor
 {
 	GENERATED_BODY()
 
@@ -41,7 +41,7 @@ protected:
 	
 public:
 	// Sets default values for this actor's properties
-	ARlExplosiveBarrel();
+	AAR_ExplosiveBarrel();
 
 protected:
 	// Called when the game starts or when spawned
