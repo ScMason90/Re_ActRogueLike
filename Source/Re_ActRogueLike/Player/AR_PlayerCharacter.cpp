@@ -3,11 +3,13 @@
 
 #include "AR_PlayerCharacter.h"
 
+#include "TimerManager.h"
 #include "Camera/CameraComponent.h"
 #include "Components/InputComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Re_ActRogueLike/Core/AR_GameplayInterface.h"
 
 
 // Sets default values
@@ -16,16 +18,18 @@ AAR_PlayerCharacter::AAR_PlayerCharacter()
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	
-	SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComponent"));
-	SpringArmComponent->bUsePawnControlRotation = true;
-	SpringArmComponent->SetupAttachment(RootComponent);
+	SpringArmComp = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComp"));
+	SpringArmComp->bUsePawnControlRotation = true;
+	SpringArmComp->SetupAttachment(RootComponent);
 	
-	CameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComponent"));
-	CameraComponent->SetupAttachment(SpringArmComponent);
+	CameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComp"));
+	CameraComp->SetupAttachment(SpringArmComp);
 	
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	
 	bUseControllerRotationYaw = false;
+	
+	InteractionComp = CreateDefaultSubobject<UAR_InteractionComponent>(TEXT("InteractionComp"));
 }
 
 // Called when the game starts or when spawned
@@ -61,8 +65,15 @@ void AAR_PlayerCharacter::MoveRight(float Value)
 
 void AAR_PlayerCharacter::PrimaryAttack()
 {
-	FVector SpawnOffset = GetActorForwardVector() * 100.0f, 
-	HandLocation = GetMesh()->GetSocketLocation("ik_hand_l") + SpawnOffset;
+	PlayAnimMontage(AttackMontage);
+	
+	GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack, this,
+		&AAR_PlayerCharacter::PrimaryAttack_TimeElapsed, 0.4f);
+}
+
+void AAR_PlayerCharacter::PrimaryAttack_TimeElapsed()
+{
+	FVector HandLocation = GetMesh()->GetSocketLocation("ik_hand_r");
 	
 	FTransform SpawnTM = FTransform(GetActorRotation(), HandLocation);
 	
@@ -70,6 +81,16 @@ void AAR_PlayerCharacter::PrimaryAttack()
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 	
 	GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTM, SpawnParams);
+	
+	// GetWorldTimerManager().ClearTimer(TimerHandle_PrimaryAttack);
+}
+
+void AAR_PlayerCharacter::PrimaryInteract()
+{
+	if (InteractionComp)
+	{
+		InteractionComp->PrimaryInteraction();
+	}
 }
 
 // Called every frame
@@ -100,15 +121,19 @@ void AAR_PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 	
+	/*  TODO : 请找时间检查 Tom Looman 在哪一版本的github源码仓库中哪一commit里实现了UE5.0以上的EnhancedInput
+	 *  输入系统的引入替代了旧系统 (GitHub网站查看commit点击browse repository at this point)*/
 	PlayerInputComponent->BindAxis("MoveForward", this, &AAR_PlayerCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &AAR_PlayerCharacter::MoveRight);
 	
 	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 	
+	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
+	
 	PlayerInputComponent->BindAction("PrimaryAttack", IE_Pressed, 
 		this, &AAR_PlayerCharacter::PrimaryAttack);
-	
-	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
+	PlayerInputComponent->BindAction("PrimaryInteract", IE_Pressed, 
+		this, &AAR_PlayerCharacter::PrimaryInteract);
 }
 

@@ -3,11 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AR_InteractionComponent.h"
 #include "GameFramework/Character.h"
 #include "AR_PlayerCharacter.generated.h"
 
 class USpringArmComponent;
 class UCameraComponent;
+class UAnimMontage;
 /**
  * 
  */
@@ -17,8 +19,13 @@ class RE_ACTROGUELIKE_API AAR_PlayerCharacter : public ACharacter
 	GENERATED_BODY()
 	
 protected:
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Attack")
 	TSubclassOf<AActor> ProjectileClass;
+	
+	UPROPERTY(EditAnywhere, Category = "Attack")
+	UAnimMontage* AttackMontage;
+	
+	FTimerHandle TimerHandle_PrimaryAttack;
 
 public:
 	// Sets default values for this character's properties
@@ -26,10 +33,13 @@ public:
 
 protected:
 	UPROPERTY(VisibleAnywhere)
-	USpringArmComponent* SpringArmComponent;
+	USpringArmComponent* SpringArmComp;
 	
 	UPROPERTY(VisibleAnywhere)
-	UCameraComponent* CameraComponent;
+	UCameraComponent* CameraComp;
+	
+	UPROPERTY(VisibleAnywhere)
+	UAR_InteractionComponent* InteractionComp;
 	
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -39,6 +49,10 @@ protected:
 	void MoveRight(float Value);
 	
 	void PrimaryAttack();
+	
+	void PrimaryAttack_TimeElapsed();
+	
+	void PrimaryInteract();
 
 public:
 	// Called every frame

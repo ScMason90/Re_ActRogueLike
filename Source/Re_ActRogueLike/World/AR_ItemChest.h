@@ -4,11 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Re_ActRogueLike/Core/AR_GameplayInterface.h"
 #include "AR_ItemChest.generated.h"
 
 class UStaticMeshComponent;
+
 UCLASS()
-class RE_ACTROGUELIKE_API AAR_ItemChest : public AActor
+class RE_ACTROGUELIKE_API AAR_ItemChest : public AActor, public IAR_GameplayInterface
 {
 	GENERATED_BODY()
 
@@ -23,10 +25,26 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* LidMesh;
 	
+	UPROPERTY(EditAnywhere, Category = "OpenChest")
+	FRotator TargetRotation;
+	
+	UPROPERTY(EditAnywhere, Category = "OpenChest")
+	FRotator StaticRotation;
+	
+	UPROPERTY(EditAnywhere, Category = "OpenChest")
+	float OpenSpeed = 2.0f;
+	
+	UPROPERTY(EditAnywhere, Category = "OpenChest")
+	float TargetPitch;
+	
+	bool bIsOpening = false;
+	
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+	
+	virtual void Interact_Implementation(APawn* InstigatorPawn) override;
 };

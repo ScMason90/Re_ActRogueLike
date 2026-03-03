@@ -5,6 +5,12 @@
 
 #include "Components/StaticMeshComponent.h"
 
+void AAR_ItemChest::Interact_Implementation(APawn* InstigatorPawn)
+{
+	IAR_GameplayInterface::Interact_Implementation(InstigatorPawn);
+	
+	bIsOpening = true;
+}
 
 // Sets default values
 AAR_ItemChest::AAR_ItemChest()
@@ -17,6 +23,7 @@ AAR_ItemChest::AAR_ItemChest()
 	
 	LidMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("LidMesh"));
 	LidMesh->SetupAttachment(BaseMesh);
+	LidMesh->SetSimulatePhysics(false);
 }
 
 // Called when the game starts or when spawned
@@ -24,11 +31,48 @@ void AAR_ItemChest::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	TargetPitch = 110.0f;
+	StaticRotation = LidMesh->GetRelativeRotation();
+	TargetRotation = StaticRotation + FRotator(TargetPitch, 0.0f, 0.0f);
+	
+	StaticRotation.Normalize();
+	TargetRotation.Normalize();
 }
 
 // Called every frame
 void AAR_ItemChest::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	
+	if (!bIsOpening) return;
+
+	// Get current&target quaternion via FRotator
+	FQuat CurrentQ = LidMesh->GetRelativeRotation().Quaternion();
+	FQuat TargetQ  = TargetRotation.Quaternion();
+
+	// Compute Lerp factor(ensure it in [0,1])
+	// Simple linear: alpha = clamp(OpenSpeed * DeltaTime, 0, 1)
+	// Also more smooth: alpha = 1 - exp(-OpenSpeed * DeltaTime)
+	float Alpha = FMath::Clamp(OpenSpeed * DeltaTime, 0.0f, 1.0f);
+
+	// Spherical Linear Interpolation(Slerp)
+	FQuat NewQ = FQuat::Slerp(CurrentQ, TargetQ, Alpha);
+	NewQ.Normalize();
+
+	// Apply rotation
+	LidMesh->SetRelativeRotation(NewQ);
+
+	// Final determination: Convert NewQ and TargetQ to Rotator to compare the Angle tolerance (more intuitive)
+	FRotator NewRot = NewQ.Rotator();
+	if (NewRot.Equals(TargetRotation, 0.5f)) 
+	{
+		// Force alignment to the precise target to avoid residual jitter
+		LidMesh->SetRelativeRotation(TargetRotation);
+		bIsOpening = false;
+		
+		// TODO: open-close-open loop.
+		TargetPitch = -TargetPitch;
+		TargetRotation = FRotator(TargetPitch, 0.0f, 0.0f);
+	}
 }
 
