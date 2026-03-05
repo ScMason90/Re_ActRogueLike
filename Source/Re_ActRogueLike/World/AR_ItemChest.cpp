@@ -4,12 +4,19 @@
 #include "AR_ItemChest.h"
 
 #include "Components/StaticMeshComponent.h"
+#include "Engine/Engine.h"
 
 void AAR_ItemChest::Interact_Implementation(APawn* InstigatorPawn)
 {
 	IAR_GameplayInterface::Interact_Implementation(InstigatorPawn);
 	
+	// // No Slerp, only open-close-open loop
+	// LidMesh->AddRelativeRotation(FQuat(FVector::RightVector, FMath::DegreesToRadians(TargetPitch)));
+	// TargetPitch = -TargetPitch;
+	
 	bIsOpening = true;
+	// TODO: Maybe the chest in Minecraft will be the ideal one.But i'll just leave this in future.
+	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, TEXT("Open"));
 }
 
 // Sets default values
@@ -50,10 +57,9 @@ void AAR_ItemChest::Tick(float DeltaTime)
 	FQuat CurrentQ = LidMesh->GetRelativeRotation().Quaternion();
 	FQuat TargetQ  = TargetRotation.Quaternion();
 
-	// Compute Lerp factor(ensure it in [0,1])
-	// Simple linear: alpha = clamp(OpenSpeed * DeltaTime, 0, 1)
-	// Also more smooth: alpha = 1 - exp(-OpenSpeed * DeltaTime)
-	float Alpha = FMath::Clamp(OpenSpeed * DeltaTime, 0.0f, 1.0f);
+	// Compute Lerp factor(ensure it's in [0,1])
+	float Alpha = 1 - exp(-OpenSpeed * DeltaTime);
+	// float Alpha = FMath::Clamp(OpenSpeed * DeltaTime/* Identical param: DeltaTime/OpenSpeed, (1/OpenSpeed)*DeltaTime*/, 0.0f, 1.0f);
 
 	// Spherical Linear Interpolation(Slerp)
 	FQuat NewQ = FQuat::Slerp(CurrentQ, TargetQ, Alpha);
@@ -63,16 +69,14 @@ void AAR_ItemChest::Tick(float DeltaTime)
 	LidMesh->SetRelativeRotation(NewQ);
 
 	// Final determination: Convert NewQ and TargetQ to Rotator to compare the Angle tolerance (more intuitive)
-	FRotator NewRot = NewQ.Rotator();
-	if (NewRot.Equals(TargetRotation, 0.5f)) 
+	if (NewQ.Equals(TargetQ, 0.05)) 
 	{
 		// Force alignment to the precise target to avoid residual jitter
 		LidMesh->SetRelativeRotation(TargetRotation);
 		bIsOpening = false;
 		
-		// TODO: open-close-open loop.
-		TargetPitch = -TargetPitch;
-		TargetRotation = FRotator(TargetPitch, 0.0f, 0.0f);
+		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("Opened"));
+		Swap(TargetRotation.Pitch, StaticRotation.Pitch);
 	}
 }
 
