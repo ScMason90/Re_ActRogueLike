@@ -73,12 +73,14 @@ void AAR_PlayerCharacter::PrimaryAttack()
 
 void AAR_PlayerCharacter::PrimaryAttack_TimeElapsed()
 {
-	FVector HandLocation = GetMesh()->GetSocketLocation("ik_hand_r");
+	FVector HandLocation = GetMesh()->GetSocketLocation("ik_hand_l");
+	// HandLocation += GetActorForwardVector() * 80.0f;
 	
 	FTransform SpawnTM = FTransform(GetActorRotation(), HandLocation);
 	
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	SpawnParams.Instigator = this;
 	
 	GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTM, SpawnParams);
 	

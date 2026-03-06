@@ -4,7 +4,9 @@
 #include "AR_MagicProjectiles.h"
 
 #include "Components/SphereComponent.h"
+#include "Engine/Engine.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystemComponent.h"
 
 
@@ -32,13 +34,37 @@ AAR_MagicProjectiles::AAR_MagicProjectiles()
 	MovementComp->bInitialVelocityInLocalSpace = true;
 	
 	// Register hit event
-	SphereComp->OnComponentHit.AddDynamic(this, &AAR_MagicProjectiles::OnActorHit);
+	// SphereComp->OnComponentHit.AddDynamic(this, &AAR_MagicProjectiles::OnActorHit);
 }
 
-void AAR_MagicProjectiles::OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
-	UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& HitResult)
+// void AAR_MagicProjectiles::OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
+// 	UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+// {
+// 	UE_LOG(LogTemp, Warning, TEXT("HitComponent: %s"), *HitComponent->GetName());
+// 	UE_LOG(LogTemp, Warning, TEXT("OtherActor: %s"), *GetNameSafe(OtherActor));
+// 	UE_LOG(LogTemp, Warning, TEXT("NormalImpulse: %s"), *NormalImpulse.ToString());
+// 	UE_LOG(LogTemp, Warning, TEXT("HitLocation: %s"), *Hit.ImpactPoint.ToString());
+//
+// 	
+// 	// Destroy projectile on impact
+// 	Explode(&Hit);
+// }
+
+void AAR_MagicProjectiles::LifeSpanExpired()
 {
-	// Destroy projectile on impact
+	Explode(nullptr);
+	Super::LifeSpanExpired();
+}
+
+void AAR_MagicProjectiles::Explode(const FHitResult* Hit)
+{
+	if (ImpactVFX)
+	{
+		if (Hit) UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactVFX, 
+			Hit->ImpactPoint, Hit->ImpactNormal.Rotation());
+		else UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactVFX, GetActorLocation());
+	}
+	
 	Destroy();
 }
 

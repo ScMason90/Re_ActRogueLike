@@ -19,25 +19,14 @@ public:
 	AAR_ItemChest();
 
 protected:
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UStaticMeshComponent* BaseMesh;
 	
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UStaticMeshComponent* LidMesh;
 	
 	UPROPERTY(EditAnywhere, Category = "OpenChest")
-	FRotator TargetRotation;
-	
-	UPROPERTY(EditAnywhere, Category = "OpenChest")
-	FRotator StaticRotation;
-	
-	UPROPERTY(EditAnywhere, Category = "OpenChest")
-	float OpenSpeed = 2.0f;
-	
-	UPROPERTY(EditAnywhere, Category = "OpenChest")
 	float TargetPitch;
-	
-	bool bIsOpening = false;
 	
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

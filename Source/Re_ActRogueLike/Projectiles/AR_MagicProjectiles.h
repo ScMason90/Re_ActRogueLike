@@ -20,17 +20,22 @@ public:
 
 protected:
 	// Collision sphere for hit detection
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	USphereComponent* SphereComp;
 	
 	// Projectile movement logic
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UProjectileMovementComponent* MovementComp;
 	
 	// Visual effect for projectile
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UParticleSystemComponent* EffectComp;
 	
+	// Visual effect for projectile hit
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UParticleSystem* ImpactVFX;
+	
+	// I currently implement it in BP.
 	/**
  	* Called when this actor's collision component hits another object.
  	*
@@ -40,9 +45,15 @@ protected:
  	* @param NormalImpulse    The impulse applied to resolve the collision.
  	* @param Hit              Detailed hit result data for the collision.
  	*/
-	UFUNCTION()
-	void OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
-		UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+	// UFUNCTION()
+	// void OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
+	// 	UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+	
+	// Called when projectile died naturally
+	virtual void LifeSpanExpired() override;
+	
+	// Called when utilities executing projectile explode 
+	void Explode(const FHitResult* Hit = nullptr);
 	
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
