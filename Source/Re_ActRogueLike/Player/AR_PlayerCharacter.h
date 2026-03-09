@@ -20,12 +20,18 @@ class RE_ACTROGUELIKE_API AAR_PlayerCharacter : public ACharacter
 	
 protected:
 	UPROPERTY(EditAnywhere, Category = "Attack")
-	TSubclassOf<AActor> ProjectileClass;
+	TSubclassOf<AActor> MagicProjectileClass;
+	
+	UPROPERTY(EditAnywhere, Category = "Attack")
+	TSubclassOf<AActor> BlackHoleProjectileClass;
+	
+	UPROPERTY(EditAnywhere, Category = "Attack")
+	TSubclassOf<AActor> TeleportProjectileClass;
 	
 	UPROPERTY(EditAnywhere, Category = "Attack")
 	UAnimMontage* AttackMontage;
 	
-	FTimerHandle TimerHandle_PrimaryAttack;
+	FTimerHandle TimerHandle_FireProj;
 
 public:
 	// Sets default values for this character's properties
@@ -48,11 +54,17 @@ protected:
 	
 	void MoveRight(float Value);
 	
-	void PrimaryAttack();
-	
-	void PrimaryAttack_TimeElapsed();
-	
 	void PrimaryInteract();
+	
+	// TODO: May considering introduce different AnimMontage for each proj attack?
+	void FireProj(
+		TSubclassOf<AActor> ProjClassToSpawn, UAnimMontage* AnimMontageToPlay, float TimeBeforProj);
+	
+	void FireMagicProj();
+	void FireBlackHole();
+	void FireTeleportProj();
+	
+	FTransform AdjustedProjSpawnTransform(FName InSocketName);
 
 public:
 	// Called every frame

@@ -63,36 +63,64 @@ void AAR_PlayerCharacter::MoveRight(float Value)
 	AddMovementInput(RightVector, Value);
 }
 
-void AAR_PlayerCharacter::PrimaryAttack()
-{
-	PlayAnimMontage(AttackMontage);
-	
-	GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack, this,
-		&AAR_PlayerCharacter::PrimaryAttack_TimeElapsed, 0.4f);
-}
-
-void AAR_PlayerCharacter::PrimaryAttack_TimeElapsed()
-{
-	FVector HandLocation = GetMesh()->GetSocketLocation("ik_hand_l");
-	// HandLocation += GetActorForwardVector() * 80.0f;
-	
-	FTransform SpawnTM = FTransform(GetActorRotation(), HandLocation);
-	
-	FActorSpawnParameters SpawnParams;
-	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	SpawnParams.Instigator = this;
-	
-	GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTM, SpawnParams);
-	
-	// GetWorldTimerManager().ClearTimer(TimerHandle_PrimaryAttack);
-}
-
 void AAR_PlayerCharacter::PrimaryInteract()
 {
 	if (InteractionComp)
 	{
 		InteractionComp->PrimaryInteraction();
 	}
+}
+
+void AAR_PlayerCharacter::FireProj(
+	TSubclassOf<AActor> ProjClassToSpawn, UAnimMontage* AnimMontageToPlay, float TimeBeforeProj)
+{
+	PlayAnimMontage(AnimMontageToPlay);
+	
+	GetWorldTimerManager().SetTimer(TimerHandle_FireProj, 
+		[this, ProjClassToSpawn]()
+		{
+			FTransform SpawnTM = AdjustedProjSpawnTransform("ik_hand_l");
+	
+			FActorSpawnParameters SpawnParams;
+			SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+			SpawnParams.Instigator = this;
+
+			GetWorld()->SpawnActor<AActor>(ProjClassToSpawn, SpawnTM, SpawnParams);
+	
+			/* GetWorldTimerManager().ClearTimer(TimerHandle_PrimaryAttack);*/
+		}, TimeBeforeProj, false);
+}
+
+void AAR_PlayerCharacter::FireMagicProj()	
+{FireProj(MagicProjectileClass, AttackMontage, 0.4f);}
+void AAR_PlayerCharacter::FireBlackHole()	
+{FireProj(BlackHoleProjectileClass, AttackMontage, 0.4f);}
+void AAR_PlayerCharacter::FireTeleportProj()	
+{FireProj(TeleportProjectileClass, AttackMontage, 0.4f);}
+
+FTransform AAR_PlayerCharacter::AdjustedProjSpawnTransform(FName InSocketName)
+{
+	FVector HandLocation = GetMesh()->GetSocketLocation(InSocketName),
+	TraceStart = CameraComp->GetComponentLocation(),
+	TraceEnd = TraceStart + (CameraComp->GetForwardVector() * 10000.0f),
+	AimShot = TraceEnd;
+	
+	FHitResult Hit;
+	FCollisionObjectQueryParams ObjectQueryParams;
+	ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldDynamic);
+	ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldStatic);
+	
+	if (GetWorld()->LineTraceSingleByObjectType(Hit, TraceStart, AimShot, ObjectQueryParams))
+	{
+		AimShot = Hit.ImpactPoint;
+	}
+	
+	FQuat UnderCrossHairQuat = (AimShot - HandLocation).GetSafeNormal().ToOrientationQuat();
+	FTransform SpawnTM;
+	SpawnTM.SetLocation(HandLocation);
+	SpawnTM.SetRotation(UnderCrossHairQuat);
+	
+	return SpawnTM;
 }
 
 // Called every frame
@@ -105,7 +133,7 @@ void AAR_PlayerCharacter::Tick(float DeltaTime)
 	
 	FVector LineStart = GetActorLocation();
 	// Offset to the right of pawn
-	LineStart += GetActorRightVector() * 100.0f;
+	LineStart -= GetActorRightVector() * 100.0f;
 	// Set line end in direction of the actor's forward
 	FVector ActorDirection_LineEnd = LineStart + (GetActorForwardVector() * 100.0f);
 	// Draw Actor's Direction 
@@ -134,7 +162,13 @@ void AAR_PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	
 	PlayerInputComponent->BindAction("PrimaryAttack", IE_Pressed, 
-		this, &AAR_PlayerCharacter::PrimaryAttack);
+		this, &AAR_PlayerCharacter::FireMagicProj);
+	PlayerInputComponent->BindAction("UltimateAttack", IE_Pressed,
+		this, &AAR_PlayerCharacter::FireBlackHole);
+	PlayerInputComponent->BindAction("TeleportAttack", IE_Pressed,
+		this, &AAR_PlayerCharacter::FireTeleportProj);
+	
+	
 	PlayerInputComponent->BindAction("PrimaryInteract", IE_Pressed, 
 		this, &AAR_PlayerCharacter::PrimaryInteract);
 }
