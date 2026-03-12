@@ -3,8 +3,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AR_InteractionComponent.h"
+#include "../Components/AR_InteractionComponent.h"
 #include "GameFramework/Character.h"
+#include "Re_ActRogueLike/Components/AR_AttributeComponent.h"
 #include "AR_PlayerCharacter.generated.h"
 
 class USpringArmComponent;
@@ -19,17 +20,17 @@ class RE_ACTROGUELIKE_API AAR_PlayerCharacter : public ACharacter
 	GENERATED_BODY()
 	
 protected:
-	UPROPERTY(EditAnywhere, Category = "Attack")
+	UPROPERTY(EditAnywhere, Category = "FireProjectile")
 	TSubclassOf<AActor> MagicProjectileClass;
 	
-	UPROPERTY(EditAnywhere, Category = "Attack")
+	UPROPERTY(EditAnywhere, Category = "FireProjectile")
 	TSubclassOf<AActor> BlackHoleProjectileClass;
 	
-	UPROPERTY(EditAnywhere, Category = "Attack")
+	UPROPERTY(EditAnywhere, Category = "FireProjectile")
 	TSubclassOf<AActor> TeleportProjectileClass;
-	
-	UPROPERTY(EditAnywhere, Category = "Attack")
-	UAnimMontage* AttackMontage;
+	// TODO: May considering using separate anim montage for each proj action
+	UPROPERTY(EditAnywhere, Category = "FireProjectile")
+	UAnimMontage* SharedProjMontage;
 	
 	FTimerHandle TimerHandle_FireProj;
 
@@ -46,6 +47,9 @@ protected:
 	
 	UPROPERTY(VisibleAnywhere)
 	UAR_InteractionComponent* InteractionComp;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	UAR_AttributeComponent* AttributeComponent;
 	
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

@@ -8,6 +8,7 @@
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystemComponent.h"
+#include "Re_ActRogueLike/Components/AR_AttributeComponent.h"
 
 
 // Sets default values
@@ -35,6 +36,8 @@ AAR_MagicProjectiles::AAR_MagicProjectiles()
 	
 	// Register hit event
 	// SphereComp->OnComponentHit.AddDynamic(this, &AAR_MagicProjectiles::OnActorHit);
+	
+	SphereComp->OnComponentBeginOverlap.AddDynamic(this, &AAR_MagicProjectiles::OnComponentBeginOverlap);
 }
 
 // void AAR_MagicProjectiles::OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
@@ -66,6 +69,21 @@ void AAR_MagicProjectiles::Explode(const FHitResult* Hit)
 	}
 	
 	Destroy();
+}
+
+void AAR_MagicProjectiles::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (OtherActor)
+	{
+		if (UAR_AttributeComponent* AttributeComp = Cast<UAR_AttributeComponent>(
+			OtherActor->GetComponentByClass(UAR_AttributeComponent::StaticClass())))
+		{
+			AttributeComp->ApplyHealthChange(-20.0f);
+			
+			Explode(&SweepResult);
+		}
+	}
 }
 
 // Called when the game starts or when spawned

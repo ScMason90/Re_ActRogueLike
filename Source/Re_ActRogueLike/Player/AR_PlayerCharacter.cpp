@@ -30,6 +30,8 @@ AAR_PlayerCharacter::AAR_PlayerCharacter()
 	bUseControllerRotationYaw = false;
 	
 	InteractionComp = CreateDefaultSubobject<UAR_InteractionComponent>(TEXT("InteractionComp"));
+	
+	AttributeComponent = CreateDefaultSubobject<UAR_AttributeComponent>(TEXT("AttributeComp"));
 }
 
 // Called when the game starts or when spawned
@@ -92,11 +94,11 @@ void AAR_PlayerCharacter::FireProj(
 }
 
 void AAR_PlayerCharacter::FireMagicProj()	
-{FireProj(MagicProjectileClass, AttackMontage, 0.4f);}
+{FireProj(MagicProjectileClass, SharedProjMontage, 0.4f);}
 void AAR_PlayerCharacter::FireBlackHole()	
-{FireProj(BlackHoleProjectileClass, AttackMontage, 0.4f);}
+{FireProj(BlackHoleProjectileClass, SharedProjMontage, 0.4f);}
 void AAR_PlayerCharacter::FireTeleportProj()	
-{FireProj(TeleportProjectileClass, AttackMontage, 0.4f);}
+{FireProj(TeleportProjectileClass, SharedProjMontage, 0.4f);}
 
 FTransform AAR_PlayerCharacter::AdjustedProjSpawnTransform(FName InSocketName)
 {
@@ -109,6 +111,7 @@ FTransform AAR_PlayerCharacter::AdjustedProjSpawnTransform(FName InSocketName)
 	FCollisionObjectQueryParams ObjectQueryParams;
 	ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldDynamic);
 	ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldStatic);
+	ObjectQueryParams.AddObjectTypesToQuery(ECC_PhysicsBody);
 	
 	if (GetWorld()->LineTraceSingleByObjectType(Hit, TraceStart, AimShot, ObjectQueryParams))
 	{
