@@ -13,6 +13,7 @@ UAR_AttributeComponent::UAR_AttributeComponent()
 
 bool UAR_AttributeComponent::ApplyHealthChange(float Delta)
 {
+	/* TODO: No validating check and clamp([0,max]) solution either in cpp or bp yet.*/
 	Health += Delta;
 	
 	OnHealthChanged.Broadcast(nullptr, this, Health, Delta);

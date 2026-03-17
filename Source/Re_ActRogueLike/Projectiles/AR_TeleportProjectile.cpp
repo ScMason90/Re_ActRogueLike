@@ -1,52 +1,72 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
-
-
-#include "AR_TeleportProjectile.h"
-
+﻿#include "AR_TeleportProjectile.h"
 #include "TimerManager.h"
 #include "GameFramework/Pawn.h"
-#include "GameFramework/ProjectileMovementComponent.h"
 
-
-// Sets default values
 AAR_TeleportProjectile::AAR_TeleportProjectile()
 {
-	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	InitialLifeSpan = 0.0f;
 	
-	InitialLifeSpan = 0;
+	MovementComp->InitialSpeed = 1300.0f;
 }
 
-// Called when the game starts or when spawned
 void AAR_TeleportProjectile::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	GetWorldTimerManager().SetTimer(TimerHandle_Explode, this, 
-		&AAR_TeleportProjectile::ExplodeAndTeleport, 0.2f);
+
+	GetWorldTimerManager().SetTimer(
+		TimerHandle_Explode,
+		this,
+		&AAR_TeleportProjectile::ExplodeAndTeleport,
+		0.2f,
+		false);
+}
+
+void AAR_TeleportProjectile::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	GetWorldTimerManager().ClearTimer(TimerHandle_Explode);
+	GetWorldTimerManager().ClearTimer(TimerHandle_Teleport);
+
+	Super::EndPlay(EndPlayReason);
 }
 
 void AAR_TeleportProjectile::ExplodeAndTeleport()
 {
-	Explode(nullptr);
-	
-	MovementComp->StopMovementImmediately();
-	
-	GetWorldTimerManager().SetTimer(TimerHandle_Teleport, 
-		[this]()
+	if (IsPendingKillPending())
+	{
+		return;
+	}
+
+	// 基类负责视觉 & 停止移动
+	Explode(FHitResult());
+
+	// 再保险一次
+	if (MovementComp)
+	{
+		MovementComp->StopMovementImmediately();
+	}
+
+	FTimerDelegate TeleportDelegate;
+	TeleportDelegate.BindWeakLambda(this, [this]()
+	{
+		if (!IsValid(this) || IsPendingKillPending())
 		{
-			if (APawn* Instigator = GetInstigator())
-			{
-				Instigator->TeleportTo(GetActorLocation(), Instigator->GetActorRotation());
-			}
-			
-			Destroy();
-		}, 0.2f, false);
-}
+			return;
+		}
+		
+		if (APawn* InstigatorPawn = GetInstigator())
+		{
+			UE_LOG(LogTemp, Warning, TEXT("AR_TeleProj location : %s"), *GetActorLocation().ToString());
+			InstigatorPawn->TeleportTo(GetActorLocation(), InstigatorPawn->GetActorRotation());
+			FVector PlayerLocation = InstigatorPawn->GetActorLocation();
+			UE_LOG(LogTemp, Error, TEXT("Player location : %s"), *PlayerLocation.ToString());
+		}
+		
+		Destroy();
+	});
 
-// Called every frame
-void AAR_TeleportProjectile::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
+	GetWorldTimerManager().SetTimer(
+		TimerHandle_Teleport,
+		TeleportDelegate,
+		0.2f,
+		false);
 }
-

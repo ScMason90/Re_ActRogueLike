@@ -1,101 +1,40 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
-
-
-#include "AR_MagicProjectiles.h"
-
-#include "Components/SphereComponent.h"
-#include "Engine/Engine.h"
-#include "GameFramework/ProjectileMovementComponent.h"
-#include "Kismet/GameplayStatics.h"
-#include "Particles/ParticleSystemComponent.h"
+﻿#include "AR_MagicProjectiles.h"
 #include "Re_ActRogueLike/Components/AR_AttributeComponent.h"
 
-
-// Sets default values
 AAR_MagicProjectiles::AAR_MagicProjectiles()
 {
-	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
-	
+	SphereComp->SetSphereRadius(20.0f);
+
+	if (MovementComp)
+	{
+		MovementComp->InitialSpeed = 1000.0f;
+	}
+
+	DamageAmount = -20.0f;
 	InitialLifeSpan = 4.0f;
-	
-	// Collision sphere
-	SphereComp = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComp"));
-	SphereComp->SetCollisionProfileName("Projectile");
-	RootComponent = SphereComp;
-	
-	// Visual effect
-	EffectComp = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("EffectComp"));
-	EffectComp->SetupAttachment(SphereComp);
-	
-	// Movement behavior
-	MovementComp = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("MovementComp"));
-	MovementComp->InitialSpeed = 1000.0f;
-	MovementComp->bRotationFollowsVelocity = true;
-	MovementComp->bInitialVelocityInLocalSpace = true;
-	
-	// Register hit event
-	// SphereComp->OnComponentHit.AddDynamic(this, &AAR_MagicProjectiles::OnActorHit);
-	
+
 	SphereComp->OnComponentBeginOverlap.AddDynamic(this, &AAR_MagicProjectiles::OnComponentBeginOverlap);
 }
 
-// void AAR_MagicProjectiles::OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
-// 	UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
-// {
-// 	UE_LOG(LogTemp, Warning, TEXT("HitComponent: %s"), *HitComponent->GetName());
-// 	UE_LOG(LogTemp, Warning, TEXT("OtherActor: %s"), *GetNameSafe(OtherActor));
-// 	UE_LOG(LogTemp, Warning, TEXT("NormalImpulse: %s"), *NormalImpulse.ToString());
-// 	UE_LOG(LogTemp, Warning, TEXT("HitLocation: %s"), *Hit.ImpactPoint.ToString());
-//
-// 	
-// 	// Destroy projectile on impact
-// 	Explode(&Hit);
-// }
-
 void AAR_MagicProjectiles::LifeSpanExpired()
 {
-	Explode(nullptr);
+	Explode(FHitResult());
 	Super::LifeSpanExpired();
-}
-
-void AAR_MagicProjectiles::Explode(const FHitResult* Hit)
-{
-	if (ImpactVFX)
-	{
-		if (Hit) UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactVFX, 
-			Hit->ImpactPoint, Hit->ImpactNormal.Rotation());
-		else UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactVFX, GetActorLocation());
-	}
-	
-	Destroy();
 }
 
 void AAR_MagicProjectiles::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (OtherActor)
+	APawn* InstigatorActor = GetInstigator();
+
+	if (OtherActor && OtherActor != Cast<AActor>(InstigatorActor))
 	{
 		if (UAR_AttributeComponent* AttributeComp = Cast<UAR_AttributeComponent>(
 			OtherActor->GetComponentByClass(UAR_AttributeComponent::StaticClass())))
 		{
-			AttributeComp->ApplyHealthChange(-20.0f);
-			
-			Explode(&SweepResult);
+			AttributeComp->ApplyHealthChange(DamageAmount);
+			Explode(SweepResult);
+			Destroy();
 		}
 	}
 }
-
-// Called when the game starts or when spawned
-void AAR_MagicProjectiles::BeginPlay()
-{
-	Super::BeginPlay();
-	
-}
-
-// Called every frame
-void AAR_MagicProjectiles::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-}
-

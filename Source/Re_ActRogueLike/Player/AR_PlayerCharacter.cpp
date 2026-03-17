@@ -74,14 +74,16 @@ void AAR_PlayerCharacter::PrimaryInteract()
 }
 
 void AAR_PlayerCharacter::FireProj(
-	TSubclassOf<AActor> ProjClassToSpawn, UAnimMontage* AnimMontageToPlay, float TimeBeforeProj)
+	TSubclassOf<AActor> ProjClassToSpawn, UAnimMontage* AnimMontageToPlay, float TimeBeforeProj,
+	/* And there are params passing to internal func-AdjustedProjSpawnTransform */
+	FName InSocketName, float LineTraceEndOffset)
 {
 	PlayAnimMontage(AnimMontageToPlay);
 	
 	GetWorldTimerManager().SetTimer(TimerHandle_FireProj, 
-		[this, ProjClassToSpawn]()
+		[this, ProjClassToSpawn, InSocketName, LineTraceEndOffset]()
 		{
-			FTransform SpawnTM = AdjustedProjSpawnTransform("ik_hand_l");
+			FTransform SpawnTM = AdjustedProjSpawnTransform(InSocketName, LineTraceEndOffset);
 	
 			FActorSpawnParameters SpawnParams;
 			SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
@@ -94,30 +96,34 @@ void AAR_PlayerCharacter::FireProj(
 }
 
 void AAR_PlayerCharacter::FireMagicProj()	
-{FireProj(MagicProjectileClass, SharedProjMontage, 0.4f);}
+{FireProj(MagicProjectileClass, SharedProjMontage, 0.4f, 
+	"ik_hand_l", 10000.f);}
 void AAR_PlayerCharacter::FireBlackHole()	
-{FireProj(BlackHoleProjectileClass, SharedProjMontage, 0.4f);}
+{FireProj(BlackHoleProjectileClass, SharedProjMontage, 0.4f, 
+	"ik_hand_l", 10000.f);}
 void AAR_PlayerCharacter::FireTeleportProj()	
-{FireProj(TeleportProjectileClass, SharedProjMontage, 0.4f);}
+{FireProj(TeleportProjectileClass, SharedProjMontage, 0.4f, 
+	"ik_hand_l", 1000.f);}
 
-FTransform AAR_PlayerCharacter::AdjustedProjSpawnTransform(FName InSocketName)
+FTransform AAR_PlayerCharacter::AdjustedProjSpawnTransform(FName InSocketName, float LineTraceEndOffset)
 {
 	FVector HandLocation = GetMesh()->GetSocketLocation(InSocketName),
 	TraceStart = CameraComp->GetComponentLocation(),
-	TraceEnd = TraceStart + (CameraComp->GetForwardVector() * 10000.0f),
+	TraceEnd = TraceStart + (CameraComp->GetForwardVector() * LineTraceEndOffset),
 	AimShot = TraceEnd;
 	
 	FHitResult Hit;
-	FCollisionObjectQueryParams ObjectQueryParams;
-	ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldDynamic);
-	ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldStatic);
-	ObjectQueryParams.AddObjectTypesToQuery(ECC_PhysicsBody);
-	
-	if (GetWorld()->LineTraceSingleByObjectType(Hit, TraceStart, AimShot, ObjectQueryParams))
+	/* Legacy bug - Wrong behavior when LineTrace 'Hit' any actor derived from class AR_MagicProjectile,
+	 * It will cause proj actor spawn into a odd direction.May need fix it with specified Trace Channel
+	 * ↑ Nah, after 2h struggling on collision channel/preset/object type.I initially repair it.--26.3.13*/ 
+	if (GetWorld()->LineTraceSingleByChannel(
+		Hit, TraceStart, AimShot, ECC_GameTraceChannel1))
 	{
 		AimShot = Hit.ImpactPoint;
 	}
-	
+	/* TODO: Now there is a problem when spawn a MagicProj in a position which camera was too close to something,
+	 * The proj will go to the item that closely block around camera.
+	 * May need scope iteration to ignore items nearby. */
 	FQuat UnderCrossHairQuat = (AimShot - HandLocation).GetSafeNormal().ToOrientationQuat();
 	FTransform SpawnTM;
 	SpawnTM.SetLocation(HandLocation);
