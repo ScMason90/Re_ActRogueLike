@@ -36,10 +36,10 @@ void AAR_TeleportProjectile::ExplodeAndTeleport()
 		return;
 	}
 
-	// The base class is responsible for vision and stopping movement
+	// 基类负责视觉 & 停止移动
 	Explode(FHitResult());
 
-	// Reinsurance once
+	// 再保险一次
 	if (MovementComp)
 	{
 		MovementComp->StopMovementImmediately();

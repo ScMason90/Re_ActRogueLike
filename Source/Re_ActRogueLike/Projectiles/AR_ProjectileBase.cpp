@@ -28,7 +28,7 @@ void AAR_ProjectileBase::PostInitializeComponents()
 void AAR_ProjectileBase::OnProjHit(UPrimitiveComponent* ComponentBeenHit, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	// Here, the actual Hit is passed, not FHitResult().
+	// 这里传真正的 Hit，而不是 FHitResult()
 	Explode(Hit);
 }
 
@@ -57,6 +57,6 @@ void AAR_ProjectileBase::Explode_Implementation(const FHitResult& Hit)
 
 	SetActorEnableCollision(false);
 
-	// The base class is only responsible for "dead appearance" and does not force Destroy. 
-	// It is up to the subclass to decide whether to Destroy immediately or delay. /Teleport, etc
+	// 基类只负责「死相」，不强制 Destroy
+	// 由子类决定是立刻 Destroy 还是延迟/Teleport 等
 }
