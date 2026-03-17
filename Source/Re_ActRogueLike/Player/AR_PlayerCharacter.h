@@ -62,13 +62,15 @@ protected:
 	
 	// TODO: May considering introduce different AnimMontage for each proj attack?
 	void FireProj(
-		TSubclassOf<AActor> ProjClassToSpawn, UAnimMontage* AnimMontageToPlay, float TimeBeforProj);
+		TSubclassOf<AActor> ProjClassToSpawn, UAnimMontage* AnimMontageToPlay, float TimeBeforProj,
+		/* And there are params passing to internal func-AdjustedProjSpawnTransform */
+		FName InSocketName, float LineTraceEndOffset);
 	
 	void FireMagicProj();
 	void FireBlackHole();
 	void FireTeleportProj();
 	
-	FTransform AdjustedProjSpawnTransform(FName InSocketName);
+	FTransform AdjustedProjSpawnTransform(FName InSocketName, float LineTraceEndOffset);
 
 public:
 	// Called every frame
