@@ -28,7 +28,7 @@ void AAR_ProjectileBase::PostInitializeComponents()
 void AAR_ProjectileBase::OnProjHit(UPrimitiveComponent* ComponentBeenHit, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	// 这里传真正的 Hit，而不是 FHitResult()
+	// Here, the actual Hit is passed, not FHitResult().
 	Explode(Hit);
 }
 
@@ -44,19 +44,14 @@ void AAR_ProjectileBase::Explode_Implementation(const FHitResult& Hit)
 	{
 		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactVFX, GetActorLocation(), GetActorRotation());
 	}
-
-	if (EffectComp)
-	{
-		EffectComp->DeactivateSystem();
-	}
-
-	if (MovementComp)
-	{
-		MovementComp->StopMovementImmediately();
-	}
-
-	SetActorEnableCollision(false);
-
-	// 基类只负责「死相」，不强制 Destroy
-	// 由子类决定是立刻 Destroy 还是延迟/Teleport 等
+	
+	/* These could be not necessary for a base class implementation, may modularize in subclass.
+	 * Noticed that we only need to 'Destroy()' actor then it will implement logic below */
+	
+	// if (EffectComp)EffectComp->DeactivateSystem();
+	// if (MovementComp)MovementComp->StopMovementImmediately();
+	// SetActorEnableCollision(false);
+	
+	// The base class is only responsible for "dead appearance" and does not force Destroy. 
+	// It is up to the subclass to decide whether to Destroy immediately or delay. /Teleport, etc
 }

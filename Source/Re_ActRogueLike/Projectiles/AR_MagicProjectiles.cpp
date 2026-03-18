@@ -27,6 +27,7 @@ void AAR_MagicProjectiles::OnComponentBeginOverlap(UPrimitiveComponent* Overlapp
 {
 	APawn* InstigatorActor = GetInstigator();
 
+	// Change BP_MagicProjectile's collision response to 'Overlap' to Pawn for testing snippet under
 	if (OtherActor && OtherActor != Cast<AActor>(InstigatorActor))
 	{
 		if (UAR_AttributeComponent* AttributeComp = Cast<UAR_AttributeComponent>(

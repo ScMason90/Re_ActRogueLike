@@ -28,7 +28,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Effects")
 	UParticleSystem* ImpactVFX;
 
-	// 防止重复 Explode
+	// Prevent duplicate Explode
 	UPROPERTY(VisibleInstanceOnly, Category = "State")
 	bool bExploded = false;
 
