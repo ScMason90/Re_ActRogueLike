@@ -71,6 +71,12 @@ protected:
 	void FireTeleportProj();
 	
 	FTransform AdjustedProjSpawnTransform(FName InSocketName, float LineTraceEndOffset);
+	
+	virtual void PostInitializeComponents() override;
+	
+	UFUNCTION()
+	void OnHealthChanged(
+		AActor* InstigatorActor, UAR_AttributeComponent* OwningComp, float NewHealth, float Delta);
 
 public:
 	// Called every frame

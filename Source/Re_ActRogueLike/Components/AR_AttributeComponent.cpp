@@ -20,3 +20,8 @@ bool UAR_AttributeComponent::ApplyHealthChange(float Delta)
 	
 	return true;
 }
+
+bool UAR_AttributeComponent::IsDead() const
+{
+	return Health < 0.0f;
+}

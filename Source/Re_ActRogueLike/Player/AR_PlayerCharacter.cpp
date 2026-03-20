@@ -41,6 +41,13 @@ void AAR_PlayerCharacter::BeginPlay()
 	
 }
 
+void AAR_PlayerCharacter::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+	
+	AttributeComponent->OnHealthChanged.AddDynamic(this, &AAR_PlayerCharacter::OnHealthChanged);
+}
+
 void AAR_PlayerCharacter::MoveForward(float Value)
 {
 	FRotator ControlRot = GetControlRotation();
@@ -114,7 +121,7 @@ FTransform AAR_PlayerCharacter::AdjustedProjSpawnTransform(FName InSocketName, f
 	
 	FHitResult Hit;
 	/* Legacy bug - Wrong behavior when LineTrace 'Hit' any actor derived from class AR_MagicProjectile,
-	 * It will cause proj actor spawn into a odd direction.May need fix it with specified Trace Channel
+	 * It will cause proj actor spawn into an odd direction.May need fix it with specified Trace Channel
 	 * ↑ Nah, after 2h struggling on collision channel/preset/object type.I initially repair it.--26.3.13*/ 
 	if (GetWorld()->LineTraceSingleByChannel(
 		Hit, TraceStart, AimShot, ECC_GameTraceChannel1))
@@ -182,3 +189,12 @@ void AAR_PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 		this, &AAR_PlayerCharacter::PrimaryInteract);
 }
 
+void AAR_PlayerCharacter::OnHealthChanged(AActor* InstigatorActor, UAR_AttributeComponent* OwningComp, float NewHealth,
+	float Delta)
+{
+	if (NewHealth < 0.0f && Delta < 0.0f)
+	{
+		APlayerController* PC = Cast<APlayerController>(GetController());
+		DisableInput(PC);
+	}
+}
