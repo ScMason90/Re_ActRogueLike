@@ -1,6 +1,8 @@
 ﻿#include "AR_TeleportProjectile.h"
+
 #include "TimerManager.h"
 #include "GameFramework/Pawn.h"
+#include "GameFramework/ProjectileMovementComponent.h"
 
 AAR_TeleportProjectile::AAR_TeleportProjectile()
 {

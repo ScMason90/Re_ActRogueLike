@@ -1,5 +1,13 @@
 ﻿#include "AR_ProjectileBase.h"
+
+#include "Components/SphereComponent.h"
+#include "Components/PrimitiveComponent.h"
+#include "Components/AudioComponent.h"
+#include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Particles/ParticleSystemComponent.h"
+#include "Particles/ParticleSystem.h"
+#include "Sound/SoundCue.h"
 
 AAR_ProjectileBase::AAR_ProjectileBase()
 {
@@ -14,15 +22,25 @@ AAR_ProjectileBase::AAR_ProjectileBase()
 	MovementComp->bInitialVelocityInLocalSpace = true;
 	MovementComp->ProjectileGravityScale = 0.0f;
 	MovementComp->InitialSpeed = 8000.0f;
-    
-	SphereComp->SetCollisionProfileName(TEXT("Projectile"));
-	SphereComp->OnComponentHit.AddDynamic(this, &AAR_ProjectileBase::OnProjHit);
+	
+	FlightAudioComp = CreateDefaultSubobject<UAudioComponent>(TEXT("FlightAudioComp"));
+	FlightAudioComp->SetupAttachment(SphereComp);	// Must SetupAttachment otherwise we can't edit in editor
+	FlightAudioComp->bAutoActivate = false;
 }
 
 void AAR_ProjectileBase::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
+	
 	// SphereComp->IgnoreActorWhenMoving(GetInstigator(), true);
+	SphereComp->SetCollisionProfileName(TEXT("Projectile"));
+	SphereComp->OnComponentHit.AddDynamic(this, &AAR_ProjectileBase::OnProjHit);
+}
+
+void AAR_ProjectileBase::OnProjBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	// Overlapping logic...
 }
 
 void AAR_ProjectileBase::OnProjHit(UPrimitiveComponent* ComponentBeenHit, AActor* OtherActor,
@@ -39,10 +57,18 @@ void AAR_ProjectileBase::Explode_Implementation(const FHitResult& Hit)
 		return;
 	}
 	bExploded = true;
+	
+	FVector ProjInsLocation = GetActorLocation();
+	FRotator ProjInsRotation = GetActorRotation();
 
-	if (ImpactVFX)
+	if (IsValid(ImpactVFX))
 	{
-		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactVFX, GetActorLocation(), GetActorRotation());
+		UGameplayStatics::SpawnEmitterAtLocation(this, ImpactVFX, ProjInsLocation, ProjInsRotation);
+	}
+	
+	if (ImpactSoundCue)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, ImpactSoundCue, ProjInsLocation);
 	}
 	
 	/* These could be not necessary for a base class implementation, may modularize in subclass.
@@ -51,7 +77,4 @@ void AAR_ProjectileBase::Explode_Implementation(const FHitResult& Hit)
 	// if (EffectComp)EffectComp->DeactivateSystem();
 	// if (MovementComp)MovementComp->StopMovementImmediately();
 	// SetActorEnableCollision(false);
-	
-	// The base class is only responsible for "dead appearance" and does not force Destroy. 
-	// It is up to the subclass to decide whether to Destroy immediately or delay. /Teleport, etc
 }

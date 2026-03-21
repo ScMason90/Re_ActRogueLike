@@ -20,7 +20,7 @@ void AAR_ExplosiveBarrel::PostInitializeComponents()
 }
 
 void AAR_ExplosiveBarrel::OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
-	UPrimitiveComponent* OtherComp, FVector NormalisedImpulse, const FHitResult& Hit)
+	UPrimitiveComponent* OtherComp, FVector NormaleImpulse, const FHitResult& Hit)
 {
 	// Apply explosion impulse
 	ForceComp->FireImpulse();
