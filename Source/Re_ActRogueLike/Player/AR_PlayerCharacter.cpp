@@ -5,6 +5,7 @@
 
 #include "TimerManager.h"
 #include "Camera/CameraComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -192,14 +193,40 @@ void AAR_PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 void AAR_PlayerCharacter::OnHealthChanged(
 	AActor* InstigatorActor, UAR_AttributeComponent* OwningComp, float NewHealth, float Delta)
 {
+	// Flash when damaged
 	if (Delta < 0.0f)
 	{
 		GetMesh()->SetScalarParameterValueOnMaterials("TimeToHit", GetWorld()->TimeSeconds);
-		
-		if (NewHealth < 0.0f)
+	}
+	
+	// Death logic (RAW)
+	if (NewHealth <= 0.0f)
+	{
+		// Disable Player Input
+		if (APlayerController* PC = Cast<APlayerController>(GetController()))
 		{
-			APlayerController* PC = Cast<APlayerController>(GetController());
-			DisableInput(PC);
+			DisableInput(PC);	
 		}
+		
+		// Disable Movement
+		GetMovementComponent()->StopActiveMovement();
+		
+		// Disable Collision
+		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		
+		// Stop AI（if this's AI）
+		// if (AAIController* AIC = Cast<AAIController>(GetController()))
+		// {
+		// 	AIC->StopMovement();
+		// 	AIC->UnPossess();
+		// }
+
+		// Optional
+		
+		// Play ragdoll
+		// GetMesh()->SetSimulatePhysics(true);
+
+		// Delayed destruction
+		// SetLifeSpan(5.0f);
 	}
 }

@@ -7,14 +7,16 @@
 // Sets default values for this component's properties
 UAR_AttributeComponent::UAR_AttributeComponent()
 {
-	Health = 100.0f;
+	Health = MaxHealth = 100.0f;
 	
 }
 
 bool UAR_AttributeComponent::ApplyHealthChange(float Delta)
 {
-	/* TODO: No validating check and clamp([0,max]) solution either in cpp or bp yet.*/
 	Health += Delta;
+	
+	/* Simply clamp to validate Health variable.*/
+	Health = FMath::Clamp(Health, 0, MaxHealth);
 	
 	OnHealthChanged.Broadcast(nullptr, this, Health, Delta);
 	
@@ -23,5 +25,5 @@ bool UAR_AttributeComponent::ApplyHealthChange(float Delta)
 
 bool UAR_AttributeComponent::IsDead() const
 {
-	return Health < 0.0f;
+	return Health <= 0.0f;
 }
