@@ -189,12 +189,17 @@ void AAR_PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 		this, &AAR_PlayerCharacter::PrimaryInteract);
 }
 
-void AAR_PlayerCharacter::OnHealthChanged(AActor* InstigatorActor, UAR_AttributeComponent* OwningComp, float NewHealth,
-	float Delta)
+void AAR_PlayerCharacter::OnHealthChanged(
+	AActor* InstigatorActor, UAR_AttributeComponent* OwningComp, float NewHealth, float Delta)
 {
-	if (NewHealth < 0.0f && Delta < 0.0f)
+	if (Delta < 0.0f)
 	{
-		APlayerController* PC = Cast<APlayerController>(GetController());
-		DisableInput(PC);
+		GetMesh()->SetScalarParameterValueOnMaterials("TimeToHit", GetWorld()->TimeSeconds);
+		
+		if (NewHealth < 0.0f)
+		{
+			APlayerController* PC = Cast<APlayerController>(GetController());
+			DisableInput(PC);
+		}
 	}
 }

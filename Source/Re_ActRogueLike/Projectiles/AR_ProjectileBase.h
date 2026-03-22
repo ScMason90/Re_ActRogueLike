@@ -76,7 +76,7 @@ protected:
 		UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 	
 	/**The base class is only responsible for "dead appearance" and does not force Destroy.
-	* It is up to the subclass to decide whether to Destroy immediately or delay. /Teleport, etc
+	* It is up to the subclass to decide whether to Destroy immediately or delay. /Teleport, etc.
 	* Currently just play ImpactVFX and ImpactSoundCue if they are valid.*/
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void Explode(const FHitResult& Hit);
