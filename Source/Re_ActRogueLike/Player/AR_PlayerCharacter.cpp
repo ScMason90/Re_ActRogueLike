@@ -212,7 +212,8 @@ void AAR_PlayerCharacter::OnHealthChanged(
 		GetMovementComponent()->StopActiveMovement();
 		
 		// Disable Collision
-		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		GetCapsuleComponent()->SetCollisionProfileName("PawnDead");
+		GetMesh()->SetCollisionProfileName("PawnDead");
 		
 		// Stop AI（if this's AI）
 		// if (AAIController* AIC = Cast<AAIController>(GetController()))
@@ -223,7 +224,7 @@ void AAR_PlayerCharacter::OnHealthChanged(
 
 		// Optional
 		
-		// Play ragdoll
+		// Play ragdoll	
 		// GetMesh()->SetSimulatePhysics(true);
 
 		// Delayed destruction

@@ -61,6 +61,7 @@ void AAR_MagicProjectiles::OnProjBeginOverlap(UPrimitiveComponent* OverlappedCom
 			AttributeComp->ApplyHealthChange(DamageAmount);
 			Explode(SweepResult);
 			
+			if (AttributeComp->IsDead()) SphereComp->SetCollisionProfileName("IgnoreOnlyPawn");
 			if (IsValid(this))Destroy();
 		}
 	}
