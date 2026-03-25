@@ -15,7 +15,6 @@ class RE_ACTROGUELIKE_API UAR_AttributeComponent : public UActorComponent
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this component's properties
 	UAR_AttributeComponent();
 
 protected:
@@ -43,9 +42,15 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FOnHealthChanged OnHealthChanged;
 	
-	UFUNCTION(BlueprintCallable, Category = "Attributes")
+	UFUNCTION(BlueprintCallable, Category = "Attributes | Setters")
 	bool ApplyHealthChange(float Delta);
 	
-	UFUNCTION(BlueprintCallable, Category = "Attributes")
+	UFUNCTION(BlueprintCallable, Category = "Attributes | Getters")
 	bool IsDead() const;
+	
+	UFUNCTION(BlueprintCallable, Category = "Attributes | Getters")
+	float GetMaxHealth() const;
+	
+	UFUNCTION(BlueprintCallable, Category = "Attributes | Getters")
+	bool IsFullHealth() const;
 };
