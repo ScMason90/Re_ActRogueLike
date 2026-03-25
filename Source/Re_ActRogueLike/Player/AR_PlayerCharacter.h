@@ -8,6 +8,7 @@
 #include "Re_ActRogueLike/Components/AR_AttributeComponent.h"
 #include "AR_PlayerCharacter.generated.h"
 
+class UParticleSystem;
 class USpringArmComponent;
 class UCameraComponent;
 class UAnimMontage;
@@ -20,19 +21,27 @@ class RE_ACTROGUELIKE_API AAR_PlayerCharacter : public ACharacter
 	GENERATED_BODY()
 	
 protected:
-	UPROPERTY(EditAnywhere, Category = "FireProjectile")
+	UPROPERTY(EditAnywhere, Category = "FireProjectile | SpawnSources")
 	TSubclassOf<AActor> MagicProjectileClass;
 	
-	UPROPERTY(EditAnywhere, Category = "FireProjectile")
+	UPROPERTY(EditAnywhere, Category = "FireProjectile | SpawnSources")
 	TSubclassOf<AActor> BlackHoleProjectileClass;
 	
-	UPROPERTY(EditAnywhere, Category = "FireProjectile")
+	UPROPERTY(EditAnywhere, Category = "FireProjectile | SpawnSources")
 	TSubclassOf<AActor> TeleportProjectileClass;
-	// TODO: May considering using separate anim montage for each proj action
-	UPROPERTY(EditAnywhere, Category = "FireProjectile")
-	UAnimMontage* SharedProjMontage;
+	
+	// TODO: May considering using separate 'anim montage & casting effect & spawn socket' for each proj action
+	UPROPERTY(EditAnywhere, Category = "FireProjectile | Anim&Effect")
+	UAnimMontage* SharedFireMontage;
+	
+	UPROPERTY(EditAnywhere, Category = "FireProjectile | Anim&Effect")// Particle System played during attack animation
+	UParticleSystem* SharedCastEffect;
 	
 	FTimerHandle TimerHandle_FireProj;
+	
+	/* VisibleAnywhere = read-only, still useful to view in-editor and enforce a convention. */
+	UPROPERTY(VisibleAnywhere, Category = "Reaction | OnHealthChange")
+	FName TimeToHitParamName;
 
 public:
 	// Sets default values for this character's properties
@@ -63,6 +72,7 @@ protected:
 	// TODO: May considering introduce different AnimMontage for each proj attack?
 	void FireProj(
 		TSubclassOf<AActor> ProjClassToSpawn, UAnimMontage* AnimMontageToPlay, float TimeBeforProj,
+		UParticleSystem* EffectWhenCast,
 		/* And there are params passing to internal func-AdjustedProjSpawnTransform */
 		FName InSocketName, float LineTraceEndOffset);
 	

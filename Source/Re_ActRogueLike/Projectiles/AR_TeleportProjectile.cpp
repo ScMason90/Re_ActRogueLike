@@ -57,10 +57,10 @@ void AAR_TeleportProjectile::ExplodeAndTeleport()
 		
 		if (APawn* InstigatorPawn = GetInstigator())
 		{
-			UE_LOG(LogTemp, Warning, TEXT("AR_TeleProj location : %s"), *GetActorLocation().ToString());
+			UE_LOG(LogTemp, Warning, TEXT("AAR_TeleportProjectile::ExplodeAndTeleport();TeleProj location : %s"), *GetActorLocation().ToString());
 			InstigatorPawn->TeleportTo(GetActorLocation(), InstigatorPawn->GetActorRotation());
 			FVector PlayerLocation = InstigatorPawn->GetActorLocation();
-			UE_LOG(LogTemp, Error, TEXT("Player location : %s"), *PlayerLocation.ToString());
+			UE_LOG(LogTemp, Error, TEXT("AAR_TeleportProjectile::ExplodeAndTeleport();Player location : %s"), *PlayerLocation.ToString());
 		}
 		
 		Destroy();

@@ -40,7 +40,16 @@ protected:
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Effects | Sounds&Audios")
 	USoundCue* ImpactSoundCue;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Effects | CameraShake")
+	TSubclassOf<UCameraShakeBase> ImpactShake;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Effects | CameraShake")
+	float ImpactShakeInnerRadius;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Effects | CameraShake")
+	float ImpactShakeOuterRadius;
+	
 	// Prevent duplicate Explode
 	UPROPERTY(VisibleInstanceOnly, Category = "State")
 	bool bExploded = false;
@@ -84,5 +93,6 @@ protected:
 	virtual void PostInitializeComponents() override;
 
 public:
+	// Redundant?
 	FORCEINLINE UProjectileMovementComponent* GetMovementComp() const { return MovementComp; }
 };

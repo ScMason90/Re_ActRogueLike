@@ -1,5 +1,6 @@
 ﻿#include "AR_ProjectileBase.h"
 
+#include "Camera/CameraShakeBase.h"
 #include "Components/SphereComponent.h"
 #include "Components/PrimitiveComponent.h"
 #include "Components/AudioComponent.h"
@@ -26,6 +27,9 @@ AAR_ProjectileBase::AAR_ProjectileBase()
 	FlightAudioComp = CreateDefaultSubobject<UAudioComponent>(TEXT("FlightAudioComp"));
 	FlightAudioComp->SetupAttachment(SphereComp);	// Must SetupAttachment otherwise we can't edit in editor
 	FlightAudioComp->bAutoActivate = false;
+	
+	ImpactShakeInnerRadius = 200.0f;
+	ImpactShakeOuterRadius = 2000.0f;
 }
 
 void AAR_ProjectileBase::PostInitializeComponents()
@@ -69,6 +73,16 @@ void AAR_ProjectileBase::Explode_Implementation(const FHitResult& Hit)
 	if (ImpactSoundCue)
 	{
 		UGameplayStatics::PlaySoundAtLocation(this, ImpactSoundCue, ProjInsLocation);
+	}
+	
+	if (IsValid(ImpactShake))
+	{
+		UGameplayStatics::PlayWorldCameraShake(
+			this, ImpactShake, ProjInsLocation, ImpactShakeInnerRadius, ImpactShakeOuterRadius);
+		
+		// Add camera shake only to instigating player(not all)
+		// APlayerController* PC = UGameplayStatics::GetPlayerController(this, 0);
+		// PC->ClientStartCameraShake(ImpactCameraShakeClass);
 	}
 	
 	/* These could be not necessary for a base class implementation, may modularize in subclass.

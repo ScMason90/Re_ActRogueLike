@@ -10,7 +10,8 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
-#include "Re_ActRogueLike/Core/AR_GameplayInterface.h"
+#include "Kismet/GameplayStatics.h"
+#include "Particles/ParticleSystem.h"
 
 
 // Sets default values
@@ -47,6 +48,8 @@ void AAR_PlayerCharacter::PostInitializeComponents()
 	Super::PostInitializeComponents();
 	
 	AttributeComponent->OnHealthChanged.AddDynamic(this, &AAR_PlayerCharacter::OnHealthChanged);
+	
+	TimeToHitParamName = "TimeToHit";
 }
 
 void AAR_PlayerCharacter::MoveForward(float Value)
@@ -82,11 +85,14 @@ void AAR_PlayerCharacter::PrimaryInteract()
 }
 
 void AAR_PlayerCharacter::FireProj(
-	TSubclassOf<AActor> ProjClassToSpawn, UAnimMontage* AnimMontageToPlay, float TimeBeforeProj,
+	TSubclassOf<AActor> ProjClassToSpawn, UAnimMontage* AnimMontageToPlay, float TimeBeforeProj, 
+	UParticleSystem* EffectToCast,
 	/* And there are params passing to internal func-AdjustedProjSpawnTransform */
 	FName InSocketName, float LineTraceEndOffset)
 {
 	PlayAnimMontage(AnimMontageToPlay);
+	EffectToCast->Delay = TimeBeforeProj;
+	UGameplayStatics::SpawnEmitterAttached(EffectToCast, GetMesh(), InSocketName);
 	
 	GetWorldTimerManager().SetTimer(TimerHandle_FireProj, 
 		[this, ProjClassToSpawn, InSocketName, LineTraceEndOffset]()
@@ -104,13 +110,13 @@ void AAR_PlayerCharacter::FireProj(
 }
 
 void AAR_PlayerCharacter::FireMagicProj()	
-{FireProj(MagicProjectileClass, SharedProjMontage, 0.4f, 
+{FireProj(MagicProjectileClass, SharedFireMontage, 0.4f, SharedCastEffect,
 	"ik_hand_l", 10000.f);}
 void AAR_PlayerCharacter::FireBlackHole()	
-{FireProj(BlackHoleProjectileClass, SharedProjMontage, 0.4f, 
+{FireProj(BlackHoleProjectileClass, SharedFireMontage, 0.4f, SharedCastEffect,
 	"ik_hand_l", 10000.f);}
 void AAR_PlayerCharacter::FireTeleportProj()	
-{FireProj(TeleportProjectileClass, SharedProjMontage, 0.4f, 
+{FireProj(TeleportProjectileClass, SharedFireMontage, 0.4f, SharedCastEffect,
 	"ik_hand_l", 1000.f);}
 
 FTransform AAR_PlayerCharacter::AdjustedProjSpawnTransform(FName InSocketName, float LineTraceEndOffset)
