@@ -50,7 +50,7 @@ void AAR_MagicProjectiles::LifeSpanExpired()
 }
 
 void AAR_MagicProjectiles::OnProjBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-                                                   UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	// Change BP_MagicProjectile's collision response to 'Overlap' to Pawn for testing snippet under
 	if (OtherActor && OtherActor != InstigatorPawnActorRef)
