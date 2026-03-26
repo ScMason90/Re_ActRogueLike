@@ -34,7 +34,6 @@ void AAR_PickupActorBase::HideAndCooldownPickup()
 {
 	SetPickupState(false);
 	
-	FTimerHandle HideAndCooldownPickup_TimerHandle;
 	GetWorldTimerManager().SetTimer(
 		HideAndCooldownPickup_TimerHandle, this, &AAR_PickupActorBase::ShowPickup, RespawnTime);
 }

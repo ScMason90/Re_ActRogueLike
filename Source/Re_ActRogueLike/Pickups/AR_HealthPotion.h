@@ -21,8 +21,6 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	UStaticMeshComponent* MeshComp;
 	
-	// float healing amount? 
-	
 public:
 	void Interact_Implementation(APawn* InstigatorPawn) override;
 };

@@ -25,6 +25,8 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	USphereComponent* SphereComp;
 	
+	FTimerHandle HideAndCooldownPickup_TimerHandle;
+	
 	void SetPickupState(bool bNewIsActivate);
 	
 	UFUNCTION()

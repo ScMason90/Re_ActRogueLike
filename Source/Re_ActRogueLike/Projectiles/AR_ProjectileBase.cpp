@@ -28,8 +28,8 @@ AAR_ProjectileBase::AAR_ProjectileBase()
 	FlightAudioComp->SetupAttachment(SphereComp);	// Must SetupAttachment otherwise we can't edit in editor
 	FlightAudioComp->bAutoActivate = false;
 	
-	ImpactShakeInnerRadius = 200.0f;
-	ImpactShakeOuterRadius = 2000.0f;
+	ImpactShakeInnerRadius = 0.0f;
+	ImpactShakeOuterRadius = 1500.0f;
 }
 
 void AAR_ProjectileBase::PostInitializeComponents()
