@@ -3,6 +3,11 @@
 
 #include "AR_PlayerCharacter.h"
 
+#include "EnhancedInputComponent.h"
+#include "InputAction.h"
+#include "InputActionValue.h"
+#include "NiagaraFunctionLibrary.h"
+#include "NiagaraSystem.h"
 #include "TimerManager.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -11,7 +16,8 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "Particles/ParticleSystem.h"
+#include "Re_ActRogueLike/Components/AR_AttributeComponent.h"
+#include "Re_ActRogueLike/Components/AR_InteractionComponent.h"
 
 
 // Sets default values
@@ -52,30 +58,6 @@ void AAR_PlayerCharacter::PostInitializeComponents()
 	TimeToHitParamName = "TimeToHit";
 }
 
-void AAR_PlayerCharacter::MoveForward(float Value)
-{
-	FRotator ControlRot = GetControlRotation();
-	ControlRot.Pitch = 0.0f;
-	ControlRot.Roll = 0.0f;
-	
-	AddMovementInput(ControlRot.Vector(), Value);
-}
-
-void AAR_PlayerCharacter::MoveRight(float Value)
-{
-	FRotator ControlRot = GetControlRotation();
-	ControlRot.Pitch = 0.0f;
-	ControlRot.Roll = 0.0f;
-	
-	FVector RightVector = FRotationMatrix(ControlRot).GetScaledAxis(EAxis::Y);
-	
-	// X - Forward (Red)
-	// Y - Right (Green)
-	// Z - Up (Blue)
-	
-	AddMovementInput(RightVector, Value);
-}
-
 void AAR_PlayerCharacter::PrimaryInteract()
 {
 	if (InteractionComp)
@@ -85,14 +67,16 @@ void AAR_PlayerCharacter::PrimaryInteract()
 }
 
 void AAR_PlayerCharacter::FireProj(
-	TSubclassOf<AActor> ProjClassToSpawn, UAnimMontage* AnimMontageToPlay, float TimeBeforeProj, 
-	UParticleSystem* EffectToCast,
-	/* And there are params passing to internal func-AdjustedProjSpawnTransform */
-	FName InSocketName, float LineTraceEndOffset)
+		TSubclassOf<AActor> ProjClassToSpawn, TObjectPtr<UAnimMontage> AnimMontageToPlay, float TimeBeforeProj,
+		TObjectPtr<UNiagaraSystem> EffectWhenCast,
+		/* And there are params passing to internal func-AdjustedProjSpawnTransform */
+		FName InSocketName, float LineTraceEndOffset)
 {
 	PlayAnimMontage(AnimMontageToPlay);
-	EffectToCast->Delay = TimeBeforeProj;
-	UGameplayStatics::SpawnEmitterAttached(EffectToCast, GetMesh(), InSocketName);
+	
+	UNiagaraFunctionLibrary::SpawnSystemAttached(SharedCastingEffect, GetMesh(), InSocketName, 
+		FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget, true);
+	UGameplayStatics::PlaySound2D(this, SharedCastingSound);
 	
 	GetWorldTimerManager().SetTimer(TimerHandle_FireProj, 
 		[this, ProjClassToSpawn, InSocketName, LineTraceEndOffset]()
@@ -110,13 +94,13 @@ void AAR_PlayerCharacter::FireProj(
 }
 
 void AAR_PlayerCharacter::FireMagicProj()	
-{FireProj(MagicProjectileClass, SharedFireMontage, 0.4f, SharedCastEffect,
+{FireProj(MagicProjectileClass, SharedFireMontage, 0.4f, SharedCastingEffect,
 	"ik_hand_l", 10000.f);}
 void AAR_PlayerCharacter::FireBlackHole()	
-{FireProj(BlackHoleProjectileClass, SharedFireMontage, 0.4f, SharedCastEffect,
+{FireProj(BlackHoleProjectileClass, SharedFireMontage, 0.4f, SharedCastingEffect,
 	"ik_hand_l", 10000.f);}
 void AAR_PlayerCharacter::FireTeleportProj()	
-{FireProj(TeleportProjectileClass, SharedFireMontage, 0.4f, SharedCastEffect,
+{FireProj(TeleportProjectileClass, SharedFireMontage, 0.4f, SharedCastingEffect,
 	"ik_hand_l", 1000.f);}
 
 FTransform AAR_PlayerCharacter::AdjustedProjSpawnTransform(FName InSocketName, float LineTraceEndOffset)
@@ -173,27 +157,42 @@ void AAR_PlayerCharacter::Tick(float DeltaTime)
 void AAR_PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+	UEnhancedInputComponent* EnhancedInput = Cast<UEnhancedInputComponent>(PlayerInputComponent);
 	
-	/*  TODO : 请找时间检查 Tom Looman 在哪一版本的github源码仓库中哪一commit里实现了UE5.0以上的EnhancedInput
-	 *  输入系统的引入替代了旧系统 (GitHub网站查看commit点击browse repository at this point)*/
-	PlayerInputComponent->BindAxis("MoveForward", this, &AAR_PlayerCharacter::MoveForward);
-	PlayerInputComponent->BindAxis("MoveRight", this, &AAR_PlayerCharacter::MoveRight);
+	EnhancedInput->BindAction(IA_Move, ETriggerEvent::Triggered, this, &AAR_PlayerCharacter::Move);
+	EnhancedInput->BindAction(IA_Look, ETriggerEvent::Triggered, this, &AAR_PlayerCharacter::Look);
 	
-	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
-	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
+	EnhancedInput->BindAction(IA_Jump, ETriggerEvent::Started, this, &ACharacter::Jump);
+	EnhancedInput->BindAction(IA_Jump, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 	
-	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
+	EnhancedInput->BindAction(IA_FireMagicProj, ETriggerEvent::Triggered, this, &AAR_PlayerCharacter::FireMagicProj);
+	EnhancedInput->BindAction(IA_FireTeleportProj, ETriggerEvent::Triggered, this, &AAR_PlayerCharacter::FireTeleportProj);
+	EnhancedInput->BindAction(IA_FireBlackHole, ETriggerEvent::Triggered, this, &AAR_PlayerCharacter::FireBlackHole);
 	
-	PlayerInputComponent->BindAction("PrimaryAttack", IE_Pressed, 
-		this, &AAR_PlayerCharacter::FireMagicProj);
-	PlayerInputComponent->BindAction("UltimateAttack", IE_Pressed,
-		this, &AAR_PlayerCharacter::FireBlackHole);
-	PlayerInputComponent->BindAction("TeleportAttack", IE_Pressed,
-		this, &AAR_PlayerCharacter::FireTeleportProj);
+	EnhancedInput->BindAction(IA_PrimaryInteract, ETriggerEvent::Triggered, this, &AAR_PlayerCharacter::PrimaryInteract);
+}
+void AAR_PlayerCharacter::Move(const FInputActionValue& InValue)
+{
+	FVector2D InputValue = InValue.Get<FVector2D>();
 	
+	FRotator ControlRot = GetControlRotation();
+	ControlRot.Pitch = 0;
 	
-	PlayerInputComponent->BindAction("PrimaryInteract", IE_Pressed, 
-		this, &AAR_PlayerCharacter::PrimaryInteract);
+	// Move Forward/Back
+	AddMovementInput(ControlRot.Vector(), InputValue.X);
+	
+	// Sideways
+	FVector RightDirection = ControlRot.RotateVector(FVector::RightVector);
+	AddMovementInput(RightDirection, InputValue.Y);
+}
+
+void AAR_PlayerCharacter::Look(const FInputActionInstance& InValue)
+{
+	FVector2D InputValue = InValue.GetValue().Get<FVector2D>();
+	
+	AddControllerPitchInput(InputValue.Y);
+	AddControllerYawInput(InputValue.X);
 }
 
 void AAR_PlayerCharacter::OnHealthChanged(
