@@ -26,18 +26,18 @@ AAR_PlayerCharacter::AAR_PlayerCharacter()
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	
-	SpringArmComp = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComp"));
-	SpringArmComp->bUsePawnControlRotation = true;
-	SpringArmComp->SetupAttachment(RootComponent);
+	SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComp"));
+	SpringArmComponent->bUsePawnControlRotation = true;
+	SpringArmComponent->SetupAttachment(RootComponent);
 	
-	CameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComp"));
-	CameraComp->SetupAttachment(SpringArmComp);
+	CameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComp"));
+	CameraComponent->SetupAttachment(SpringArmComponent);
 	
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	
 	bUseControllerRotationYaw = false;
 	
-	InteractionComp = CreateDefaultSubobject<UAR_InteractionComponent>(TEXT("InteractionComp"));
+	InteractionComponent = CreateDefaultSubobject<UAR_InteractionComponent>(TEXT("InteractionComp"));
 	
 	AttributeComponent = CreateDefaultSubobject<UAR_AttributeComponent>(TEXT("AttributeComp"));
 }
@@ -56,13 +56,14 @@ void AAR_PlayerCharacter::PostInitializeComponents()
 	AttributeComponent->OnHealthChanged.AddDynamic(this, &AAR_PlayerCharacter::OnHealthChanged);
 	
 	TimeToHitParamName = "TimeToHit";
+	MuzzleSocketName = "Muzzle_01";
 }
 
 void AAR_PlayerCharacter::PrimaryInteract()
 {
-	if (InteractionComp)
+	if (InteractionComponent)
 	{
-		InteractionComp->PrimaryInteraction();
+		InteractionComponent->PrimaryInteraction();
 	}
 }
 
@@ -95,19 +96,19 @@ void AAR_PlayerCharacter::FireProj(
 
 void AAR_PlayerCharacter::FireMagicProj()	
 {FireProj(MagicProjectileClass, SharedFireMontage, 0.4f, SharedCastingEffect,
-	"ik_hand_l", 10000.f);}
+	MuzzleSocketName, 10000.f);}
 void AAR_PlayerCharacter::FireBlackHole()	
 {FireProj(BlackHoleProjectileClass, SharedFireMontage, 0.4f, SharedCastingEffect,
-	"ik_hand_l", 10000.f);}
+	MuzzleSocketName, 10000.f);}
 void AAR_PlayerCharacter::FireTeleportProj()	
 {FireProj(TeleportProjectileClass, SharedFireMontage, 0.4f, SharedCastingEffect,
-	"ik_hand_l", 1000.f);}
+	MuzzleSocketName, 1000.f);}
 
 FTransform AAR_PlayerCharacter::AdjustedProjSpawnTransform(FName InSocketName, float LineTraceEndOffset)
 {
 	FVector HandLocation = GetMesh()->GetSocketLocation(InSocketName),
-	TraceStart = CameraComp->GetComponentLocation(),
-	TraceEnd = TraceStart + (CameraComp->GetForwardVector() * LineTraceEndOffset),
+	TraceStart = CameraComponent->GetComponentLocation(),
+	TraceEnd = TraceStart + (CameraComponent->GetForwardVector() * LineTraceEndOffset),
 	AimShot = TraceEnd;
 	
 	FHitResult Hit;
@@ -166,12 +167,14 @@ void AAR_PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 	EnhancedInput->BindAction(IA_Jump, ETriggerEvent::Started, this, &ACharacter::Jump);
 	EnhancedInput->BindAction(IA_Jump, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 	
+	// TODO: Considering add self-banned(tag, GAS cooldown etc.) to avoid convulsive shooting
 	EnhancedInput->BindAction(IA_FireMagicProj, ETriggerEvent::Triggered, this, &AAR_PlayerCharacter::FireMagicProj);
 	EnhancedInput->BindAction(IA_FireTeleportProj, ETriggerEvent::Triggered, this, &AAR_PlayerCharacter::FireTeleportProj);
 	EnhancedInput->BindAction(IA_FireBlackHole, ETriggerEvent::Triggered, this, &AAR_PlayerCharacter::FireBlackHole);
 	
 	EnhancedInput->BindAction(IA_PrimaryInteract, ETriggerEvent::Triggered, this, &AAR_PlayerCharacter::PrimaryInteract);
 }
+
 void AAR_PlayerCharacter::Move(const FInputActionValue& InValue)
 {
 	FVector2D InputValue = InValue.Get<FVector2D>();
