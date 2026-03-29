@@ -61,9 +61,9 @@ float AAR_ExplosiveBarrel::TakeDamage(float DamageAmount, struct FDamageEvent co
 	}
 	
 	// Hold onto both the Niagara and Audio Components to disable them during the Explode()
-	ActiveBurningEffectComp = UNiagaraFunctionLibrary::SpawnSystemAttached(BurningEffect, MeshComponent, NAME_None,
+	ActiveBurningVFXComp = UNiagaraFunctionLibrary::SpawnSystemAttached(BurningVFX, MeshComponent, NAME_None,
 		FVector::ZeroVector,FRotator::ZeroRotator,EAttachLocation::SnapToTarget,true);
-	ActiveBurningSoundComp = UGameplayStatics::SpawnSoundAttached(BurningSound, MeshComponent);
+	ActiveBurningSFXComp = UGameplayStatics::SpawnSoundAttached(BurningSFX, MeshComponent);
 	
 	GetWorldTimerManager().SetTimer(
 		ExplosionTimerHandle, this,  &AAR_ExplosiveBarrel::Explode, ExplosionDelay);
@@ -75,8 +75,8 @@ void AAR_ExplosiveBarrel::Explode()
 {
 	bExploded = true;
 	
-	ActiveBurningEffectComp->Deactivate();
-	ActiveBurningSoundComp->Stop();
+	ActiveBurningVFXComp->Deactivate();
+	ActiveBurningSFXComp->Stop();
 	
 	RadialForceComponent->FireImpulse();
 	
@@ -84,6 +84,6 @@ void AAR_ExplosiveBarrel::Explode()
 	FRotator BarrelRot = GetActorRotation();
 	
 	UNiagaraFunctionLibrary::SpawnSystemAtLocation(
-		this, ExplosionEffect, BarrelLoc, BarrelRot);
-	UGameplayStatics::PlaySoundAtLocation(this, ExplosionSound, BarrelLoc);
+		this, ExplosionVFX, BarrelLoc, BarrelRot);
+	UGameplayStatics::PlaySoundAtLocation(this, ExplosionSFX, BarrelLoc);
 }

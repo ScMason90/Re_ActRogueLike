@@ -43,14 +43,14 @@ protected:
 	TObjectPtr<UAnimMontage> SharedFireMontage;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "FireProjectile | Anim&Effect")// NiagaraSystem played during attack animation
-	TObjectPtr<UNiagaraSystem> SharedCastingEffect;
+	TObjectPtr<UNiagaraSystem> SharedCastingVFX;
 	
 	UPROPERTY(VisibleAnywhere, Category = "FireProjectile | Anim&Effect")
 	FName MuzzleSocketName;
 	
 	/* Projectile - Sounds&Audios */
 	UPROPERTY(EditDefaultsOnly, Category = "FireProjectile | Sounds&Audios")
-	TObjectPtr<USoundBase> SharedCastingSound;
+	TObjectPtr<USoundBase> SharedCastingSFX;
 	
 	// Cpp only variables
 	FTimerHandle TimerHandle_FireProj;

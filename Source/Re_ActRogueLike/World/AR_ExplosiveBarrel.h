@@ -29,16 +29,16 @@ protected:
 	float ExplosionDelay = 3.0f;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Explosive Barrel")
-	TObjectPtr<UNiagaraSystem> BurningEffect;
+	TObjectPtr<UNiagaraSystem> BurningVFX;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Explosive Barrel")
-	TObjectPtr<USoundBase> BurningSound;
+	TObjectPtr<USoundBase> BurningSFX;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Explosive Barrel")
-	TObjectPtr<UNiagaraSystem> ExplosionEffect;
+	TObjectPtr<UNiagaraSystem> ExplosionVFX;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Explosive Barrel")
-	TObjectPtr<USoundBase> ExplosionSound;
+	TObjectPtr<USoundBase> ExplosionSFX;
 	
 	// Bind hit event after components are initialized
 	virtual void PostInitializeComponents() override;
@@ -48,9 +48,9 @@ protected:
 	FTimerHandle ExplosionTimerHandle;
 	
 	UPROPERTY()
-	TObjectPtr<UNiagaraComponent> ActiveBurningEffectComp = nullptr;
+	TObjectPtr<UNiagaraComponent> ActiveBurningVFXComp = nullptr;
 	UPROPERTY()
-	TObjectPtr<UAudioComponent> ActiveBurningSoundComp = nullptr;
+	TObjectPtr<UAudioComponent> ActiveBurningSFXComp = nullptr;
 	
 	/** Apply damage to this actor.
 	 *	@param DamageAmount		How much damage to apply.

@@ -10,7 +10,6 @@
 #include "NiagaraSystem.h"
 #include "TimerManager.h"
 #include "Camera/CameraComponent.h"
-#include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -75,9 +74,9 @@ void AAR_PlayerCharacter::FireProj(
 {
 	PlayAnimMontage(AnimMontageToPlay);
 	
-	UNiagaraFunctionLibrary::SpawnSystemAttached(SharedCastingEffect, GetMesh(), InSocketName, 
+	UNiagaraFunctionLibrary::SpawnSystemAttached(SharedCastingVFX, GetMesh(), InSocketName, 
 		FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget, true);
-	UGameplayStatics::PlaySound2D(this, SharedCastingSound);
+	UGameplayStatics::PlaySound2D(this, SharedCastingSFX);
 	
 	GetWorldTimerManager().SetTimer(TimerHandle_FireProj, 
 		[this, ProjClassToSpawn, InSocketName, LineTraceEndOffset]()
@@ -95,13 +94,13 @@ void AAR_PlayerCharacter::FireProj(
 }
 
 void AAR_PlayerCharacter::FireMagicProj()	
-{FireProj(MagicProjectileClass, SharedFireMontage, 0.4f, SharedCastingEffect,
+{FireProj(MagicProjectileClass, SharedFireMontage, 0.2f, SharedCastingVFX,
 	MuzzleSocketName, 10000.f);}
 void AAR_PlayerCharacter::FireBlackHole()	
-{FireProj(BlackHoleProjectileClass, SharedFireMontage, 0.4f, SharedCastingEffect,
+{FireProj(BlackHoleProjectileClass, SharedFireMontage, 0.2f, SharedCastingVFX,
 	MuzzleSocketName, 10000.f);}
 void AAR_PlayerCharacter::FireTeleportProj()	
-{FireProj(TeleportProjectileClass, SharedFireMontage, 0.4f, SharedCastingEffect,
+{FireProj(TeleportProjectileClass, SharedFireMontage, 0.2f, SharedCastingVFX,
 	MuzzleSocketName, 1000.f);}
 
 FTransform AAR_PlayerCharacter::AdjustedProjSpawnTransform(FName InSocketName, float LineTraceEndOffset)
@@ -219,17 +218,10 @@ void AAR_PlayerCharacter::OnHealthChanged(
 		// Disable Movement
 		GetMovementComponent()->StopActiveMovement();
 		
-		// Disable Collision
-		GetCapsuleComponent()->SetCollisionProfileName("PawnDead");
-		GetMesh()->SetCollisionProfileName("PawnDead");
+		// Play Death Anim in Anim Class of PlayerCharacter...
 		
-		// Stop AI（if this's AI）
-		// if (AAIController* AIC = Cast<AAIController>(GetController()))
-		// {
-		// 	AIC->StopMovement();
-		// 	AIC->UnPossess();
-		// }
-
+		// Disable Collision...
+		
 		// Optional
 		
 		// Play ragdoll	

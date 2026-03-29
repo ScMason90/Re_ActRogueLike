@@ -1,6 +1,7 @@
 ﻿#include "AR_TeleportProjectile.h"
 
 #include "TimerManager.h"
+#include "Engine/HitResult.h"
 #include "GameFramework/Pawn.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 
@@ -8,7 +9,7 @@ AAR_TeleportProjectile::AAR_TeleportProjectile()
 {
 	InitialLifeSpan = 0.0f;
 	
-	MovementComp->InitialSpeed = 1300.0f;
+	ProjectileMovementComponent->InitialSpeed = 1300.0f;
 }
 
 void AAR_TeleportProjectile::BeginPlay()
@@ -16,35 +17,53 @@ void AAR_TeleportProjectile::BeginPlay()
 	Super::BeginPlay();
 
 	GetWorldTimerManager().SetTimer(
-		TimerHandle_Explode,
+		TimerHandle_TeleportProj,
 		this,
 		&AAR_TeleportProjectile::ExplodeAndTeleport,
-		0.2f,
+		DetonateDelay,
 		false);
 }
 
 void AAR_TeleportProjectile::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	GetWorldTimerManager().ClearTimer(TimerHandle_Explode);
-	GetWorldTimerManager().ClearTimer(TimerHandle_Teleport);
-
+	GetWorldTimerManager().ClearTimer(TimerHandle_TeleportProj);
 	Super::EndPlay(EndPlayReason);
+}
+
+void AAR_TeleportProjectile::OnProjHit(UPrimitiveComponent* ComponentBeenHit, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+{
+	// Skip the base implementation, we handle our own as we must delay destroying and avoid playing duplicate explosion effects
+	// Super::OnActorHit(HitComponent, OtherActor, OtherComp, NormalImpulse, Hit);
+
+	// Cancel the timer to prevent a second teleportation
+	GetWorldTimerManager().ClearTimer(TimerHandle_TeleportProj);
+	
+	ExplodeAndTeleport();
+}
+
+void AAR_TeleportProjectile::OnProjBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	// Skip the base implementation, we handle our own as we must delay destroying and avoid playing duplicate explosion effects
+	// Super::OnProjBeginOverlap(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult);
+	
+	// Cancel the timer to prevent a second teleportation
+	GetWorldTimerManager().ClearTimer(TimerHandle_TeleportProj);
+	
+	ExplodeAndTeleport();
 }
 
 void AAR_TeleportProjectile::ExplodeAndTeleport()
 {
-	if (IsPendingKillPending())
-	{
-		return;
-	}
-
-	// The base class is responsible for vision and stopping movement
+	// The base class is responsible for VFX&SFX
+	// Don't specify any CameraShake_BP inorder to keep clean teleport logic
 	Explode(FHitResult());
 
-	// Reinsurance once
-	if (MovementComp)
+	// Reinsurance
+	if (ProjectileMovementComponent)
 	{
-		MovementComp->StopMovementImmediately();
+		ProjectileMovementComponent->StopMovementImmediately();
 	}
 
 	FTimerDelegate TeleportDelegate;
@@ -55,11 +74,11 @@ void AAR_TeleportProjectile::ExplodeAndTeleport()
 			return;
 		}
 		
-		if (APawn* InstigatorPawn = GetInstigator())
+		if (IsValid(InstigatorPawnActorRef))
 		{
 			UE_LOG(LogTemp, Warning, TEXT("AAR_TeleportProjectile::ExplodeAndTeleport();TeleProj location : %s"), *GetActorLocation().ToString());
-			InstigatorPawn->TeleportTo(GetActorLocation(), InstigatorPawn->GetActorRotation());
-			FVector PlayerLocation = InstigatorPawn->GetActorLocation();
+			InstigatorPawnActorRef->TeleportTo(GetActorLocation(), InstigatorPawnActorRef->GetActorRotation());
+			FVector PlayerLocation = InstigatorPawnActorRef->GetActorLocation();
 			UE_LOG(LogTemp, Error, TEXT("AAR_TeleportProjectile::ExplodeAndTeleport();Player location : %s"), *PlayerLocation.ToString());
 		}
 		
@@ -67,8 +86,8 @@ void AAR_TeleportProjectile::ExplodeAndTeleport()
 	});
 
 	GetWorldTimerManager().SetTimer(
-		TimerHandle_Teleport,
+		TimerHandle_TeleportProj,
 		TeleportDelegate,
-		0.2f,
+		TeleportDelay,
 		false);
 }
