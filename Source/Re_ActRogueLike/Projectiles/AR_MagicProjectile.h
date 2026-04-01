@@ -12,6 +12,8 @@ class RE_ACTROGUELIKE_API AAR_MagicProjectile : public AAR_ProjectileBase
 
 public:
 	AAR_MagicProjectile();
+	
+	virtual void LifeSpanExpired() override;
 
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Damage")
@@ -19,8 +21,6 @@ protected:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Damage")
 	TSubclassOf<UDamageType> DmgTypeClass;
-	
-	virtual void LifeSpanExpired() override;
 	
 	virtual void OnImpact(AActor* OtherActor, const FHitResult& Hit) override;
 };

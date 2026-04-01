@@ -9,7 +9,6 @@
 struct FInputActionInstance;
 struct FInputActionValue;
 class UAR_AttributeComponent;
-class UAR_InteractionComponent;
 class UAnimMontage;
 class UCameraComponent;
 class UInputAction;
@@ -99,10 +98,6 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
 	TObjectPtr<UInputAction> IA_Look;
 	
-	/* Interaction */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
-	TObjectPtr<UInputAction> IA_PrimaryInteract;
-	
 	/* Combat and fight */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
 	TObjectPtr<UInputAction> IA_FireMagicProj;
@@ -117,6 +112,10 @@ protected:
 	/* VisibleAnywhere = read-only, still useful to view in-editor and enforce a convention. */
 	UPROPERTY(VisibleAnywhere, Category = "Reaction | OnHealthChange")
 	FName TimeToHitParamName;
+	
+	/* -------------Player State---------------- */
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Player State")
+	bool IsPlayerDead = false;
 
 public:
 	// Sets default values for this character's properties

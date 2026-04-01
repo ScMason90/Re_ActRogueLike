@@ -27,6 +27,8 @@ void UAR_InteractionComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	
+	UE_LOG(LogTemp, Warning, TEXT("Owner = %s"), *GetOwner()->GetName());
+	
 	APlayerController* PC = CastChecked<APlayerController>(GetOwner());
 	
 	FVector OwnerCenter = GetOwner()->GetActorLocation();
@@ -65,7 +67,8 @@ void UAR_InteractionComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 		float NormalizedDotResult = DotResult * 0.5f +0.5f;
 		
 		float Weight = (NormalizedDotResult * DirectionWeightScale) + (NormalizedDistanceTo * DistanceToWeightScale);
-		if (Weight > HighestWeight)	// HighestWeight = Max(Weight, HighestWeight)
+		
+		if (Weight > HighestWeight)
 		{
 			HighestWeight = Weight;
 			BestActor = OverlappedActor;
@@ -77,8 +80,6 @@ void UAR_InteractionComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 			FString DebugString = FString::Printf(TEXT("Weight: %f, Dot: %f, Dist: %f"), Weight, NormalizedDotResult, NormalizedDistanceTo);
 			DrawDebugString(GetWorld(), Origin, DebugString, nullptr, FColor::White, 0.0f, true);
 		}
-		
-		if (HighestWeight == 3.0f)break;
 	}
 	
 	

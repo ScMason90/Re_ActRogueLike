@@ -79,7 +79,7 @@ void AAR_PlayerCharacter::FireProj(const FFireProjSpawnSourceConfig Config)
 			
 		}, Config.TimeBeforeProj, false);
 	
-	/* GetWorldTimerManager().ClearTimer(TimerHandle_PrimaryAttack);*/
+	/* GetWorldTimerManager().ClearTimer(TimerHandle_FireProj);*/
 }
 
 void AAR_PlayerCharacter::FireMagicProj()	
@@ -207,43 +207,53 @@ void AAR_PlayerCharacter::Look(const FInputActionInstance& InValue)
 float AAR_PlayerCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent,
 	class AController* EventInstigator, AActor* DamageCauser)
 {
-	return Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	float ActualDamage =  Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	
+	AttributeComponent->ApplyHealthChange(DamageCauser,-ActualDamage);
+	
+	return ActualDamage;
 	
 }
 
 void AAR_PlayerCharacter::OnHealthChanged(
 	AActor* InstigatorActor, UAR_AttributeComponent* OwningComp, float NewHealth, float Delta)
 {
-	// Flash when damaged
-	if (Delta < 0.0f)
+	if (!IsPlayerDead)
 	{
-		GetMesh()->SetScalarParameterValueOnMaterials("TimeToHit", GetWorld()->TimeSeconds);
-	}
+		// Flash when damaged
+		if (Delta < 0.0f)
+		{
+			GetMesh()->SetScalarParameterValueOnMaterials("TimeToHit", GetWorld()->TimeSeconds);
+		}
 	
-	// Death logic (RAW), Currently remained as null?
-	if (FMath::IsNearlyZero(NewHealth)/*NewHealth <= 0.0f*/)
-	{
-		// Disable Player Input
-		// if (APlayerController* PC = Cast<APlayerController>(GetController()))
-		// {
-		// 	DisableInput(PC);	
-		// }
-		DisableInput(nullptr);
+		// Death logic (RAW), Currently remained as null?
+		if (FMath::IsNearlyZero(NewHealth)/*NewHealth <= 0.0f*/)
+		{
+			// Mark as Dead
+			IsPlayerDead = AttributeComponent->IsDead();
 		
-		// Disable Movement
-		GetMovementComponent()->StopActiveMovement();
+			// Disable Player Input
+			// if (APlayerController* PC = Cast<APlayerController>(GetController()))
+			// {
+			// 	DisableInput(PC);	
+			// }
+			DisableInput(nullptr);
 		
-		// Play Death Anim in Anim Class of PlayerCharacter...
-		PlayAnimMontage(DeathMontage);
+			// Disable Movement
+			GetMovementComponent()->StopActiveMovement();
 		
-		// Disable Collision...
+			// Play Death Anim in Anim Class of PlayerCharacter...
+			PlayAnimMontage(DeathMontage);
 		
-		// Optional
+			// Disable Collision...
 		
-		// Play ragdoll	
-		// GetMesh()->SetSimulatePhysics(true);
+			// Optional
+		
+			// Play ragdoll	
+			// GetMesh()->SetSimulatePhysics(true);
 
-		// Delayed destruction
-		// SetLifeSpan(5.0f);
+			// Delayed destruction
+			// SetLifeSpan(5.0f);
+		}
 	}
 }
