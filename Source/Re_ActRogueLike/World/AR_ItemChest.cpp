@@ -8,7 +8,7 @@
 
 void AAR_ItemChest::Interact_Implementation(APawn* InstigatorPawn)
 {
-	IAR_GameplayInterface::Interact_Implementation(InstigatorPawn);
+	IAR_InteractionInterface::Interact_Implementation(InstigatorPawn);
 	
 	LidMesh->SetRelativeRotation(FQuat(FVector::RightVector, FMath::DegreesToRadians(TargetPitch)));
 }

@@ -4,11 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
-#include "AR_GameplayInterface.generated.h"
+#include "AR_InteractionInterface.generated.h"
 
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI)
-class UAR_GameplayInterface : public UInterface
+class UAR_InteractionInterface : public UInterface
 {
 	GENERATED_BODY()
 };
@@ -16,7 +16,7 @@ class UAR_GameplayInterface : public UInterface
 /**
  * 
  */
-class RE_ACTROGUELIKE_API IAR_GameplayInterface
+class RE_ACTROGUELIKE_API IAR_InteractionInterface
 {
 	GENERATED_BODY()
 

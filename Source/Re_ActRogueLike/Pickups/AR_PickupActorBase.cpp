@@ -41,6 +41,6 @@ void AAR_PickupActorBase::HideAndCooldownPickup()
 void AAR_PickupActorBase::Interact_Implementation(APawn* InstigatorPawn)
 {
 	// Logic in derived class...
-	IAR_GameplayInterface::Interact_Implementation(InstigatorPawn);
+	IAR_InteractionInterface::Interact_Implementation(InstigatorPawn);
 	
 }

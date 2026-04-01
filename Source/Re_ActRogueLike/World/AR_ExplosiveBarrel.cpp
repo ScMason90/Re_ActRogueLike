@@ -29,7 +29,7 @@ AAR_ExplosiveBarrel::AAR_ExplosiveBarrel()
 	RadialForceComponent->SetAutoActivate(false);
 	
 	// Must be quite large, depends on the Mass of the Actors we intend to launch such as the Cubes
-	RadialForceComponent->ImpulseStrength = 150000.0f;	// Alternative: 2000000.0f if bImpulseVelChange is false.
+	RadialForceComponent->ImpulseStrength = 1500.0f;	// Alternative: 2000000.0f if bImpulseVelChange is false.
 	RadialForceComponent->Radius = 750.0f;
 	// Optional, ignores 'Mass' of other objects 
 	RadialForceComponent->bImpulseVelChange = true;	//(if false, the impulse strength will be much higher to push most objects depending on Mass)
@@ -49,6 +49,7 @@ void AAR_ExplosiveBarrel::PostInitializeComponents()
 	MeshComponent->SetCollisionObjectType(ECC_PhysicsBody);
 }
 
+// TODO: For somehow, bp instance derived from current cpp class set can only 'explode' once
 float AAR_ExplosiveBarrel::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent,
 	class AController* EventInstigator, AActor* DamageCauser)
 {
