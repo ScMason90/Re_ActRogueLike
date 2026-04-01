@@ -29,7 +29,7 @@ void AAR_HealthPotion::Interact_Implementation(APawn* InstigatorPawn)
 	if (IsValid(AttributeComp) && !AttributeComp->IsFullHealth())
 	{
 		// Only activate if healed successfully
-		if (AttributeComp->ApplyHealthChange(AttributeComp->GetMaxHealth()))
+		if (AttributeComp->ApplyHealthChange(this, AttributeComp->GetMaxHealth()))
 		{
 			HideAndCooldownPickup();
 		}

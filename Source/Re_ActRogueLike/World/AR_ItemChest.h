@@ -4,13 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Re_ActRogueLike/Core/AR_GameplayInterface.h"
+#include "Re_ActRogueLike/Core/AR_InteractionInterface.h"
 #include "AR_ItemChest.generated.h"
 
 class UStaticMeshComponent;
 
 UCLASS()
-class RE_ACTROGUELIKE_API AAR_ItemChest : public AActor, public IAR_GameplayInterface
+class RE_ACTROGUELIKE_API AAR_ItemChest : public AActor, public IAR_InteractionInterface
 {
 	GENERATED_BODY()
 

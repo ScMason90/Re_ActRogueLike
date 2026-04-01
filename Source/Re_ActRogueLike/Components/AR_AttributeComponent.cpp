@@ -7,24 +7,24 @@
 // Sets default values for this component's properties
 UAR_AttributeComponent::UAR_AttributeComponent()
 {
-	Health = MaxHealth = 100.0f;
-	
+	Attributes = FAR_AttributeSet();
 }
 
-bool UAR_AttributeComponent::ApplyHealthChange(float Delta)
+bool UAR_AttributeComponent::ApplyHealthChange(AActor* Instigator, float Delta)
 {
-	float OldHealth = Health, ActualDelta;
+	float OldHealth = Attributes.Health, ActualDelta;
 	
 	/* Simply clamp to validate Health variable.*/
-	Health = FMath::Clamp(Health + Delta, 0, MaxHealth);
-	ActualDelta = Health - OldHealth;
+	Attributes.Health = FMath::Clamp(Attributes.Health + Delta, 0, Attributes.MaxHealth);
+	ActualDelta = Attributes.Health - OldHealth;
 	
-	// @fixme: Still nullptr for InstigatorActor parameter
-	OnHealthChanged.Broadcast(nullptr, this, Health, ActualDelta);
+	OnHealthChanged.Broadcast(Instigator, this, Attributes.Health, ActualDelta);
+	UE_LOG(LogTemp, Log, TEXT("New Health: %f, Max Health: %f"), Attributes.Health, Attributes.MaxHealth);
 	
 	return ActualDelta != 0;
 }
 
-bool UAR_AttributeComponent::IsDead() const {return Health <= 0.0f;}
-float UAR_AttributeComponent::GetMaxHealth() const {return MaxHealth;}
-bool UAR_AttributeComponent::IsFullHealth() const {return Health == MaxHealth;}
+bool UAR_AttributeComponent::IsDead() const {return Attributes.Health <= 0.0f;}
+float UAR_AttributeComponent::GetMaxHealth() const {return Attributes.MaxHealth;}
+float UAR_AttributeComponent::GetHealth() const {return Attributes.Health;}
+bool UAR_AttributeComponent::IsFullHealth() const {return Attributes.Health == Attributes.MaxHealth;}

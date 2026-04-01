@@ -13,7 +13,7 @@ AAR_MagicProjectile::AAR_MagicProjectile()
 	
 	ProjectileMovementComponent->InitialSpeed = 2000.0f;
 
-	DamageAmount = 10.0f;
+	DamageAmount = 3.0f;
 	InitialLifeSpan = 4.0f;
 }
 
@@ -37,7 +37,7 @@ void AAR_MagicProjectile::OnImpact(AActor* OtherActor, const FHitResult& Hit)
 		if (UAR_AttributeComponent* AttributeComp = Cast<UAR_AttributeComponent>(
 			OtherActor->GetComponentByClass(UAR_AttributeComponent::StaticClass())))
 		{
-			AttributeComp->ApplyHealthChange(-DamageAmount);
+			AttributeComp->ApplyHealthChange(this, -DamageAmount);
 			Explode(Hit);
 			if (IsValid(this))Destroy();
 		}

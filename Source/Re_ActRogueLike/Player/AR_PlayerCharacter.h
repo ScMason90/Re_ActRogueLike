@@ -16,6 +16,39 @@ class UInputAction;
 class UNiagaraSystem;
 class UParticleSystem;
 class USpringArmComponent;
+
+USTRUCT(BlueprintType)
+struct FFireProjSpawnSourceConfig
+{
+	GENERATED_BODY()
+	
+public:
+	// Default constructor that forces parameter passing.
+	FFireProjSpawnSourceConfig(TSubclassOf<AActor> InProjClassToSpawn, 
+		TObjectPtr<UAnimMontage> InAnimMontageToPlay,float InTimeBeforeProj,
+		TObjectPtr<UNiagaraSystem> InEffectWhenCast, FName InSocketName, float InLineTraceEndOffset)
+	:ProjClassToSpawn(InProjClassToSpawn), AnimMontageToPlay(InAnimMontageToPlay), TimeBeforeProj(InTimeBeforeProj),
+	EffectWhenCast(InEffectWhenCast), SocketName(InSocketName), LineTraceEndOffset(InLineTraceEndOffset){}
+
+	// The UE reflection system requires a default constructor (which can be empty).
+	FFireProjSpawnSourceConfig() = default;
+	
+	/*------------------struct variables----------------------*/
+	TSubclassOf<AActor> ProjClassToSpawn;
+	
+	UPROPERTY()
+	TObjectPtr<UAnimMontage> AnimMontageToPlay;
+	
+	float TimeBeforeProj = 0.0f;
+	
+	UPROPERTY()
+	TObjectPtr<UNiagaraSystem> EffectWhenCast;
+	
+	/* And there are params passing to internal func-AdjustedProjSpawnTransform */
+	FName SocketName;
+	float LineTraceEndOffset = 10000.0f;
+};
+
 /**
  * 
  */
@@ -42,6 +75,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "FireProjectile | Anim&Effect")
 	TObjectPtr<UAnimMontage> SharedFireMontage;
 	
+	UPROPERTY(EditDefaultsOnly, Category = "FireProjectile | Anim&Effect")
+	TObjectPtr<UAnimMontage> DeathMontage;
+	
 	UPROPERTY(EditDefaultsOnly, Category = "FireProjectile | Anim&Effect")// NiagaraSystem played during attack animation
 	TObjectPtr<UNiagaraSystem> SharedCastingVFX;
 	
@@ -51,9 +87,6 @@ protected:
 	/* Projectile - Sounds&Audios */
 	UPROPERTY(EditDefaultsOnly, Category = "FireProjectile | Sounds&Audios")
 	TObjectPtr<USoundBase> SharedCastingSFX;
-	
-	// Cpp only variables
-	FTimerHandle TimerHandle_FireProj;
 	
 	/* ---------------------- Input Action ----------------------- */
 	/* Movements */
@@ -88,6 +121,11 @@ protected:
 public:
 	// Sets default values for this character's properties
 	AAR_PlayerCharacter();
+	
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+	
+	virtual void PostInitializeComponents() override;
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
@@ -97,33 +135,19 @@ protected:
 	TObjectPtr<UCameraComponent> CameraComponent;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	TObjectPtr<UAR_InteractionComponent> InteractionComponent;
-	
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<UAR_AttributeComponent> AttributeComponent;
-	
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
 	
 	void Move(const FInputActionValue& InValue);
 	void Look(const FInputActionInstance& InValue);
 	
-	void PrimaryInteract();
-	
 	// TODO: May considering introduce different AnimMontage for each proj attack?
-	void FireProj(
-		TSubclassOf<AActor> ProjClassToSpawn, TObjectPtr<UAnimMontage> AnimMontageToPlay, float TimeBeforeProj,
-		TObjectPtr<UNiagaraSystem> EffectWhenCast,
-		/* And there are params passing to internal func-AdjustedProjSpawnTransform */
-		FName InSocketName, float LineTraceEndOffset);
+	void FireProj(const FFireProjSpawnSourceConfig Config);
 	
 	void FireMagicProj();
 	void FireBlackHole();
 	void FireTeleportProj();
 	
 	FTransform AdjustedProjSpawnTransform(FName InSocketName, float LineTraceEndOffset);
-	
-	virtual void PostInitializeComponents() override;
 	
 	UFUNCTION()
 	void OnHealthChanged(
@@ -135,4 +159,6 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 };

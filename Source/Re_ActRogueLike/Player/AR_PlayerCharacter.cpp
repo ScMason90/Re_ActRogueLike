@@ -7,7 +7,6 @@
 #include "InputAction.h"
 #include "InputActionValue.h"
 #include "NiagaraFunctionLibrary.h"
-#include "NiagaraSystem.h"
 #include "TimerManager.h"
 #include "Camera/CameraComponent.h"
 #include "Components/InputComponent.h"
@@ -15,9 +14,11 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Re_ActRogueLike/Re_ActRoguelikeType.h"
 #include "Re_ActRogueLike/Components/AR_AttributeComponent.h"
-#include "Re_ActRogueLike/Components/AR_InteractionComponent.h"
 
+TAutoConsoleVariable<float> CVarProjectileAdjustmentDebugDrawing(TEXT("game.projectile.DebugDraw"), 0.0f,
+	TEXT("Enable projectile aim adjustment debug rendering. (0 = off, > 0 is duration)"), ECVF_Cheat);
 
 // Sets default values
 AAR_PlayerCharacter::AAR_PlayerCharacter()
@@ -35,8 +36,6 @@ AAR_PlayerCharacter::AAR_PlayerCharacter()
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	
 	bUseControllerRotationYaw = false;
-	
-	InteractionComponent = CreateDefaultSubobject<UAR_InteractionComponent>(TEXT("InteractionComp"));
 	
 	AttributeComponent = CreateDefaultSubobject<UAR_AttributeComponent>(TEXT("AttributeComp"));
 }
@@ -58,50 +57,40 @@ void AAR_PlayerCharacter::PostInitializeComponents()
 	MuzzleSocketName = "Muzzle_01";
 }
 
-void AAR_PlayerCharacter::PrimaryInteract()
+void AAR_PlayerCharacter::FireProj(const FFireProjSpawnSourceConfig Config)
 {
-	if (InteractionComponent)
-	{
-		InteractionComponent->PrimaryInteraction();
-	}
-}
-
-void AAR_PlayerCharacter::FireProj(
-		TSubclassOf<AActor> ProjClassToSpawn, TObjectPtr<UAnimMontage> AnimMontageToPlay, float TimeBeforeProj,
-		TObjectPtr<UNiagaraSystem> EffectWhenCast,
-		/* And there are params passing to internal func-AdjustedProjSpawnTransform */
-		FName InSocketName, float LineTraceEndOffset)
-{
-	PlayAnimMontage(AnimMontageToPlay);
+	PlayAnimMontage(Config.AnimMontageToPlay);
 	
-	UNiagaraFunctionLibrary::SpawnSystemAttached(SharedCastingVFX, GetMesh(), InSocketName, 
+	UNiagaraFunctionLibrary::SpawnSystemAttached(Config.EffectWhenCast, GetMesh(), Config.SocketName, 
 		FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget, true);
 	UGameplayStatics::PlaySound2D(this, SharedCastingSFX);
 	
+	FTimerHandle TimerHandle_FireProj;
 	GetWorldTimerManager().SetTimer(TimerHandle_FireProj, 
-		[this, ProjClassToSpawn, InSocketName, LineTraceEndOffset]()
+		[this, Config]()
 		{
-			FTransform SpawnTM = AdjustedProjSpawnTransform(InSocketName, LineTraceEndOffset);
+			FTransform SpawnTM = AdjustedProjSpawnTransform(Config.SocketName, Config.LineTraceEndOffset);
 	
 			FActorSpawnParameters SpawnParams;
 			SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 			SpawnParams.Instigator = this;
 
-			GetWorld()->SpawnActor<AActor>(ProjClassToSpawn, SpawnTM, SpawnParams);
+			GetWorld()->SpawnActor<AActor>(Config.ProjClassToSpawn, SpawnTM, SpawnParams);
+			
+		}, Config.TimeBeforeProj, false);
 	
-			/* GetWorldTimerManager().ClearTimer(TimerHandle_PrimaryAttack);*/
-		}, TimeBeforeProj, false);
+	/* GetWorldTimerManager().ClearTimer(TimerHandle_PrimaryAttack);*/
 }
 
 void AAR_PlayerCharacter::FireMagicProj()	
-{FireProj(MagicProjectileClass, SharedFireMontage, 0.2f, SharedCastingVFX,
-	MuzzleSocketName, 10000.f);}
+{FireProj(FFireProjSpawnSourceConfig(MagicProjectileClass, SharedFireMontage, 0.2f, 
+	SharedCastingVFX, MuzzleSocketName, 10000.f));}
 void AAR_PlayerCharacter::FireBlackHole()	
-{FireProj(BlackHoleProjectileClass, SharedFireMontage, 0.2f, SharedCastingVFX,
-	MuzzleSocketName, 10000.f);}
+{FireProj(FFireProjSpawnSourceConfig(BlackHoleProjectileClass, SharedFireMontage, 0.2f, 
+	SharedCastingVFX, MuzzleSocketName, 10000.f));}
 void AAR_PlayerCharacter::FireTeleportProj()	
-{FireProj(TeleportProjectileClass, SharedFireMontage, 0.2f, SharedCastingVFX,
-	MuzzleSocketName, 1000.f);}
+{FireProj(FFireProjSpawnSourceConfig(TeleportProjectileClass, SharedFireMontage, 0.2f, 
+	SharedCastingVFX, MuzzleSocketName, 1000.f));}
 
 FTransform AAR_PlayerCharacter::AdjustedProjSpawnTransform(FName InSocketName, float LineTraceEndOffset)
 {
@@ -111,11 +100,12 @@ FTransform AAR_PlayerCharacter::AdjustedProjSpawnTransform(FName InSocketName, f
 	AimShot = TraceEnd;
 	
 	FHitResult Hit;
+	UWorld* World = GetWorld();
 	/* Legacy bug - Wrong behavior when LineTrace 'Hit' any actor derived from class AR_MagicProjectile,
 	 * It will cause proj actor spawn into an odd direction.May need fix it with specified Trace Channel
 	 * ↑ Nah, after 2h struggling on collision channel/preset/object type.I initially repair it.--26.3.13*/ 
 	if (GetWorld()->LineTraceSingleByChannel(
-		Hit, TraceStart, AimShot, ECC_GameTraceChannel1))
+		Hit, TraceStart, AimShot, COLLISION_PROJECTILE))
 	{
 		AimShot = Hit.ImpactPoint;
 	}
@@ -126,6 +116,25 @@ FTransform AAR_PlayerCharacter::AdjustedProjSpawnTransform(FName InSocketName, f
 	FTransform SpawnTM;
 	SpawnTM.SetLocation(HandLocation);
 	SpawnTM.SetRotation(UnderCrossHairQuat);
+	
+#if !UE_BUILD_SHIPPING
+	float DebugDrawDuration = CVarProjectileAdjustmentDebugDrawing.GetValueOnGameThread();
+	if (DebugDrawDuration > 0.0f)
+	{
+		// The hit location or trace end
+		DrawDebugBox(World, AimShot, FVector(20.0f), FColor::Green, false, DebugDrawDuration);
+		
+		// Adjustment line trace
+		DrawDebugLine(World, TraceStart, TraceEnd, FColor::Green, false, DebugDrawDuration);
+		
+		// New projectile path
+		DrawDebugLine(World, HandLocation, AimShot, FColor::Yellow, false, DebugDrawDuration);
+		
+		// The original path of the projectile
+		DrawDebugLine(World, HandLocation, HandLocation + (GetControlRotation().Vector() * 5000.0f), 
+			FColor::Purple, false, DebugDrawDuration);
+	}
+#endif
 	
 	return SpawnTM;
 }
@@ -170,8 +179,6 @@ void AAR_PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 	EnhancedInput->BindAction(IA_FireMagicProj, ETriggerEvent::Triggered, this, &AAR_PlayerCharacter::FireMagicProj);
 	EnhancedInput->BindAction(IA_FireTeleportProj, ETriggerEvent::Triggered, this, &AAR_PlayerCharacter::FireTeleportProj);
 	EnhancedInput->BindAction(IA_FireBlackHole, ETriggerEvent::Triggered, this, &AAR_PlayerCharacter::FireBlackHole);
-	
-	EnhancedInput->BindAction(IA_PrimaryInteract, ETriggerEvent::Triggered, this, &AAR_PlayerCharacter::PrimaryInteract);
 }
 
 void AAR_PlayerCharacter::Move(const FInputActionValue& InValue)
@@ -197,6 +204,13 @@ void AAR_PlayerCharacter::Look(const FInputActionInstance& InValue)
 	AddControllerYawInput(InputValue.X);
 }
 
+float AAR_PlayerCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent,
+	class AController* EventInstigator, AActor* DamageCauser)
+{
+	return Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	
+}
+
 void AAR_PlayerCharacter::OnHealthChanged(
 	AActor* InstigatorActor, UAR_AttributeComponent* OwningComp, float NewHealth, float Delta)
 {
@@ -206,19 +220,21 @@ void AAR_PlayerCharacter::OnHealthChanged(
 		GetMesh()->SetScalarParameterValueOnMaterials("TimeToHit", GetWorld()->TimeSeconds);
 	}
 	
-	// Death logic (RAW)
-	if (NewHealth <= 0.0f)
+	// Death logic (RAW), Currently remained as null?
+	if (FMath::IsNearlyZero(NewHealth)/*NewHealth <= 0.0f*/)
 	{
 		// Disable Player Input
-		if (APlayerController* PC = Cast<APlayerController>(GetController()))
-		{
-			DisableInput(PC);	
-		}
+		// if (APlayerController* PC = Cast<APlayerController>(GetController()))
+		// {
+		// 	DisableInput(PC);	
+		// }
+		DisableInput(nullptr);
 		
 		// Disable Movement
 		GetMovementComponent()->StopActiveMovement();
 		
 		// Play Death Anim in Anim Class of PlayerCharacter...
+		PlayAnimMontage(DeathMontage);
 		
 		// Disable Collision...
 		

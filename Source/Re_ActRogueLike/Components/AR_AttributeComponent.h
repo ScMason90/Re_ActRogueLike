@@ -6,9 +6,26 @@
 #include "Components/ActorComponent.h"
 #include "AR_AttributeComponent.generated.h"
 
+USTRUCT(BlueprintType)
+struct FAR_AttributeSet
+{
+	GENERATED_BODY()
+	
+	FAR_AttributeSet():Health(100.0f),MaxHealth(100.0f){}
+	
+	UPROPERTY(BlueprintReadOnly)
+	float Health;
+	
+	UPROPERTY(BlueprintReadOnly)
+	float MaxHealth;
+	
+	// Stamina, Strength
+};
+
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(
 	FOnHealthChanged, AActor*, Instigator, UAR_AttributeComponent*, OwingComp, float, NewHealth, float, Delta);
-
+/* For somehow, i can't rename this class(symbol) */
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class RE_ACTROGUELIKE_API UAR_AttributeComponent : public UActorComponent
 {
@@ -18,7 +35,6 @@ public:
 	UAR_AttributeComponent();
 
 protected:
-	
 	// EditAnywhere - edit in BP editor and per-instance in level.
 	// VisibleAnywhere - 'read-only' in editor and level. (Use for Components)
 	// EditDefaultsOnly - hide variable per-instance, edit in BP editor only
@@ -29,27 +45,24 @@ protected:
 	// BlueprintReadWrite - read-write access in Blueprints
 	// --
 	// Category = "" - display only for detail panels and blueprint context menu.
-	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes")
-	float Health;
-	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes")
-	float MaxHealth;
-	
-	// Stamina, Strength
+	UPROPERTY(BlueprintReadOnly, Category = "Attributes")
+	FAR_AttributeSet Attributes;
 
 public:
 	UPROPERTY(BlueprintAssignable)
 	FOnHealthChanged OnHealthChanged;
 	
 	UFUNCTION(BlueprintCallable, Category = "Attributes | Setters")
-	bool ApplyHealthChange(float Delta);
+	bool ApplyHealthChange(AActor* Instigator, float Delta);
 	
 	UFUNCTION(BlueprintCallable, Category = "Attributes | Getters")
 	bool IsDead() const;
 	
 	UFUNCTION(BlueprintCallable, Category = "Attributes | Getters")
 	float GetMaxHealth() const;
+	
+	UFUNCTION(BlueprintCallable, Category = "Attributes | Getters")
+	float GetHealth() const;
 	
 	UFUNCTION(BlueprintCallable, Category = "Attributes | Getters")
 	bool IsFullHealth() const;

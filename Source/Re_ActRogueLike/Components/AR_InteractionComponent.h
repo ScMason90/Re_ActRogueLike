@@ -6,7 +6,6 @@
 #include "Components/ActorComponent.h"
 #include "AR_InteractionComponent.generated.h"
 
-
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class RE_ACTROGUELIKE_API UAR_InteractionComponent : public UActorComponent
 {
@@ -17,8 +16,17 @@ public:
 	UAR_InteractionComponent();
 
 protected:
-	// Called when the game starts
-	virtual void BeginPlay() override;
+	UPROPERTY(EditDefaultsOnly, Category = "Interaction")
+	float InteractionRadius = 800.0f;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Interaction")
+	float DistanceToWeightScale = 2.0f;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Interaction")
+	float DirectionWeightScale = 1.0;
+	
+	UPROPERTY()
+	TObjectPtr<AActor> SelectedActor;
 
 public:
 	// Called every frame

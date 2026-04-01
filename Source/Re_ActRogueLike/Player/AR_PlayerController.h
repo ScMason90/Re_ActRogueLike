@@ -6,20 +6,34 @@
 #include "GameFramework/PlayerController.h"
 #include "AR_PlayerController.generated.h"
 
+class UInputAction;
+class UInputMappingContext;
+class UAR_InteractionComponent;
 /**
  * 
  */
-class UInputMappingContext;
 UCLASS()
 class RE_ACTROGUELIKE_API AAR_PlayerController : public APlayerController
 {
 	GENERATED_BODY()
 	
 protected:
-	virtual void BeginPlay() override;
-	
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	TObjectPtr<UInputMappingContext> DefaultMappingContext;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	TObjectPtr<UInputAction> IA_Interact;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Components")
+	TObjectPtr<UAR_InteractionComponent> InteractionComponent;
+	
+	virtual void BeginPlay() override;
+	
+	virtual void SetupInputComponent() override;
+	
+	void StartInteract();
+	
 public:
+	
 	AAR_PlayerController();
 };
