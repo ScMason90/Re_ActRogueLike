@@ -10,37 +10,21 @@
 // Sets default values
 AAR_PickupActorBase::AAR_PickupActorBase()
 {
-	SphereComp = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComp"));
-	SphereComp->SetCollisionProfileName("Pickup");
-	RootComponent = SphereComp;
-	
-	RespawnTime = 5.0f;
+	OverlapComponent = CreateDefaultSubobject<USphereComponent>(TEXT("OverlapComp"));
+	// Always start with decent defaults, let Blueprint decide the final tweaked values
+	OverlapComponent->SetSphereRadius(128.0f);
+	RootComponent = OverlapComponent;
 }
 
-void AAR_PickupActorBase::SetPickupState(bool bNewIsActivate)
+void AAR_PickupActorBase::PostInitializeComponents()
 {
-	SetActorEnableCollision(bNewIsActivate);
+	Super::PostInitializeComponents();
 	
-	// Set visibility on root and all children
-	RootComponent->SetVisibility(bNewIsActivate, true);
+	OverlapComponent->OnComponentBeginOverlap.AddDynamic(this, &AAR_PickupActorBase::OnActorOverlapped);
 }
 
-void AAR_PickupActorBase::ShowPickup()
+void AAR_PickupActorBase::OnActorOverlapped(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	SetPickupState(true);
-}
-
-void AAR_PickupActorBase::HideAndCooldownPickup()
-{
-	SetPickupState(false);
-	
-	GetWorldTimerManager().SetTimer(
-		HideAndCooldownPickup_TimerHandle, this, &AAR_PickupActorBase::ShowPickup, RespawnTime);
-}
-
-void AAR_PickupActorBase::Interact_Implementation(APawn* InstigatorPawn)
-{
-	// Logic in derived class...
-	IAR_InteractionInterface::Interact_Implementation(InstigatorPawn);
-	
+	// Do nothing here
 }

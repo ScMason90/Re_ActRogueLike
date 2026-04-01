@@ -22,12 +22,12 @@ protected:
 	virtual void OnProjHit(UPrimitiveComponent* ComponentBeenHit, AActor* OtherActor, 
 		UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit) override;
 	
-	// Override Explode() intend to shut down its logic
-	virtual void Explode_Implementation(const FHitResult& Hit) override;
-	
 public:
 	// Sets default values for this actor's properties
 	AAR_BlackHoleProjectile();
 	
 	virtual void PostInitializeComponents() override;
+	
+	// Override Explode() intend to shut down its logic
+	virtual void Explode_Implementation(const FHitResult& Hit) override;
 };

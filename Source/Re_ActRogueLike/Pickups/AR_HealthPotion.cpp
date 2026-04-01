@@ -3,37 +3,46 @@
 
 #include "AR_HealthPotion.h"
 
+#include "Components/SphereComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "GameFramework/Pawn.h"
+#include "Kismet/GameplayStatics.h"
 #include "Re_ActRogueLike/Components/AR_AttributeComponent.h"
 
 
 // Sets default values
 AAR_HealthPotion::AAR_HealthPotion()
 {
-	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
-	MeshComp->SetupAttachment(RootComponent);
+	PickupMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
+	PickupMeshComponent->SetupAttachment(RootComponent);
 	// Using 'SphereComp' in parent class for collision query instead of subclass.Disable it.
-	MeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	PickupMeshComponent->SetCollisionProfileName("NoCollision");
+	PickupMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	
+	// Set collision profile(object type), make this in Project Settings, "Overlap" only to Pawn
+	OverlapComponent->SetCollisionProfileName("Pickups");
+	OverlapComponent->SetupAttachment(PickupMeshComponent);
 }
 
-void AAR_HealthPotion::Interact_Implementation(APawn* InstigatorPawn)
+void AAR_HealthPotion::OnActorOverlapped(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	Super::Interact_Implementation(InstigatorPawn);
+	Super::OnActorOverlapped(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult);
 	
-	if (!IsValid(InstigatorPawn))return;
+	UAR_AttributeComponent* AttributeComp = OtherActor->GetComponentByClass<UAR_AttributeComponent>();
 	
-	UAR_AttributeComponent* AttributeComp = Cast<UAR_AttributeComponent>(
-		InstigatorPawn->GetComponentByClass(UAR_AttributeComponent::StaticClass()));
-	// Check if not at max health
-	if (IsValid(AttributeComp) && !AttributeComp->IsFullHealth())
+	// Assert if null, then we misconfigured what we can overlap with, any Pawn should have an action component
+	// Skip Health Potion pickup if already full health
+	if (IsValid(AttributeComp)/*ensure(AttributeComp != nullptr)*/ && !AttributeComp->IsFullHealth())
 	{
-		// Only activate if healed successfully
-		if (AttributeComp->ApplyHealthChange(this, AttributeComp->GetMaxHealth()))
-		{
-			HideAndCooldownPickup();
-		}
+		// TODO: Considering add heal up material flash VFX...or SFX for both damaged and healed?
+		AttributeComp->ApplyHealthChange(this, HealingAmount);
+		
+		// Play(valid context and location) before destroying actor
+		UGameplayStatics::PlaySoundAtLocation(
+			this, PickupSound, GetActorLocation(), FRotator::ZeroRotator);
+		
+		// Remove Actor from world, eventually memory will be freed (garbage collection)
+		Destroy();
 	}
 }
-
-

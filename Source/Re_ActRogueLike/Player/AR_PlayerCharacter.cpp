@@ -110,8 +110,8 @@ FTransform AAR_PlayerCharacter::AdjustedProjSpawnTransform(FName InSocketName, f
 		AimShot = Hit.ImpactPoint;
 	}
 	/* TODO: Now there is a problem when spawn a MagicProj in a position which camera was too close to something,
-	 * The proj will go to the item that closely block around camera.
-	 * May need scope iteration to ignore items nearby. */
+	 * The proj will go to the item that closely block around camera.And it's not a stable trace adjustment when
+	 * third person camera is close to player character.*/
 	FQuat UnderCrossHairQuat = (AimShot - HandLocation).GetSafeNormal().ToOrientationQuat();
 	FTransform SpawnTM;
 	SpawnTM.SetLocation(HandLocation);

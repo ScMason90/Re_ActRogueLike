@@ -19,14 +19,24 @@ public:
 	AAR_ItemChest();
 
 protected:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	UStaticMeshComponent* BaseMesh;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	TObjectPtr<UStaticMeshComponent> BaseMesh;
 	
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	UStaticMeshComponent* LidMesh;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	TObjectPtr<UStaticMeshComponent> LidMesh;
 	
-	UPROPERTY(EditAnywhere, Category = "OpenChest")
 	float TargetPitch;
+	
+	// UPROPERTY(EditAnywhere, Category="Animation")
+	// float AnimationSpeed = 50.0f;
+	//
+	// UPROPERTY(EditAnywhere, Category="Animation")
+	// float AnimationTargetPitch = 120.f;
+	//
+	// float CurrentAnimationPitch = 0.0f;
+	//
+	// UFUNCTION(BlueprintImplementableEvent)
+	// void ChestAnimationComplete();
 	
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

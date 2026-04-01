@@ -11,7 +11,7 @@ class UNiagaraSystem;
 class UAudioComponent;
 class UStaticMeshComponent;
 class URadialForceComponent;
-UCLASS()
+UCLASS(Abstract)
 class RE_ACTROGUELIKE_API AAR_ExplosiveBarrel : public AActor
 {
 	GENERATED_BODY()
@@ -40,9 +40,6 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Explosive Barrel")
 	TObjectPtr<USoundBase> ExplosionSFX;
 	
-	// Bind hit event after components are initialized
-	virtual void PostInitializeComponents() override;
-	
 	void Explode();
 	bool bExploded = false;
 	FTimerHandle ExplosionTimerHandle;
@@ -51,6 +48,10 @@ protected:
 	TObjectPtr<UNiagaraComponent> ActiveBurningVFXComp = nullptr;
 	UPROPERTY()
 	TObjectPtr<UAudioComponent> ActiveBurningSFXComp = nullptr;
+	
+public:
+	// Sets default values for this actor's properties
+	AAR_ExplosiveBarrel();
 	
 	/** Apply damage to this actor.
 	 *	@param DamageAmount		How much damage to apply.
@@ -62,7 +63,6 @@ protected:
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, 
 		class AController* EventInstigator, AActor* DamageCauser) override;
 	
-public:
-	// Sets default values for this actor's properties
-	AAR_ExplosiveBarrel();
+	// Bind hit event after components are initialized
+	virtual void PostInitializeComponents() override;
 };

@@ -9,8 +9,8 @@
 
 class USphereComponent;
 
-UCLASS()
-class RE_ACTROGUELIKE_API AAR_PickupActorBase : public AActor, public IAR_InteractionInterface
+UCLASS(Abstract)
+class RE_ACTROGUELIKE_API AAR_PickupActorBase : public AActor
 {
 	GENERATED_BODY()
 
@@ -19,21 +19,25 @@ public:
 	AAR_PickupActorBase();
 
 protected:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Pickup")
-	float RespawnTime;
-	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	USphereComponent* SphereComp;
+	TObjectPtr<USphereComponent> OverlapComponent;
 	
-	FTimerHandle HideAndCooldownPickup_TimerHandle;
+	// UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Pickup")
+	// float RespawnTime;
 	
-	void SetPickupState(bool bNewIsActivate);
+	// FTimerHandle HideAndCooldownPickup_TimerHandle;
+	
+	// void SetPickupState(bool bNewIsActivate);
+	
+	// UFUNCTION()
+	// void ShowPickup();
+	
+	// void HideAndCooldownPickup();
 	
 	UFUNCTION()
-	void ShowPickup();
-	
-	void HideAndCooldownPickup();
+	virtual void OnActorOverlapped(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 public:
-	void Interact_Implementation(APawn* InstigatorPawn) override;	
+	virtual void PostInitializeComponents() override;
 };
