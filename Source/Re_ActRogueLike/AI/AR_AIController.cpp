@@ -3,12 +3,14 @@
 
 #include "AR_AIController.h"
 
+#include "BehaviorTree/BlackboardComponent.h"
+#include "Kismet/GameplayStatics.h"
+
 
 // Sets default values
 AAR_AIController::AAR_AIController()
 {
-	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	
 }
 
 // Called when the game starts or when spawned
@@ -16,11 +18,14 @@ void AAR_AIController::BeginPlay()
 {
 	Super::BeginPlay();
 	
-}
-
-// Called every frame
-void AAR_AIController::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
+	RunBehaviorTree(BehaviorTree);
+	
+	FName TargetActor = FName("TargetActor"), MoveToLocation = FName("MoveToLocation");
+	
+	APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(this, 0);
+	check(PlayerPawn);
+	
+	GetBlackboardComponent()->SetValueAsVector(MoveToLocation, PlayerPawn->GetActorLocation());
+	GetBlackboardComponent()->SetValueAsObject(TargetActor, PlayerPawn);
 }
 

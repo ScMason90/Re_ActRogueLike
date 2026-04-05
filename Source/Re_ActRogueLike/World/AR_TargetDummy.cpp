@@ -45,3 +45,13 @@ void AAR_TargetDummy::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
+float AAR_TargetDummy::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent,
+	AController* EventInstigator, AActor* DamageCauser)
+{
+	float ActualDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	
+	AttributeComp->ApplyHealthChange(DamageCauser, -DamageAmount);
+	
+	return ActualDamage;
+}
+
