@@ -25,6 +25,7 @@ void AAR_AIController::BeginPlay()
 	APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(this, 0);
 	check(PlayerPawn);
 	
+	// MoveToLocation variable maybe redundant for now.We currently use move to actor node to implement tracking down.
 	GetBlackboardComponent()->SetValueAsVector(MoveToLocation, PlayerPawn->GetActorLocation());
 	GetBlackboardComponent()->SetValueAsObject(TargetActor, PlayerPawn);
 }
