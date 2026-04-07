@@ -6,7 +6,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "Engine/LocalPlayer.h"
-#include "Re_ActRogueLike/Components/AR_InteractionComponent.h"
+#include "Re_ActRogueLike/Player/AR_InteractionComponent.h"
 
 AAR_PlayerController::AAR_PlayerController()
 {

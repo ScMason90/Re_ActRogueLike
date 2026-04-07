@@ -6,7 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "AR_TargetDummy.generated.h"
 
-class UAR_AttributeComponent;
+class UAR_ActionSystemComponent;
 
 UCLASS()
 class RE_ACTROGUELIKE_API AAR_TargetDummy : public AActor
@@ -22,14 +22,14 @@ protected:
 	virtual void BeginPlay() override;
 	
 	UPROPERTY(VisibleAnywhere)
-	UStaticMeshComponent* MeshComp;
+	TObjectPtr<UStaticMeshComponent> MeshComponent;
 	
 	UPROPERTY(VisibleAnywhere)
-	UAR_AttributeComponent* AttributeComp;
+	TObjectPtr<UAR_ActionSystemComponent> ActionSystemComponent;
 	
 	UFUNCTION()
 	void OnHealthChanged(
-		AActor* InstigatorActor, UAR_AttributeComponent* OwningComp, float NewHealth, float Delta);
+		AActor* InstigatorActor, UAR_ActionSystemComponent* OwningComp, float NewHealth, float Delta);
 
 public:
 	// Called every frame

@@ -8,7 +8,7 @@
 
 struct FInputActionInstance;
 struct FInputActionValue;
-class UAR_AttributeComponent;
+class UAR_ActionSystemComponent;
 class UAnimMontage;
 class UCameraComponent;
 class UInputAction;
@@ -134,7 +134,7 @@ protected:
 	TObjectPtr<UCameraComponent> CameraComponent;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	TObjectPtr<UAR_AttributeComponent> AttributeComponent;
+	TObjectPtr<UAR_ActionSystemComponent> ActionSystemComponent;
 	
 	void Move(const FInputActionValue& InValue);
 	void Look(const FInputActionInstance& InValue);
@@ -150,7 +150,7 @@ protected:
 	
 	UFUNCTION()
 	void OnHealthChanged(
-		AActor* InstigatorActor, UAR_AttributeComponent* OwningComp, float NewHealth, float Delta);
+		AActor* InstigatorActor, UAR_ActionSystemComponent* OwningComp, float NewHealth, float Delta);
 
 public:
 	// Called every frame

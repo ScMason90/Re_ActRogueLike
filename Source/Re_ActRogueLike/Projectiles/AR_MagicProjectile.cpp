@@ -5,7 +5,7 @@
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystemComponent.h"
-#include "Re_ActRogueLike/Components/AR_AttributeComponent.h"
+#include "Re_ActRogueLike/ActionSystem/AR_ActionSystemComponent.h"
 
 AAR_MagicProjectile::AAR_MagicProjectile()
 {

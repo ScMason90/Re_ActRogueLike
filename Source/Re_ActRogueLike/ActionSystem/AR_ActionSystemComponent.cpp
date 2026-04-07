@@ -1,16 +1,16 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "AR_AttributeComponent.h"
+#include "AR_ActionSystemComponent.h"
 
 
 // Sets default values for this component's properties
-UAR_AttributeComponent::UAR_AttributeComponent()
+UAR_ActionSystemComponent::UAR_ActionSystemComponent()
 {
 	Attributes = FAR_AttributeSet();
 }
 
-bool UAR_AttributeComponent::ApplyHealthChange(AActor* Instigator, float Delta)
+bool UAR_ActionSystemComponent::ApplyHealthChange(AActor* Instigator, float Delta)
 {
 	float OldHealth = Attributes.Health, ActualDelta;
 	
@@ -24,7 +24,7 @@ bool UAR_AttributeComponent::ApplyHealthChange(AActor* Instigator, float Delta)
 	return ActualDelta != 0;
 }
 
-bool UAR_AttributeComponent::IsDead() const {return Attributes.Health <= 0.0f;}
-float UAR_AttributeComponent::GetMaxHealth() const {return Attributes.MaxHealth;}
-float UAR_AttributeComponent::GetHealth() const {return Attributes.Health;}
-bool UAR_AttributeComponent::IsFullHealth() const {return Attributes.Health == Attributes.MaxHealth;}
+bool UAR_ActionSystemComponent::IsDead() const {return Attributes.Health <= 0.0f;}
+float UAR_ActionSystemComponent::GetMaxHealth() const {return Attributes.MaxHealth;}
+float UAR_ActionSystemComponent::GetHealth() const {return Attributes.Health;}
+bool UAR_ActionSystemComponent::IsFullHealth() const {return Attributes.Health == Attributes.MaxHealth;}

@@ -5,7 +5,7 @@
 
 #include "Components/StaticMeshComponent.h"
 #include "Engine/World.h"
-#include "Re_ActRogueLike/Components/AR_AttributeComponent.h"
+#include "Re_ActRogueLike/ActionSystem/AR_ActionSystemComponent.h"
 
 
 // Sets default values
@@ -14,21 +14,21 @@ AAR_TargetDummy::AAR_TargetDummy()
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	
-	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>("MeshComp");
-	RootComponent = MeshComp;
+	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>("MeshComp");
+	RootComponent = MeshComponent;
 	
-	AttributeComp = CreateDefaultSubobject<UAR_AttributeComponent>("AttributeComp");
+	ActionSystemComponent = CreateDefaultSubobject<UAR_ActionSystemComponent>("ActionSystemComp");
 	// Trigger when health is changed (damage/healing)
-	AttributeComp->OnHealthChanged.AddDynamic(this, &AAR_TargetDummy::OnHealthChanged);
+	ActionSystemComponent->OnHealthChanged.AddDynamic(this, &AAR_TargetDummy::OnHealthChanged);
 	
 }
 
 void AAR_TargetDummy::OnHealthChanged(
-	AActor* InstigatorActor, UAR_AttributeComponent* OwningComp, float NewHealth, float Delta)
+	AActor* InstigatorActor, UAR_ActionSystemComponent* OwningComp, float NewHealth, float Delta)
 {
 	if (Delta < 0.0f)
 	{
-		MeshComp->SetScalarParameterValueOnMaterials("TimeToHit", GetWorld()->TimeSeconds);
+		MeshComponent->SetScalarParameterValueOnMaterials("TimeToHit", GetWorld()->TimeSeconds);
 	}
 }
 
@@ -50,7 +50,7 @@ float AAR_TargetDummy::TakeDamage(float DamageAmount, struct FDamageEvent const&
 {
 	float ActualDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	
-	AttributeComp->ApplyHealthChange(DamageCauser, -DamageAmount);
+	ActionSystemComponent->ApplyHealthChange(DamageCauser, -DamageAmount);
 	
 	return ActualDamage;
 }

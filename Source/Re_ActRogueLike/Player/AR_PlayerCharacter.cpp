@@ -15,7 +15,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Re_ActRogueLike/Re_ActRoguelikeType.h"
-#include "Re_ActRogueLike/Components/AR_AttributeComponent.h"
+#include "Re_ActRogueLike/ActionSystem/AR_ActionSystemComponent.h"
 
 TAutoConsoleVariable<float> CVarProjectileAdjustmentDebugDrawing(TEXT("game.projectile.DebugDraw"), 0.0f,
 	TEXT("Enable projectile aim adjustment debug rendering. (0 = off, > 0 is duration)"), ECVF_Cheat);
@@ -37,7 +37,7 @@ AAR_PlayerCharacter::AAR_PlayerCharacter()
 	
 	bUseControllerRotationYaw = false;
 	
-	AttributeComponent = CreateDefaultSubobject<UAR_AttributeComponent>(TEXT("AttributeComp"));
+	ActionSystemComponent = CreateDefaultSubobject<UAR_ActionSystemComponent>(TEXT("AttributeComp"));
 }
 
 // Called when the game starts or when spawned
@@ -51,7 +51,7 @@ void AAR_PlayerCharacter::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 	
-	AttributeComponent->OnHealthChanged.AddDynamic(this, &AAR_PlayerCharacter::OnHealthChanged);
+	ActionSystemComponent->OnHealthChanged.AddDynamic(this, &AAR_PlayerCharacter::OnHealthChanged);
 	
 	TimeToHitParamName = "TimeToHit";
 	MuzzleSocketName = "Muzzle_01";
@@ -209,14 +209,14 @@ float AAR_PlayerCharacter::TakeDamage(float DamageAmount, struct FDamageEvent co
 {
 	float ActualDamage =  Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	
-	AttributeComponent->ApplyHealthChange(DamageCauser,-ActualDamage);
+	ActionSystemComponent->ApplyHealthChange(DamageCauser,-ActualDamage);
 	
 	return ActualDamage;
 	
 }
 
 void AAR_PlayerCharacter::OnHealthChanged(
-	AActor* InstigatorActor, UAR_AttributeComponent* OwningComp, float NewHealth, float Delta)
+	AActor* InstigatorActor, UAR_ActionSystemComponent* OwningComp, float NewHealth, float Delta)
 {
 	if (!IsPlayerDead)
 	{
@@ -230,7 +230,7 @@ void AAR_PlayerCharacter::OnHealthChanged(
 		if (FMath::IsNearlyZero(NewHealth)/*NewHealth <= 0.0f*/)
 		{
 			// Mark as Dead
-			IsPlayerDead = AttributeComponent->IsDead();
+			IsPlayerDead = ActionSystemComponent->IsDead();
 		
 			// Disable Player Input
 			// if (APlayerController* PC = Cast<APlayerController>(GetController()))

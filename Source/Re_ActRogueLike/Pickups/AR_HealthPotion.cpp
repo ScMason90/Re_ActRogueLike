@@ -7,7 +7,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "GameFramework/Pawn.h"
 #include "Kismet/GameplayStatics.h"
-#include "Re_ActRogueLike/Components/AR_AttributeComponent.h"
+#include "Re_ActRogueLike/ActionSystem/AR_ActionSystemComponent.h"
 
 
 // Sets default values
@@ -29,7 +29,7 @@ void AAR_HealthPotion::OnActorOverlapped(UPrimitiveComponent* OverlappedComponen
 {
 	Super::OnActorOverlapped(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult);
 	
-	UAR_AttributeComponent* AttributeComp = OtherActor->GetComponentByClass<UAR_AttributeComponent>();
+	UAR_ActionSystemComponent* AttributeComp = OtherActor->GetComponentByClass<UAR_ActionSystemComponent>();
 	
 	// Assert if null, then we misconfigured what we can overlap with, any Pawn should have an action component
 	// Skip Health Potion pickup if already full health

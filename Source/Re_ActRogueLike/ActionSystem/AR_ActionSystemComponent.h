@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "AR_AttributeComponent.generated.h"
+#include "AR_ActionSystemComponent.generated.h"
 
 USTRUCT(BlueprintType)
 struct FAR_AttributeSet
@@ -24,15 +24,15 @@ struct FAR_AttributeSet
 
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(
-	FOnHealthChanged, AActor*, Instigator, UAR_AttributeComponent*, OwingComp, float, NewHealth, float, Delta);
+	FOnHealthChanged, AActor*, Instigator, UAR_ActionSystemComponent*, OwingComp, float, NewHealth, float, Delta);
 /* For somehow, i can't rename this class(symbol) */
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
-class RE_ACTROGUELIKE_API UAR_AttributeComponent : public UActorComponent
+class RE_ACTROGUELIKE_API UAR_ActionSystemComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
 public:
-	UAR_AttributeComponent();
+	UAR_ActionSystemComponent();
 
 protected:
 	// EditAnywhere - edit in BP editor and per-instance in level.
