@@ -223,7 +223,7 @@ void AAR_PlayerCharacter::OnHealthChanged(
 		// Flash when damaged
 		if (Delta < 0.0f)
 		{
-			GetMesh()->SetScalarParameterValueOnMaterials("TimeToHit", GetWorld()->TimeSeconds);
+			GetMesh()->SetScalarParameterValueOnMaterials(TimeToHitParamName, GetWorld()->TimeSeconds);
 		}
 	
 		// Death logic (RAW), Currently remained as null?

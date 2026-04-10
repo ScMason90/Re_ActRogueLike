@@ -33,6 +33,7 @@ public:
 	FFireProjSpawnSourceConfig() = default;
 	
 	/*------------------struct variables----------------------*/
+	
 	TSubclassOf<AActor> ProjClassToSpawn;
 	
 	UPROPERTY()
@@ -44,6 +45,7 @@ public:
 	TObjectPtr<UNiagaraSystem> EffectWhenCast;
 	
 	/* And there are params passing to internal func-AdjustedProjSpawnTransform */
+	
 	FName SocketName;
 	float LineTraceEndOffset = 10000.0f;
 };
@@ -59,7 +61,8 @@ class RE_ACTROGUELIKE_API AAR_PlayerCharacter : public ACharacter
 protected:
 	/* -------------- Projectile Sources -------------------
 	 * Three projectile class/instance in cpp/bp are all ultimately derived from AAcotr class. 
-	 * For keeping relative snippet work smoothly, no need to change the variable type. */ 
+	 * For keeping relative snippet work smoothly, no need to change the variable type. */
+	
 	UPROPERTY(EditDefaultsOnly, Category = "FireProjectile | SpawnSources")
 	TSubclassOf<AActor> MagicProjectileClass;
 	
@@ -69,26 +72,30 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "FireProjectile | SpawnSources")
 	TSubclassOf<AActor> TeleportProjectileClass;
 	
-	/* Projectile - Anim&Effect */
+	/* -------------Effects---------------- */
+	/* Anim&VFXs */
 	// TODO: May considering using separate 'anim montage & casting effect & spawn socket' for each proj action
-	UPROPERTY(EditDefaultsOnly, Category = "FireProjectile | Anim&Effect")
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Effects | FireProjectile | Anim&VFXs")
 	TObjectPtr<UAnimMontage> SharedFireMontage;
 	
-	UPROPERTY(EditDefaultsOnly, Category = "FireProjectile | Anim&Effect")
+	UPROPERTY(EditDefaultsOnly, Category = "Effects | FireProjectile | Anim&VFXs")
 	TObjectPtr<UAnimMontage> DeathMontage;
-	
-	UPROPERTY(EditDefaultsOnly, Category = "FireProjectile | Anim&Effect")// NiagaraSystem played during attack animation
+	// NiagaraSystem played during attack animation
+	UPROPERTY(EditDefaultsOnly, Category = "Effects | FireProjectile | Anim&VFXs")
 	TObjectPtr<UNiagaraSystem> SharedCastingVFX;
 	
-	UPROPERTY(VisibleAnywhere, Category = "FireProjectile | Anim&Effect")
+	UPROPERTY(VisibleAnywhere, Category = "Effects | FireProjectile | Anim&VFXs")
 	FName MuzzleSocketName;
 	
-	/* Projectile - Sounds&Audios */
-	UPROPERTY(EditDefaultsOnly, Category = "FireProjectile | Sounds&Audios")
+	/* Sounds(SFX)&Audios */
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Effects | FireProjectile | Sounds(SFX)&Audios")
 	TObjectPtr<USoundBase> SharedCastingSFX;
 	
 	/* ---------------------- Input Action ----------------------- */
 	/* Movements */
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
 	TObjectPtr<UInputAction> IA_Move;
 	
@@ -99,6 +106,7 @@ protected:
 	TObjectPtr<UInputAction> IA_Look;
 	
 	/* Combat and fight */
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
 	TObjectPtr<UInputAction> IA_FireMagicProj;
 	
@@ -110,10 +118,12 @@ protected:
 	
 	/* -------------Material Relative---------------- */
 	/* VisibleAnywhere = read-only, still useful to view in-editor and enforce a convention. */
+	
 	UPROPERTY(VisibleAnywhere, Category = "Reaction | OnHealthChange")
 	FName TimeToHitParamName;
 	
 	/* -------------Player State---------------- */
+	
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Player State")
 	bool IsPlayerDead = false;
 
@@ -140,6 +150,7 @@ protected:
 	void Look(const FInputActionInstance& InValue);
 	
 	// TODO: May considering introduce different AnimMontage for each proj attack?
+	
 	void FireProj(const FFireProjSpawnSourceConfig Config);
 	
 	void FireMagicProj();
@@ -159,5 +170,6 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	
-	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, 
+		class AController* EventInstigator, AActor* DamageCauser) override;
 };

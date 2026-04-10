@@ -100,7 +100,6 @@ void AAR_ProjectileBase::OnImpact(AActor* OtherActor, const FHitResult& Hit)
 	// The base class does no harm, while the subclass overrides
 }
 
-
 void AAR_ProjectileBase::Explode_Implementation(const FHitResult& Hit)
 {
 	if (bExploded || IsPendingKillPending())
