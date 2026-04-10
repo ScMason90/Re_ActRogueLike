@@ -18,6 +18,9 @@ void AAR_AIController::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	if (!ensureAlwaysMsgf(BehaviorTree, 
+		TEXT("AAR_AIController::BeginPlay(), BehaviorTree is nullptr, please assign it")))return;
+	
 	RunBehaviorTree(BehaviorTree);
 	
 	FName TargetActor = FName("TargetActor"), MoveToLocation = FName("MoveToLocation");

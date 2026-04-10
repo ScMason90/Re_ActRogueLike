@@ -50,7 +50,7 @@ float AAR_TargetDummy::TakeDamage(float DamageAmount, struct FDamageEvent const&
 {
 	float ActualDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	
-	ActionSystemComponent->ApplyHealthChange(DamageCauser, -DamageAmount);
+	ActionSystemComponent->ApplyHealthChange(DamageCauser, -ActualDamage);
 	
 	return ActualDamage;
 }
