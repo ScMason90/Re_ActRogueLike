@@ -26,8 +26,9 @@ void AAR_AICharacter::PostInitializeComponents()
 	Super::PostInitializeComponents();
 	
 	ActionSystemComponent->OnHealthChanged.AddDynamic(this, &AAR_AICharacter::OnHealthChanged);
+	
+	InitializeMIDs();
 }
-
 
 void AAR_AICharacter::BeginPlay()
 {
@@ -47,53 +48,85 @@ float AAR_AICharacter::TakeDamage(float DamageAmount, struct FDamageEvent const&
 void AAR_AICharacter::OnHealthChanged(AActor* InstigatorActor, UAR_ActionSystemComponent* OwningComp, float NewHealth,
                                       float Delta)
 {
-	if (!IsPlayerDead)
+	if (OwningComp->IsDead())
 	{
-		// Flash when damaged - PS:this design was too rough
-		if (Delta < 0.0f)
-		{
-			GetMesh()->SetScalarParameterValueOnMaterials(TimeToHitParamName, GetWorld()->TimeSeconds);
-			GEngine->AddOnScreenDebugMessage(01, 3, FColor::Emerald, 
-				FString::Printf(
-					TEXT("AAR_AICharacter::OnHealthChanged(), Current health: %.2f"), ActionSystemComponent->GetHealth()));
-		}
+		HandleDeath();
+		return;
+	}
 	
-		// TODO:We should implement death logic with specified relative behavior tree
-		if (FMath::IsNearlyZero(NewHealth)/*NewHealth <= 0.0f*/)
+	// if (!OwningComp->IsDead())...
+	// Flash when damaged - PS:this design was too rough
+	if (Delta < 0.0f)
+	{
+		GetMesh()->SetScalarParameterValueOnMaterials(TimeToHitParamName, GetWorld()->TimeSeconds);
+		GEngine->AddOnScreenDebugMessage(01, 3, FColor::Emerald, 
+			FString::Printf(
+				TEXT("AAR_AICharacter::OnHealthChanged(), Current health: %.2f"), ActionSystemComponent->GetHealth()));
+	}
+}
+
+void AAR_AICharacter::HandleDeath()
+{
+	// Disable AI Behavior Tree
+	if (AAR_AIController* AIController = Cast<AAR_AIController>(GetController()))
+	{
+		if (UBehaviorTreeComponent* AI_BT = AIController->FindComponentByClass<UBehaviorTreeComponent>())
 		{
-			// Mark as Dead
-			IsPlayerDead = ActionSystemComponent->IsDead();
-		
-			// Disable AI Behavior Tree
-			if (AAR_AIController* AIController = Cast<AAR_AIController>(GetController()))
-			{
-				if (UBehaviorTreeComponent* AI_BT = AIController->FindComponentByClass<UBehaviorTreeComponent>())
-				{
-					AI_BT->StopTree(EBTStopMode::Safe);
-				}
-				AIController->StopMovement();
-				// Optional
-				AIController->UnPossess();
-			}
-		
-			// Disable Movement
-			GetMovementComponent()->StopActiveMovement();
-		
-			// Play Death Anim in Anim Class of PlayerCharacter...
-			PlayAnimMontage(DeathMontage);
-		
-			// Disable Collision...
-			GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-			GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-			
-			// Optional
-			// --Play ragdoll--	
-			// GetMesh()->SetSimulatePhysics(true);
-			// --Delayed destruction--
-			// SetLifeSpan(5.0f);
-			
-			// Dissolve mesh material and destroy current AR_AICharacter instance
-			// done in bp.Considering moved here?
+			AI_BT->StopTree(EBTStopMode::Safe);
 		}
+		AIController->StopMovement();
+		AIController->UnPossess();	// Optional?
+	}
+	// Disable Collision...
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	
+	// Disable Movement
+	GetMovementComponent()->StopActiveMovement();
+		
+	// Play Death Anim in Anim Class of PlayerCharacter...
+	PlayAnimMontage(DeathMontage);
+			
+	// Optional
+	// --Play ragdoll--	
+	// GetMesh()->SetSimulatePhysics(true);
+	// --Delayed destruction--
+	// SetLifeSpan(5.0f);
+			
+	// Dissolve mesh material and destroy current AR_AICharacter instance
+	StartDissolve();
+}
+
+void AAR_AICharacter::InitializeMIDs()
+{
+	int32 Count = GetMesh()->GetNumMaterials();
+	for (int32 i = 0; i < Count; i++)
+	{
+		UMaterialInstanceDynamic* MID = GetMesh()->CreateAndSetMaterialInstanceDynamic(i);
+		DynamicMIDs.Add(MID);
+		// Initialize 'Dissolve' parameters, actually it already set in MF
+		MID->SetScalarParameterValue("DissolveAmount", 0.0f);
+		MID->SetScalarParameterValue("TimeToHit", -10.0f);
+	}
+}
+
+void AAR_AICharacter::StartDissolve()
+{
+	DissolveAmount = 0.0f;
+	
+	GetWorldTimerManager().SetTimer(TimerHandle_Dissolve, this, 
+		&AAR_AICharacter::UpdateDissolve, DissolveLoopRate, true);
+}
+
+void AAR_AICharacter::UpdateDissolve()
+{
+	DissolveAmount += DissolveRate;
+	
+	for (UMaterialInstanceDynamic* MID : DynamicMIDs) MID->SetScalarParameterValue("DissolveAmount", DissolveAmount);
+	
+	if (DissolveAmount >= 1.0f)
+	{
+		GetWorldTimerManager().ClearTimer(TimerHandle_Dissolve);
+		Destroy();
 	}
 }

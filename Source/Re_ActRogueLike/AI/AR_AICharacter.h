@@ -7,6 +7,7 @@
 #include "AR_AICharacter.generated.h"
 
 class UAR_ActionSystemComponent;
+class UMaterialInstanceDynamic;
 
 UCLASS()
 class RE_ACTROGUELIKE_API AAR_AICharacter : public ACharacter
@@ -26,6 +27,14 @@ protected:
 	UFUNCTION()
 	void OnHealthChanged(
 		AActor* InstigatorActor, UAR_ActionSystemComponent* OwningComp, float NewHealth, float Delta);
+	
+	void HandleDeath();
+	
+	void InitializeMIDs();
+	
+	void StartDissolve();
+	void UpdateDissolve();
+	FTimerHandle TimerHandle_Dissolve;
 
 public:
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, 
@@ -40,13 +49,19 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "Reaction | OnHealthChange")
 	FName TimeToHitParamName;
 	
-	UPROPERTY(VisibleAnywhere, Category = "Reaction | OnHealthChange")
-	FName TimeToDeadParamName;
+	UPROPERTY(VisibleAnywhere, Category = "Material | Dissolve")
+	float DissolveAmount;
+	UPROPERTY(EditAnywhere, Category = "Material | Dissolve")
+	float DissolveLoopRate = 0.02f;// Lower - faster, vice versa.
+	UPROPERTY(EditAnywhere, Category = "Material | Dissolve")
+	float DissolveRate = 0.02f;// Lower - more detailed/smooth, vice versa.
+	
+	UPROPERTY(VisibleAnywhere, Category = "Material | MaterialInstanceDynamic")
+	TArray<UMaterialInstanceDynamic*> DynamicMIDs;
 	
 	/* -------------Player State---------------- */
 	
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Character State")
-	bool IsPlayerDead = false;
+	
 	
 	/* -------------Effects---------------- */
 	/* Anim&VFXs */
