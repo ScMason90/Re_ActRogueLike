@@ -25,7 +25,8 @@ bool UAR_ActionSystemComponent::ApplyHealthChange(AActor* Instigator, float Delt
 }
 
 // return FMath::IsNearlyZero(Attributes.Health)...Restrictively check using return Attributes.Health == 0.0f; 
-bool UAR_ActionSystemComponent::IsDead() const {return FMath::IsNearlyZero(Attributes.Health);}
+bool UAR_ActionSystemComponent::IsDead() const {return FMath::IsNearlyZero(GetHealth());}
 float UAR_ActionSystemComponent::GetMaxHealth() const {return Attributes.MaxHealth;}
 float UAR_ActionSystemComponent::GetHealth() const {return Attributes.Health;}
-bool UAR_ActionSystemComponent::IsFullHealth() const {return Attributes.Health == Attributes.MaxHealth;}
+bool UAR_ActionSystemComponent::IsFullHealth() const {return GetHealth() == GetMaxHealth();}
+bool UAR_ActionSystemComponent::IsLowHealth() const {return GetHealth() <= 0.3 * GetMaxHealth();}
