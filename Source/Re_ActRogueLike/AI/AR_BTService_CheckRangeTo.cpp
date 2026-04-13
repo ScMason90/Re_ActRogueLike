@@ -6,6 +6,12 @@
 #include "AIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "GameFramework/Actor.h"
+#include "Re_ActRogueLike/Re_ActRoguelikeType.h"
+
+UAR_BTService_CheckRangeTo::UAR_BTService_CheckRangeTo()
+{
+	TargetActorKey.SelectedKeyName = NAME_TargetActor;
+}
 
 void UAR_BTService_CheckRangeTo::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {

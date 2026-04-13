@@ -7,7 +7,14 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "GameFramework/Character.h"
+#include "Re_ActRogueLike/Re_ActRoguelikeType.h"
 #include "Re_ActRogueLike/Projectiles/AR_MagicProjectile.h"
+
+
+UAR_BTTask_RangeAttack::UAR_BTTask_RangeAttack()
+{
+	TargetActorKey.SelectedKeyName = NAME_TargetActor;	
+}
 
 EBTNodeResult::Type UAR_BTTask_RangeAttack::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {

@@ -14,6 +14,9 @@ class RE_ACTROGUELIKE_API UAR_BTService_CheckRangeTo : public UBTService
 {
 	GENERATED_BODY()
 	
+public:
+	UAR_BTService_CheckRangeTo();
+	
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
 	FBlackboardKeySelector TargetActorKey;

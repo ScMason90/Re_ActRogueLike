@@ -51,10 +51,12 @@ protected:
 	
 	UPROPERTY(VisibleAnywhere, Category = "Material | Dissolve")
 	float DissolveAmount;
+	// Lower - faster, vice versa.
 	UPROPERTY(EditAnywhere, Category = "Material | Dissolve")
-	float DissolveLoopRate = 0.02f;// Lower - faster, vice versa.
+	float DissolveLoopRate = 0.02f;
+	// Lower - more detailed/smooth, vice versa.
 	UPROPERTY(EditAnywhere, Category = "Material | Dissolve")
-	float DissolveRate = 0.02f;// Lower - more detailed/smooth, vice versa.
+	float DissolveRate = 0.02f;
 	
 	UPROPERTY(VisibleAnywhere, Category = "Material | MaterialInstanceDynamic")
 	TArray<UMaterialInstanceDynamic*> DynamicMIDs;
