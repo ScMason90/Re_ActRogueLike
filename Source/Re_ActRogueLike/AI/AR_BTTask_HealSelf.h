@@ -13,4 +13,9 @@ UCLASS()
 class RE_ACTROGUELIKE_API UAR_BTTask_HealSelf : public UBTTaskNode
 {
 	GENERATED_BODY()
+
+public:
+	UAR_BTTask_HealSelf();
+	
+	EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 };

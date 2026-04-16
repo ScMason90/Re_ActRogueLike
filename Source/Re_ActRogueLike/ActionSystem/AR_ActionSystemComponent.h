@@ -66,7 +66,4 @@ public:
 	
 	UFUNCTION(BlueprintCallable, Category = "Attributes | Getters")
 	bool IsFullHealth() const;
-	// Might introduce dynamic threshold (formula etc.)
-	UFUNCTION(BlueprintCallable, Category = "Attributes | Getters")
-	bool IsLowHealth() const;
 };

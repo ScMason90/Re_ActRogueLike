@@ -29,4 +29,3 @@ bool UAR_ActionSystemComponent::IsDead() const {return FMath::IsNearlyZero(GetHe
 float UAR_ActionSystemComponent::GetMaxHealth() const {return Attributes.MaxHealth;}
 float UAR_ActionSystemComponent::GetHealth() const {return Attributes.Health;}
 bool UAR_ActionSystemComponent::IsFullHealth() const {return GetHealth() == GetMaxHealth();}
-bool UAR_ActionSystemComponent::IsLowHealth() const {return GetHealth() <= 0.3 * GetMaxHealth();}

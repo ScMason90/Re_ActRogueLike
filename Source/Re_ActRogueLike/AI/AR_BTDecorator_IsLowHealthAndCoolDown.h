@@ -13,4 +13,19 @@ UCLASS()
 class RE_ACTROGUELIKE_API UAR_BTDecorator_IsLowHealthAndCoolDown : public UBTDecorator
 {
 	GENERATED_BODY()
+	
+public:
+	UAR_BTDecorator_IsLowHealthAndCoolDown();
+	
+protected:
+	UPROPERTY(EditAnywhere, Category = "AI")
+	float CoolDownTime = 60.0f;	// In seconds...
+	
+	UPROPERTY(EditAnywhere, Category = "AI")
+	float LowHealthThreshold = 0.3f;	// Editable in UE editor
+	
+	UPROPERTY()
+	float LastTriggerTime = -1000.0f; // GetWorld - TimeSeconds()...
+	
+	virtual bool CalculateRawConditionValue(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) const override;
 };

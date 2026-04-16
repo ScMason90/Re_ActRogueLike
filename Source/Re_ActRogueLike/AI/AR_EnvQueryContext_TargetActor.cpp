@@ -7,22 +7,28 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "EnvironmentQuery/EnvQueryTypes.h"
 #include "EnvironmentQuery/Items/EnvQueryItemType_Actor.h"
-#include "GameFramework/Pawn.h"
 #include "Re_ActRogueLike/Re_ActRoguelikeType.h"
 
 void UAR_EnvQueryContext_TargetActor::ProvideContext(FEnvQueryInstance& QueryInstance,
                                                      FEnvQueryContextData& ContextData) const
 {
-	Super::ProvideContext(QueryInstance, ContextData);	// Super::Parent logic is empty...
+	UObject* OwnerObj = QueryInstance.Owner.Get(); 
+	if (!OwnerObj) return;
 	
-	// Expected Character
-	APawn* QuerierPawn = Cast<APawn>(QueryInstance.Owner.Get());
-	if (ensureMsgf(QuerierPawn, TEXT("UAR_EnvQueryContext_TargetActor::ProvideContext, QuerierPawn is nullptr!")))
-	{
-		AAIController* AIController = Cast<AAIController>(QuerierPawn->GetController());
-		check(AIController);
-		AActor* TargetActor = Cast<AActor>(
-			AIController->GetBlackboardComponent()->GetValueAsObject(NAME_TargetActor));
-		UEnvQueryItemType_Actor::SetContextHelper(ContextData, TargetActor);
-	}
+	// Expected Character - QuerierPawn
+	AActor* OwnerActor = Cast<AActor>(OwnerObj); 
+	ensureMsgf(OwnerActor, TEXT("UAR_EnvQueryContext_TargetActor::ProvideContext, OwnerActor is nullptr!"));
+	if (!OwnerActor)return;
+	
+	AAIController* AIController = Cast<AAIController>(OwnerActor->GetInstigatorController());
+	check(AIController);
+	
+	UBlackboardComponent* BB = AIController->GetBlackboardComponent();
+	check(BB);
+	
+	UObject* TargetObj = BB->GetValueAsObject(NAME_TargetActor);
+	AActor* TargetActor = Cast<AActor>(TargetObj);
+	if (!TargetActor) return;
+	
+	UEnvQueryItemType_Actor::SetContextHelper(ContextData, TargetActor);
 }

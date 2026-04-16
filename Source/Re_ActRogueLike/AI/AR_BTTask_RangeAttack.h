@@ -16,17 +16,17 @@ class RE_ACTROGUELIKE_API UAR_BTTask_RangeAttack : public UBTTaskNode
 	GENERATED_BODY()
 	
 protected:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
+	UPROPERTY(EditAnywhere, Category = "AI")
 	FBlackboardKeySelector TargetActorKey;
  
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
+	UPROPERTY(EditAnywhere, Category = "AI")
 	FName MuzzleSocketName;
 	
 	// Misc projectile class?
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
+	UPROPERTY(EditAnywhere, Category = "AI")
 	TSubclassOf<AAR_MagicProjectile> ProjectileClass;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
+	UPROPERTY(EditAnywhere, Category = "AI")
 	float MaxBulletSpread = 5.0f;
 	
 public:
