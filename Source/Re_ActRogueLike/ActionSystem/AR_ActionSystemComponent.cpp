@@ -12,11 +12,11 @@ UAR_ActionSystemComponent::UAR_ActionSystemComponent()
 
 bool UAR_ActionSystemComponent::ApplyHealthChange(AActor* Instigator, float Delta)
 {
-	float OldHealth = Attributes.Health, ActualDelta;
+	float OldHealth = Attributes.Health;
 	
 	/* Simply clamp to validate Health variable.*/
 	Attributes.Health = FMath::Clamp(Attributes.Health + Delta, 0, Attributes.MaxHealth);
-	ActualDelta = Attributes.Health - OldHealth;
+	float ActualDelta = Attributes.Health - OldHealth;
 	
 	OnHealthChanged.Broadcast(Instigator, this, Attributes.Health, ActualDelta);
 	UE_LOG(LogTemp, Log, TEXT("New Health: %f, Max Health: %f"), Attributes.Health, Attributes.MaxHealth);

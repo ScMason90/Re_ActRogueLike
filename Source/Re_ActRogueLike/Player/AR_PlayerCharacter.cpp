@@ -20,6 +20,9 @@
 TAutoConsoleVariable<float> CVarProjectileAdjustmentDebugDrawing(TEXT("game.projectile.DebugDraw"), 0.0f,
 	TEXT("Enable projectile aim adjustment debug rendering. (0 = off, > 0 is duration)"), ECVF_Cheat);
 
+TAutoConsoleVariable<bool> CVarGodMode(TEXT("game.debugcheat.god"), false,
+	TEXT("Enable god mode for inf-health... (false = off, true = on)"), ECVF_Cheat);
+
 // Sets default values
 AAR_PlayerCharacter::AAR_PlayerCharacter()
 {
@@ -207,9 +210,12 @@ void AAR_PlayerCharacter::Look(const FInputActionInstance& InValue)
 float AAR_PlayerCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent,
 	class AController* EventInstigator, AActor* DamageCauser)
 {
+#if !UE_BUILD_SHIPPING
+	if (bool bEnableGodMode = CVarGodMode.GetValueOnGameThread()) return 0;
+#endif
 	float ActualDamage =  Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	
-	ActionSystemComponent->ApplyHealthChange(DamageCauser,-ActualDamage);
+	if (ActualDamage > 0.0f) ActionSystemComponent->ApplyHealthChange(DamageCauser, -ActualDamage);
 	
 	return ActualDamage;
 	
@@ -218,6 +224,9 @@ float AAR_PlayerCharacter::TakeDamage(float DamageAmount, struct FDamageEvent co
 void AAR_PlayerCharacter::OnHealthChanged(
 	AActor* InstigatorActor, UAR_ActionSystemComponent* OwningComp, float NewHealth, float Delta)
 {
+#if !UE_BUILD_SHIPPING
+	if (bool bEnableGodMode = CVarGodMode.GetValueOnGameThread()) return;
+#endif
 	if (!IsPlayerDead)
 	{
 		// Flash when damaged

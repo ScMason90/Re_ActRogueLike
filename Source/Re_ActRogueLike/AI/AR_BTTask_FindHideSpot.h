@@ -33,9 +33,10 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "AI")
 	FBlackboardKeySelector HideLocationKey;
 	
-	UPROPERTY(VisibleAnywhere, Category = "AI")
-	TObjectPtr<UBehaviorTreeComponent> CachedOwnerComp;
-	
 	UFUNCTION()
 	void OnQueryFinished(UEnvQueryInstanceBlueprintWrapper* QueryInstance, EEnvQueryStatus::Type QueryStatus);
+	
+private:
+	UPROPERTY(VisibleAnywhere, Category = "AI")
+	UBehaviorTreeComponent* CachedOwnerComp = nullptr;
 };

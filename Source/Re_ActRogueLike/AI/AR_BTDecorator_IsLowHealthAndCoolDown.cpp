@@ -36,5 +36,5 @@ bool UAR_BTDecorator_IsLowHealthAndCoolDown::CalculateRawConditionValue(UBehavio
 	// Update Cooldown time
 	const_cast<UAR_BTDecorator_IsLowHealthAndCoolDown*>(this)->LastTriggerTime = PresentTime;
 	
-	return Super::CalculateRawConditionValue(OwnerComp, NodeMemory);// true in Super::
+	return true;// Super::CalculateRawConditionValue(OwnerComp, NodeMemory)
 }

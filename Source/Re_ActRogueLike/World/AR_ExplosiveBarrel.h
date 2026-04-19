@@ -65,4 +65,7 @@ public:
 	
 	// Bind hit event after components are initialized
 	virtual void PostInitializeComponents() override;
+	
+	// TODO: Considering make a explosive object base cpp class and implement 'DamageSystem' when explode after hit?
+	// virtual void OnImpact(AActor* Instigator, const FHitResult& Hit);
 };

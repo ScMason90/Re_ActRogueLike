@@ -12,11 +12,14 @@ UAR_BTTask_FindHideSpot::UAR_BTTask_FindHideSpot()
 	NodeName = "Find Hide Spot";
 }
 
+// @bugs: either we can't execute (return In Progress?) next node(Move to HideLocation) of sequence nor just returned 
+// instantly after this task node has been executed(return Failed/Succeeded?).It will work if manually call RunEQS node in BP BT asset.
 EBTNodeResult::Type UAR_BTTask_FindHideSpot::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	AAIController* AIController = OwnerComp.GetAIOwner();
 	if (!AIController || !QueryTemplate) return EBTNodeResult::Failed;
 	
+	// Start EQS Query (async)
 	UEnvQueryInstanceBlueprintWrapper* QueryInstance = UEnvQueryManager::RunEQSQuery(
 		AIController, QueryTemplate,AIController->GetPawn(), 
 		EEnvQueryRunMode::RandomBest5Pct, nullptr);
@@ -28,6 +31,8 @@ EBTNodeResult::Type UAR_BTTask_FindHideSpot::ExecuteTask(UBehaviorTreeComponent&
 	// Binding callback functions (using AddDynamic in UE5.7, 'Cause Epic just changed the return type of 'QueryInstance->GetOnQueryFinishedEvent()' 
 	// so that we need implemented new API of EQS)
 	QueryInstance->GetOnQueryFinishedEvent().AddDynamic(this, &UAR_BTTask_FindHideSpot::OnQueryFinished);
+	
+	if (!CachedOwnerComp) return EBTNodeResult::Failed;
 	
 	return EBTNodeResult::InProgress;
 }
