@@ -12,8 +12,6 @@ UAR_BTTask_FindHideSpot::UAR_BTTask_FindHideSpot()
 	NodeName = "Find Hide Spot";
 }
 
-// @bugs: either we can't execute (return In Progress?) next node(Move to HideLocation) of sequence nor just returned 
-// instantly after this task node has been executed(return Failed/Succeeded?).It will work if manually call RunEQS node in BP BT asset.
 EBTNodeResult::Type UAR_BTTask_FindHideSpot::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	AAIController* AIController = OwnerComp.GetAIOwner();
@@ -21,19 +19,17 @@ EBTNodeResult::Type UAR_BTTask_FindHideSpot::ExecuteTask(UBehaviorTreeComponent&
 	
 	// Start EQS Query (async)
 	UEnvQueryInstanceBlueprintWrapper* QueryInstance = UEnvQueryManager::RunEQSQuery(
-		AIController, QueryTemplate,AIController->GetPawn(), 
+		AIController->GetWorld(), QueryTemplate,AIController->GetPawn(), 
 		EEnvQueryRunMode::RandomBest5Pct, nullptr);
 	
 	if (!QueryInstance) return EBTNodeResult::Failed;
 	// Save the OwnerComp pointer for callback use
 	CachedOwnerComp = &OwnerComp;
 	
-	// Binding callback functions (using AddDynamic in UE5.7, 'Cause Epic just changed the return type of 'QueryInstance->GetOnQueryFinishedEvent()' 
-	// so that we need implemented new API of EQS)
+	// Callback binding(ue5.7+ recommended)
 	QueryInstance->GetOnQueryFinishedEvent().AddDynamic(this, &UAR_BTTask_FindHideSpot::OnQueryFinished);
 	
-	if (!CachedOwnerComp) return EBTNodeResult::Failed;
-	
+	// BT asset wait for it's finished
 	return EBTNodeResult::InProgress;
 }
 
@@ -42,14 +38,18 @@ void UAR_BTTask_FindHideSpot::OnQueryFinished(UEnvQueryInstanceBlueprintWrapper*
 	// Asynchronously check before use (assign in UAR_BTTask_FindHideSpot::ExecuteTask)
 	if (!CachedOwnerComp) return;
 	
+	EBTNodeResult::Type NodeResult = EBTNodeResult::Failed;	// This is for safely execute async 'FinishedTask'
 	if (QueryStatus == EEnvQueryStatus::Success)
 	{
-		if (TArray<FVector> ResultLocations;QueryInstance->GetQueryResultsAsLocations(ResultLocations))
+		if (TArray<FVector> EnvQueryLocations;
+			QueryInstance->GetQueryResultsAsLocations(EnvQueryLocations) && EnvQueryLocations.Num() > 0)
 		{
-			CachedOwnerComp->GetBlackboardComponent()->SetValueAsVector(HideLocationKey.SelectedKeyName, ResultLocations[0]);
-			FinishLatentTask(*CachedOwnerComp, EBTNodeResult::Succeeded);
+			CachedOwnerComp->GetBlackboardComponent()->SetValueAsVector(
+				HideLocationKey.SelectedKeyName, EnvQueryLocations[0]);
+			NodeResult = EBTNodeResult::Succeeded;	// Can't finish(notify engine the result of this 'ExecuteTask') yet 
 		}
 	}
 	
-	FinishLatentTask(*CachedOwnerComp, EBTNodeResult::Failed);
+	// We only want exit(notify engine...) at the one the end of this function otherwise quirk happens.
+	FinishLatentTask(*CachedOwnerComp, NodeResult);
 }
