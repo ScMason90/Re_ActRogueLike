@@ -27,6 +27,8 @@ public:
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 	
 protected:
+	// We should introduce a struct and override GetNodeMemory for every actor using shared BT asset during runtime 
+	
 	UPROPERTY(EditAnywhere, Category = "AI")
 	TObjectPtr<UEnvQuery> QueryTemplate;
 

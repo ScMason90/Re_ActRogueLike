@@ -18,6 +18,8 @@ public:
 	UAR_BTService_CheckRangeTo();
 	
 protected:
+	// We should introduce a struct and override GetNodeMemory for every actor using shared BT asset during runtime 
+	
 	UPROPERTY(EditAnywhere, Category = "AI")
 	FBlackboardKeySelector TargetActorKey;
 	
