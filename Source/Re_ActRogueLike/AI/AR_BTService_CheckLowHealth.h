@@ -6,6 +6,12 @@
 #include "BehaviorTree/BTService.h"
 #include "AR_BTService_CheckLowHealth.generated.h"
 
+struct FBTServiceLowHealthMemory
+{
+	// Last trigger time
+	float LastTriggerTime = -1000.0f;
+};	
+
 /**
  * 
  */
@@ -28,13 +34,13 @@ protected:
 	UPROPERTY(EditAnywhere, Category="AI")
 	float CooldownTime = 60.0f;
 
-	// Last trigger time
-	UPROPERTY()
-	float LastTriggerTime = -1000.0f;
-
 	// Blackboard key: Whether to run away
 	UPROPERTY(EditAnywhere, Category="AI")
 	FBlackboardKeySelector ShouldFleeKey;
 	
 	virtual void TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
+	
+public:
+	virtual uint16 GetInstanceMemorySize() const override;
+	
 };

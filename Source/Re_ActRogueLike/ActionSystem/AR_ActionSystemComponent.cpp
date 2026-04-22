@@ -19,7 +19,6 @@ bool UAR_ActionSystemComponent::ApplyHealthChange(AActor* Instigator, float Delt
 	float ActualDelta = Attributes.Health - OldHealth;
 	
 	OnHealthChanged.Broadcast(Instigator, this, Attributes.Health, ActualDelta);
-	UE_LOG(LogTemp, Log, TEXT("New Health: %f, Max Health: %f"), Attributes.Health, Attributes.MaxHealth);
 	
 	return ActualDelta != 0;
 }

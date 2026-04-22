@@ -8,12 +8,14 @@
 
 UAR_BTService_CheckLowHealth::UAR_BTService_CheckLowHealth()
 {
-	NodeName = "Check Low Health (with Cooldown) Service";
+	NodeName = "BTService:Check Low Health (with Cooldown)";
 	Interval = 0.5f; // check every 0.5s
 }
 
 void UAR_BTService_CheckLowHealth::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
+	Super::TickNode(OwnerComp, NodeMemory, DeltaSeconds);
+	
 	AAIController* AICon = OwnerComp.GetAIOwner();
 	if (!AICon) return;
 
@@ -25,13 +27,18 @@ void UAR_BTService_CheckLowHealth::TickNode(UBehaviorTreeComponent& OwnerComp, u
 
 	bool bLowHealth = ASComp->GetHealth() <= ASComp->GetMaxHealth() * LowHealthThreshold;
 
+	FBTServiceLowHealthMemory* MyMemory = reinterpret_cast<FBTServiceLowHealthMemory*>(NodeMemory);
 	float Now = Pawn->GetWorld()->GetTimeSeconds();
-	bool bCooldownReady = (Now - LastTriggerTime) > CooldownTime;
+	bool bCooldownReady = (Now - MyMemory->LastTriggerTime) > CooldownTime;
 
+	UE_LOG(LogTemp, Warning, TEXT("UAR_BTService_CheckLowHealth::TickNode, bLowHealth = %hhd"), bLowHealth);
+	UE_LOG(LogTemp, Warning, TEXT("UAR_BTService_CheckLowHealth::TickNode, bCooldownReady = %hhd"), bCooldownReady);
 	if (bLowHealth && bCooldownReady)
 	{
 		OwnerComp.GetBlackboardComponent()->SetValueAsBool(ShouldFleeKey.SelectedKeyName, true);
-		LastTriggerTime = Now;
+		MyMemory->LastTriggerTime = Now;
 	}
 	else OwnerComp.GetBlackboardComponent()->SetValueAsBool(ShouldFleeKey.SelectedKeyName, false);
 }
+
+uint16 UAR_BTService_CheckLowHealth::GetInstanceMemorySize() const { return sizeof(FBTServiceLowHealthMemory); }
