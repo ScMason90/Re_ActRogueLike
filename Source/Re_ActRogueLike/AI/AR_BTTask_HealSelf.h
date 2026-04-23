@@ -6,6 +6,8 @@
 #include "BehaviorTree/BTTaskNode.h"
 #include "AR_BTTask_HealSelf.generated.h"
 
+// introduce a runtime prop-struct and override GetNodeMemory when design need keep runtime info between each instance
+
 /**
  * 
  */
@@ -16,6 +18,9 @@ class RE_ACTROGUELIKE_API UAR_BTTask_HealSelf : public UBTTaskNode
 
 public:
 	UAR_BTTask_HealSelf();
+
+	UPROPERTY(EditAnywhere, Category = "Magnitude")
+	float HealAmount = +50.0f;
 	
-	EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
+	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 };

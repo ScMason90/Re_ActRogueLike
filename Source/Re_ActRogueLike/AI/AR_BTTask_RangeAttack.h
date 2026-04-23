@@ -6,6 +6,8 @@
 #include "BehaviorTree/BTTaskNode.h"
 #include "AR_BTTask_RangeAttack.generated.h"
 
+// introduce a runtime prop-struct and override GetNodeMemory when design need keep runtime info between each instance
+
 class AAR_MagicProjectile;
 /**
  * 
@@ -16,7 +18,6 @@ class RE_ACTROGUELIKE_API UAR_BTTask_RangeAttack : public UBTTaskNode
 	GENERATED_BODY()
 	
 protected:
-	// We should introduce a struct and override GetNodeMemory for every actor using shared BT asset during runtime 
 	
 	UPROPERTY(EditAnywhere, Category = "AI")
 	FBlackboardKeySelector TargetActorKey;

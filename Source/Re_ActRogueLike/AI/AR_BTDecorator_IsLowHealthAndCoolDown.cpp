@@ -30,11 +30,17 @@ bool UAR_BTDecorator_IsLowHealthAndCoolDown::CalculateRawConditionValue(UBehavio
 	if (!bLowHealth) return false;
 	
 	// Cooldown check - We can't precisely check equality of float number.
+	FBTDecoratorLowHealthMemory* MyMemory = reinterpret_cast<FBTDecoratorLowHealthMemory*>(NodeMemory);
 	float PresentTime = Pawn->GetWorld()->GetTimeSeconds();
-	if (PresentTime - LastTriggerTime < CoolDownTime) return false;
+	if (PresentTime - MyMemory->LastTriggerTime < CoolDownTime) return false;
 	
 	// Update Cooldown time
-	const_cast<UAR_BTDecorator_IsLowHealthAndCoolDown*>(this)->LastTriggerTime = PresentTime;
+	MyMemory->LastTriggerTime = PresentTime;
 	
 	return true;// Super::CalculateRawConditionValue(OwnerComp, NodeMemory)
+}
+
+uint16 UAR_BTDecorator_IsLowHealthAndCoolDown::GetInstanceMemorySize() const
+{
+	return sizeof(FBTDecoratorLowHealthMemory);
 }

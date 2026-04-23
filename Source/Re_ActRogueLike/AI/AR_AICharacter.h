@@ -61,9 +61,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "Material | MaterialInstanceDynamic")
 	TArray<UMaterialInstanceDynamic*> DynamicMIDs;
 	
-	/* -------------Player State---------------- */
-	
-	
+	/* -------------AI Pawn State---------------- */
+	UPROPERTY(VisibleAnywhere, Category = "AI Pawn State")
+	bool AIPawnDying = false;
 	
 	/* -------------Effects---------------- */
 	/* Anim&VFXs */

@@ -48,13 +48,14 @@ float AAR_AICharacter::TakeDamage(float DamageAmount, struct FDamageEvent const&
 void AAR_AICharacter::OnHealthChanged(AActor* InstigatorActor, UAR_ActionSystemComponent* OwningComp, float NewHealth,
                                       float Delta)
 {
+	if (AIPawnDying) return;
 	if (OwningComp->IsDead())
 	{
+		AIPawnDying = OwningComp->IsDead();	// Marked as already dead
 		HandleDeath();
 		return;
 	}
 	
-	// if (!OwningComp->IsDead())...
 	// Flash when damaged - PS:this design was too rough
 	if (Delta < 0.0f)
 	{

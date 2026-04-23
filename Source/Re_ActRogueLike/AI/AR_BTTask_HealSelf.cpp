@@ -22,7 +22,7 @@ EBTNodeResult::Type UAR_BTTask_HealSelf::ExecuteTask(UBehaviorTreeComponent& Own
 	UAR_ActionSystemComponent* ASComp/*Mainly for its 'Attribute'*/ = Pawn->FindComponentByClass<UAR_ActionSystemComponent>();
 	if (!ASComp) return EBTNodeResult::Failed;
 	
-	ASComp->ApplyHealthChange(nullptr, +50.0f);
+	ASComp->ApplyHealthChange(nullptr, HealAmount);
 	
 	return EBTNodeResult::Succeeded;	// Super::ExecuteTask(OwnerComp, NodeMemory) 
 }
