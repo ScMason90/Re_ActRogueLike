@@ -151,7 +151,7 @@ protected:
 	
 	// TODO: May considering introduce different AnimMontage for each proj attack?
 	
-	void FireProj(const FFireProjSpawnSourceConfig Config);
+	void FireProj(const FFireProjSpawnSourceConfig& Config);
 	
 	void FireMagicProj();
 	void FireBlackHole();

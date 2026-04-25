@@ -19,6 +19,9 @@ AAR_AICharacter::AAR_AICharacter()
 {
 	ActionSystemComponent = CreateDefaultSubobject<UAR_ActionSystemComponent>("ActionSystemComp");
 	TimeToHitParamName = "TimeToHit";
+	
+	AIControllerClass = AAR_AIController::StaticClass();
+	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 }
 
 void AAR_AICharacter::PostInitializeComponents()

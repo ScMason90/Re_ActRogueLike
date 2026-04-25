@@ -60,7 +60,7 @@ void AAR_PlayerCharacter::PostInitializeComponents()
 	MuzzleSocketName = "Muzzle_01";
 }
 
-void AAR_PlayerCharacter::FireProj(const FFireProjSpawnSourceConfig Config)
+void AAR_PlayerCharacter::FireProj(const FFireProjSpawnSourceConfig& Config)
 {
 	PlayAnimMontage(Config.AnimMontageToPlay);
 	
@@ -148,7 +148,7 @@ void AAR_PlayerCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	
 	// -- Rotation Visualization -- //
-	const float DrawScale = 100.0f, Thickness = 5.0f;
+	constexpr float DrawScale = 100.0f, Thickness = 5.0f;
 	
 	FVector LineStart = GetActorLocation();
 	// Offset to the right of pawn
