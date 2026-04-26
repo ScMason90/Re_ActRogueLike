@@ -81,24 +81,33 @@ void AAR_AICharacter::HandleDeath()
 		AIController->StopMovement();
 		AIController->UnPossess();	// Optional?
 	}
-	// Disable Collision...
-	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	USkeletalMeshComponent* MeshComp = GetMesh();
+	
+	// Disable Collision...Honestly all post-death appearances depend on your game type/design
+	// GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	// MeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	
 	// Disable Movement
 	GetMovementComponent()->StopActiveMovement();
 		
-	// Play Death Anim in Anim Class of PlayerCharacter...
+	// Play a noob Death Anim
 	PlayAnimMontage(DeathMontage);
-			
-	// Optional
-	// --Play ragdoll--	
-	// GetMesh()->SetSimulatePhysics(true);
-	// --Delayed destruction--
-	// SetLifeSpan(5.0f);
-			
-	// Dissolve mesh material and destroy current AR_AICharacter instance
-	StartDissolve();
+	
+	FTimerDelegate RagdollDelegate;
+	RagdollDelegate.BindWeakLambda(this, [this, MeshComp]()
+	{
+		if (!IsValid(this) || IsPendingKillPending()) return;
+		
+		// Optional
+		// --Play ragdoll--	
+		MeshComp->SetAllBodiesSimulatePhysics(true);
+		MeshComp->SetCollisionProfileName("Ragdoll");
+		
+		// Dissolve mesh material and destroy current AR_AICharacter instance
+		StartDissolve();
+	});
+	FTimerHandle TimerHandle_Ragdoll;
+	GetWorldTimerManager().SetTimer(TimerHandle_Ragdoll, RagdollDelegate, DeathAnimDuration, false);
 }
 
 void AAR_AICharacter::InitializeMIDs()
@@ -131,6 +140,6 @@ void AAR_AICharacter::UpdateDissolve()
 	if (DissolveAmount >= 1.0f)
 	{
 		GetWorldTimerManager().ClearTimer(TimerHandle_Dissolve);
-		Destroy();
+		Destroy();	// 'Delayed Destruction'...
 	}
 }

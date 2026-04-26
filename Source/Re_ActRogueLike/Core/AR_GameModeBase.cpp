@@ -29,22 +29,6 @@ void AAR_GameModeBase::StartPlay()
 
 void AAR_GameModeBase::SpawnBotTimerElapsed()
 {
-	UEnvQueryInstanceBlueprintWrapper* QueryInstance = UEnvQueryManager::RunEQSQuery(
-		this, SpawnBotQuery, this, EEnvQueryRunMode::RandomBest5Pct, nullptr);
-	if (ensure(QueryInstance))
-	{
-		QueryInstance->GetOnQueryFinishedEvent().AddDynamic(this, &AAR_GameModeBase::OnQueryFinished);
-	}
-}
-
-void AAR_GameModeBase::OnQueryFinished(UEnvQueryInstanceBlueprintWrapper* QueryInstance, EEnvQueryStatus::Type QueryStatus)
-{
-	if (QueryStatus != EEnvQueryStatus::Success)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("AAR_GameModeBase::OnQueryFinished, Spawn bot EQS Query Failed!"));
-		return;
-	}
-	
 	float MaxBotCount = 5.0f;
 	if (DifficultyCurve) MaxBotCount = DifficultyCurve->GetFloatValue(GetWorld()->GetTimeSeconds());
 
@@ -66,6 +50,22 @@ void AAR_GameModeBase::OnQueryFinished(UEnvQueryInstanceBlueprintWrapper* QueryI
 	{
 		UE_LOG(LogTemp, Log, 
 			TEXT("AAR_GameModeBase::OnQueryFinished, Bot count reached limit: %d / %.0f"), NumOfAliveBots, MaxBotCount);
+		return;
+	}
+	
+	UEnvQueryInstanceBlueprintWrapper* QueryInstance = UEnvQueryManager::RunEQSQuery(
+		this, SpawnBotQuery, this, EEnvQueryRunMode::RandomBest5Pct, nullptr);
+	if (ensure(QueryInstance))
+	{
+		QueryInstance->GetOnQueryFinishedEvent().AddDynamic(this, &AAR_GameModeBase::OnQueryFinished);
+	}
+}
+
+void AAR_GameModeBase::OnQueryFinished(UEnvQueryInstanceBlueprintWrapper* QueryInstance, EEnvQueryStatus::Type QueryStatus)
+{
+	if (QueryStatus != EEnvQueryStatus::Success)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("AAR_GameModeBase::OnQueryFinished, Spawn bot EQS Query Failed!"));
 		return;
 	}
 	

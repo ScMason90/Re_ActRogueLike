@@ -62,8 +62,12 @@ protected:
 	TArray<UMaterialInstanceDynamic*> DynamicMIDs;
 	
 	/* -------------AI Pawn State---------------- */
+	
 	UPROPERTY(VisibleAnywhere, Category = "AI Pawn State")
 	bool AIPawnDying = false;
+	
+	UPROPERTY(EditAnywhere, Category = "AI Pawn State")
+	float DeathAnimDuration = 3.0f;
 	
 	/* -------------Effects---------------- */
 	/* Anim&VFXs */

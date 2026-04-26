@@ -29,34 +29,3 @@ AAR_ItemChest::AAR_ItemChest()
 	
 	TargetPitch = -110.0f;
 }
-
-// Called when the game starts or when spawned
-void AAR_ItemChest::BeginPlay()
-{
-	Super::BeginPlay();
-	
-}
-
-// void ARogueItemChest::Interact_Implementation()
-// {
-// 	// Play Animation
-// 	SetActorTickEnabled(true);
-// }
-
-// Called every frame
-void AAR_ItemChest::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-	//
-	// CurrentAnimationPitch = FMath::FInterpConstantTo(CurrentAnimationPitch, AnimationTargetPitch, DeltaTime, AnimationSpeed);
-	// LidMeshComponent->SetRelativeRotation(FRotator(CurrentAnimationPitch, 0.0f, 0.0f));
-	//
-	// if (FMath::IsNearlyEqual(CurrentAnimationPitch, AnimationTargetPitch))
-	// {
-	// 	// Animation Complete
-	// 	SetActorTickEnabled(false);
-	//
-	// 	ChestAnimationComplete();
-	// }
-}
-

@@ -36,7 +36,10 @@ protected:
 	/*@bugs: idk why i can't assign my new created 'DifficultyCurve' BP asset in ue editor here for this member variable
 	 * Tom didn't add all of these lec12 code in ue5.6-course-project branch.He just simply ignored.All logic of bot 
 	 * spawning in 'GameMode' class could be done somewhere else.Also, the 'DifficultyCurve' which control spawning bot 
-	 * numbers as game time increasing could be replaced by other ways to implement. */
+	 * numbers as game time increasing could be replaced by other ways to implement. 2026/4/25 Sat.
+	 *@fixed:emmm i just get a copy a ue project default CurveFloat BP asset and successfully assign it to 'DifficultyCurve'
+	 * slot in BP_AR_GameModeBase.Inner settings synced with determination - 2026/4/26 Sun.
+	 */
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
 	TObjectPtr<UCurveFloat> DifficultyCurve;
 

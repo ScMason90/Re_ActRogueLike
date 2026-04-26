@@ -32,19 +32,6 @@ void AAR_TargetDummy::OnHealthChanged(
 	}
 }
 
-// Called when the game starts or when spawned
-void AAR_TargetDummy::BeginPlay()
-{
-	Super::BeginPlay();
-	
-}
-
-// Called every frame
-void AAR_TargetDummy::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-}
-
 float AAR_TargetDummy::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent,
 	AController* EventInstigator, AActor* DamageCauser)
 {

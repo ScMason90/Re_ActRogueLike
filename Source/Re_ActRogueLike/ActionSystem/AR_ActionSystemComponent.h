@@ -45,6 +45,7 @@ protected:
 	// BlueprintReadWrite - read-write access in Blueprints
 	// --
 	// Category = "" - display only for detail panels and blueprint context menu.
+	
 	UPROPERTY(EditAnywhere,BlueprintReadOnly, Category = "Attributes")
 	FAR_AttributeSet Attributes;
 

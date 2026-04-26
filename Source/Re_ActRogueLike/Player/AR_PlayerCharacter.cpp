@@ -9,6 +9,7 @@
 #include "NiagaraFunctionLibrary.h"
 #include "TimerManager.h"
 #include "Camera/CameraComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -241,6 +242,8 @@ void AAR_PlayerCharacter::OnHealthChanged(
 			// Mark as Dead
 			IsPlayerDead = ActionSystemComponent->IsDead();
 		
+			USkeletalMeshComponent* MeshComp = GetMesh(); 
+			
 			// Disable Player Input
 			// if (APlayerController* PC = Cast<APlayerController>(GetController()))
 			// {
@@ -254,12 +257,15 @@ void AAR_PlayerCharacter::OnHealthChanged(
 			// Play Death Anim in Anim Class of PlayerCharacter...
 			PlayAnimMontage(DeathMontage);
 		
-			// Disable Collision...
-		
+			// Disable Collision...Honestly all post-death appearances depend on your game type/design
+			// GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			// MeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			
 			// Optional
 		
 			// Play ragdoll	
-			// GetMesh()->SetSimulatePhysics(true);
+			MeshComp->SetAllBodiesSimulatePhysics(true);
+			MeshComp->SetCollisionProfileName("Ragdoll");
 
 			// Delayed destruction
 			// SetLifeSpan(5.0f);

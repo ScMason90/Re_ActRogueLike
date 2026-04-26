@@ -26,24 +26,8 @@ protected:
 	TObjectPtr<UStaticMeshComponent> LidMesh;
 	
 	float TargetPitch;
-	
-	// UPROPERTY(EditAnywhere, Category="Animation")
-	// float AnimationSpeed = 50.0f;
-	//
-	// UPROPERTY(EditAnywhere, Category="Animation")
-	// float AnimationTargetPitch = 120.f;
-	//
-	// float CurrentAnimationPitch = 0.0f;
-	//
-	// UFUNCTION(BlueprintImplementableEvent)
-	// void ChestAnimationComplete();
-	
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
 
 public:
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
 	
 	virtual void Interact_Implementation(APawn* InstigatorPawn) override;
 };
