@@ -3,11 +3,20 @@
 
 #include "AR_ActionSystemComponent.h"
 
+#include "AR_ActionSystem.h"
+
 
 // Sets default values for this component's properties
 UAR_ActionSystemComponent::UAR_ActionSystemComponent()
 {
 	Attributes = FAR_AttributeSet();
+}
+
+void UAR_ActionSystemComponent::InitializeComponent()
+{
+	Super::InitializeComponent();
+	
+	bWantsInitializeComponent = true;
 }
 
 bool UAR_ActionSystemComponent::ApplyHealthChange(AActor* Instigator, float Delta)
@@ -28,3 +37,14 @@ bool UAR_ActionSystemComponent::IsDead() const {return FMath::IsNearlyZero(GetHe
 float UAR_ActionSystemComponent::GetMaxHealth() const {return Attributes.MaxHealth;}
 float UAR_ActionSystemComponent::GetHealth() const {return Attributes.Health;}
 bool UAR_ActionSystemComponent::IsFullHealth() const {return GetHealth() == GetMaxHealth();}
+
+void UAR_ActionSystemComponent::StartAction(FName InActionName)
+{
+	for (UAR_ActionSystem* Action : Actions)
+	{
+		if (Action->GetActionName() == InActionName)
+		{
+			Action->StartAction();
+		}
+	}
+}

@@ -6,6 +6,8 @@
 #include "Components/ActorComponent.h"
 #include "AR_ActionSystemComponent.generated.h"
 
+class UAR_ActionSystem;
+
 USTRUCT(BlueprintType)
 struct FAR_AttributeSet
 {
@@ -25,7 +27,10 @@ struct FAR_AttributeSet
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(
 	FOnHealthChanged, AActor*, Instigator, UAR_ActionSystemComponent*, OwingComp, float, NewHealth, float, Delta);
-/* For somehow, i can't rename this class(symbol) */
+
+/*
+ *
+ */
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class RE_ACTROGUELIKE_API UAR_ActionSystemComponent : public UActorComponent
 {
@@ -48,8 +53,16 @@ protected:
 	
 	UPROPERTY(EditAnywhere,BlueprintReadOnly, Category = "Attributes")
 	FAR_AttributeSet Attributes;
+	
+	UPROPERTY()
+	TArray<TObjectPtr<UAR_ActionSystem>> Actions;
 
 public:
+	virtual void InitializeComponent() override;
+	
+	/*--------------- Attributes Relative ------------------*/
+	/* Health */
+	
 	UPROPERTY(BlueprintAssignable)
 	FOnHealthChanged OnHealthChanged;
 	
@@ -67,4 +80,7 @@ public:
 	
 	UFUNCTION(BlueprintCallable, Category = "Attributes | Getters")
 	bool IsFullHealth() const;
+	
+	/*---------------------- Actions Relative ---------------------*/
+	void StartAction(FName InActionName);
 };
