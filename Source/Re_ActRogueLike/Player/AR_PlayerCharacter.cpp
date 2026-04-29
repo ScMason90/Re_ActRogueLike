@@ -9,6 +9,7 @@
 #include "NiagaraFunctionLibrary.h"
 #include "TimerManager.h"
 #include "Camera/CameraComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -242,29 +243,34 @@ void AAR_PlayerCharacter::OnHealthChanged(
 			IsPlayerDead = ActionSystemComponent->IsDead();
 		
 			USkeletalMeshComponent* MeshComp = GetMesh(); 
+			UCapsuleComponent* CapsuleComp = GetCapsuleComponent();
 			
 			// Disable Player Input
-			// if (APlayerController* PC = Cast<APlayerController>(GetController()))
-			// {
-			// 	DisableInput(PC);	
-			// }
-			DisableInput(nullptr);
+			if (APlayerController* PC = Cast<APlayerController>(GetController())) DisableInput(PC);
 		
 			// Disable Movement
 			GetMovementComponent()->StopActiveMovement();
 		
+			// Honestly all post-death appearances depend on your game type/design
+			
 			// Play Death Anim in Anim Class of PlayerCharacter...
 			PlayAnimMontage(DeathMontage);
-		
-			// Disable Collision...Honestly all post-death appearances depend on your game type/design
-			// GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-			// MeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			
+			// Disable Collision...
+			CapsuleComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 			
 			// Optional
 		
-			// Play ragdoll	
-			MeshComp->SetAllBodiesSimulatePhysics(true);
-			MeshComp->SetCollisionProfileName("Ragdoll");
+			// Play ragdoll
+			GetWorldTimerManager().SetTimer(TimerHandle_Ragdoll, 
+				[this, MeshComp, CapsuleComp]()
+				{
+					if (!IsValid(this) || !MeshComp || !CapsuleComp) return;
+					
+					MeshComp->SetAllBodiesSimulatePhysics(true);
+					MeshComp->SetCollisionProfileName("Ragdoll");
+				}, 
+				DeathMontageDuration, false);
 
 			// Delayed destruction
 			// SetLifeSpan(5.0f);

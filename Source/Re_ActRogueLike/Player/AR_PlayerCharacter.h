@@ -81,6 +81,12 @@ protected:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Effects | FireProjectile | Anim&VFXs")
 	TObjectPtr<UAnimMontage> DeathMontage;
+	
+	UPROPERTY(EditAnywhere, Category = "Effects | FireProjectile | Anim&VFXs")
+	float DeathMontageDuration = 1.0f;
+	
+	FTimerHandle TimerHandle_Ragdoll;
+	
 	// NiagaraSystem played during attack animation
 	UPROPERTY(EditDefaultsOnly, Category = "Effects | FireProjectile | Anim&VFXs")
 	TObjectPtr<UNiagaraSystem> SharedCastingVFX;
