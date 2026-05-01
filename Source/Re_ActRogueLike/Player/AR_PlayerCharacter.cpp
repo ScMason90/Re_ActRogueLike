@@ -263,9 +263,9 @@ void AAR_PlayerCharacter::OnHealthChanged(
 		
 			// Play ragdoll
 			GetWorldTimerManager().SetTimer(TimerHandle_Ragdoll, 
-				[this, MeshComp, CapsuleComp]()
+				[this, MeshComp]()
 				{
-					if (!IsValid(this) || !MeshComp || !CapsuleComp) return;
+					if (!IsValid(this) || IsPendingKillPending()) return;
 					
 					MeshComp->SetAllBodiesSimulatePhysics(true);
 					MeshComp->SetCollisionProfileName("Ragdoll");
@@ -273,7 +273,7 @@ void AAR_PlayerCharacter::OnHealthChanged(
 				DeathMontageDuration, false);
 
 			// Delayed destruction
-			// SetLifeSpan(5.0f);
+			SetLifeSpan(10.0f);
 		}
 	}
 }

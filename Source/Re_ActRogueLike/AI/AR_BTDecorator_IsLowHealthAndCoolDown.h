@@ -22,6 +22,8 @@ class RE_ACTROGUELIKE_API UAR_BTDecorator_IsLowHealthAndCoolDown : public UBTDec
 public:
 	UAR_BTDecorator_IsLowHealthAndCoolDown();
 	
+	virtual uint16 GetInstanceMemorySize() const override;
+	
 protected:
 	// We should introduce a struct and override GetNodeMemory for every actor using shared BT asset during runtime 
 	
@@ -33,5 +35,4 @@ protected:
 	
 	virtual bool CalculateRawConditionValue(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) const override;
 	
-	virtual uint16 GetInstanceMemorySize() const override;
 };

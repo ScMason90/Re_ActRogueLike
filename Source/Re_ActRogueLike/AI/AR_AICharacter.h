@@ -4,8 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Re_ActRogueLike/Core/AR_TargetableInterface.h"
 #include "AR_AICharacter.generated.h"
 
+class UAR_WorldUserWidget;
 class UAR_ActionSystemComponent;
 class UMaterialInstanceDynamic;
 
@@ -24,7 +26,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<UAR_ActionSystemComponent> ActionSystemComponent;
 	
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void OnHealthChanged(
 		AActor* InstigatorActor, UAR_ActionSystemComponent* OwningComp, float NewHealth, float Delta);
 	
@@ -35,6 +37,8 @@ protected:
 	void StartDissolve();
 	void UpdateDissolve();
 	FTimerHandle TimerHandle_Dissolve;
+	
+	void SetTargetActor(AActor* NewTarget);
 
 public:
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, 
@@ -43,6 +47,13 @@ public:
 	virtual void BeginPlay() override;
 
 protected:
+	/* ------------- UI/UMG Widget Relative ---------------- */
+	
+	TObjectPtr<UAR_WorldUserWidget> ActiveHealthBar;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UUserWidget> HealthBarWidgetClass;
+	
 	/* -------------Material Relative---------------- */
 	/* VisibleAnywhere = read-only, still useful to view in-editor and enforce a convention. */
 	

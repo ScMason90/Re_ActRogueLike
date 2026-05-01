@@ -6,13 +6,17 @@
 #include "AR_AIController.h"
 #include "TimerManager.h"
 #include "BehaviorTree/BehaviorTreeComponent.h"
+#include "BehaviorTree/BlackboardComponent.h"
+#include "Blueprint/UserWidget.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Engine/Engine.h"
 #include "Engine/World.h"
 #include "GameFramework/PawnMovementComponent.h"
 #include "Materials/MaterialInstanceDynamic.h"
+#include "Re_ActRogueLike/Re_ActRoguelikeType.h"
 #include "Re_ActRogueLike/ActionSystem/AR_ActionSystemComponent.h"
+#include "Re_ActRogueLike/UI/AR_WorldUserWidget.h"
 
 // Sets default values
 AAR_AICharacter::AAR_AICharacter()
@@ -36,6 +40,34 @@ void AAR_AICharacter::PostInitializeComponents()
 void AAR_AICharacter::BeginPlay()
 {
 	Super::BeginPlay();
+	
+}
+
+/*@bug: AI will freeze when 'TargetActor' Dead(need 'Dynamic...Multicast...Delegate...Broadcast'),
+ * And still try to attack 'TargetActor' when it's actually just implement some death logic(anim, dissolve etc.)
+ */ 
+void AAR_AICharacter::SetTargetActor(AActor* NewTarget)
+{
+	if (!IsValid(NewTarget)) return;
+	
+	AAR_AIController* AIController = Cast<AAR_AIController>(GetController());
+	if (!AIController) return;
+	
+	UBlackboardComponent* BlackboardComp = AIController->GetBlackboardComponent();
+	if (!BlackboardComp) return;
+	
+	AActor* ValidTarget = NewTarget;
+	AIController->StopMovement();
+	if (NewTarget->IsPendingKillPending() || IsValid(NewTarget))
+	{
+		if (AActor* instigator = NewTarget->GetInstigator()) ValidTarget = instigator;
+		else UE_LOG(LogTemp, Error, TEXT("AAR_AICharacter::SetTargetActor, NewTarget->GetInstigator():%s is invalid!"), *instigator->GetActorNameOrLabel()); 
+	}
+	
+	BlackboardComp->SetValueAsObject(NAME_TargetActor, ValidTarget);
+	AIController->SetFocus(ValidTarget, EAIFocusPriority::Gameplay);
+	
+	UE_LOG(LogTemp, Warning, TEXT("AAR_AICharacter::SetTargetActor, SetTargetActor -> %s"), *NewTarget->GetActorNameOrLabel());
 }
 
 float AAR_AICharacter::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent,
@@ -59,13 +91,25 @@ void AAR_AICharacter::OnHealthChanged(AActor* InstigatorActor, UAR_ActionSystemC
 		return;
 	}
 	
-	// Flash when damaged - PS:this design was too rough
 	if (Delta < 0.0f)
 	{
+		if (IsValid(InstigatorActor)) SetTargetActor(InstigatorActor);
+		
+		if (ActiveHealthBar == nullptr)
+		{
+			ActiveHealthBar = CreateWidget<UAR_WorldUserWidget>(GetWorld(), HealthBarWidgetClass);
+			if (ActiveHealthBar)
+			{
+				ActiveHealthBar->AttachedActor = this;
+				ActiveHealthBar->AddToViewport();	// So, we could do some UMG logic in CPP rather in BP?
+			}
+		}
+		
+		// Flash when damaged - PS:this design was too rough
 		GetMesh()->SetScalarParameterValueOnMaterials(TimeToHitParamName, GetWorld()->TimeSeconds);
-		GEngine->AddOnScreenDebugMessage(01, 3, FColor::Emerald, 
-			FString::Printf(
-				TEXT("AAR_AICharacter::OnHealthChanged(), Current health: %.2f"), ActionSystemComponent->GetHealth()));
+		// GEngine->AddOnScreenDebugMessage(01, 3, FColor::Emerald, 
+		// 	FString::Printf(
+		// 		TEXT("AAR_AICharacter::OnHealthChanged(), Current health: %.2f"), ActionSystemComponent->GetHealth()));
 	}
 }
 
@@ -82,9 +126,10 @@ void AAR_AICharacter::HandleDeath()
 		AIController->UnPossess();	// Optional?
 	}
 	USkeletalMeshComponent* MeshComp = GetMesh();
+	UCapsuleComponent* CapsuleComp = GetCapsuleComponent();
 	
 	// Disable Collision...Honestly all post-death appearances depend on your game type/design
-	// GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	CapsuleComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	// MeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	
 	// Disable Movement
@@ -94,12 +139,13 @@ void AAR_AICharacter::HandleDeath()
 	PlayAnimMontage(DeathMontage);
 	
 	FTimerDelegate RagdollDelegate;
-	RagdollDelegate.BindWeakLambda(this, [this, MeshComp]()
+	RagdollDelegate.BindWeakLambda(this, [this, MeshComp, CapsuleComp]()
 	{
 		if (!IsValid(this) || IsPendingKillPending()) return;
 		
 		// Optional
 		// --Play ragdoll--	
+		CapsuleComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		MeshComp->SetAllBodiesSimulatePhysics(true);
 		MeshComp->SetCollisionProfileName("Ragdoll");
 		
