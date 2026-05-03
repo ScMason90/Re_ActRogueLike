@@ -16,29 +16,6 @@ AAR_AIController::AAR_AIController()
 	
 }
 
-void AAR_AIController::OnAllyOrTargetDied(AActor* DeadActor)
-{
-	UBlackboardComponent* BB = GetBlackboardComponent();
-	if (!BB) return;
-
-	AActor* CurrentTarget = Cast<AActor>(BB->GetValueAsObject(NAME_TargetActor));
-    
-	// If the current target is the dead one → Clean up immediately and switch
-	if (CurrentTarget == DeadActor)
-	{
-		BB->ClearValue(NAME_TargetActor);
-		StopMovement();
-		ClearFocus(EAIFocusPriority::Gameplay);
-        
-		// Try to find new targets (priority players)
-		APawn* Player = UGameplayStatics::GetPlayerPawn(this, 0);
-		if (Player && IsValid(Player) && !Player->IsPendingKillPending())
-		{
-			SetTargetActor(Player);
-		}
-	}
-}
-
 // Called when the game starts or when spawned
 void AAR_AIController::BeginPlay()
 {
@@ -82,13 +59,4 @@ void AAR_AIController::SetTargetActor(AActor* NewTarget)
 	StopMovement();   // Optional, according to needs
 
 	UE_LOG(LogTemp, Warning, TEXT("AAR_AIController::SetTargetActor -> %s"), *NewTarget->GetActorNameOrLabel());
-}
-
-AActor* AAR_AIController::GetTargetActor() const
-{
-	if (const UBlackboardComponent* BB = GetBlackboardComponent())
-	{
-		return Cast<AActor>(BB->GetValueAsObject(NAME_TargetActor));
-	}
-	return nullptr;
 }

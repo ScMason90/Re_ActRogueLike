@@ -43,10 +43,11 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<UAR_ActionSystemComponent> ActionSystemComponent;
 
-	/** @bug Can't trigger this delegate within build...idk, must be something with ue5 engine itself.
+	/** @bug Can't trigger this delegate within build...Could be the problem of 
+	 * subscription relationship within ue5 event system.
 	 */
-	UFUNCTION()
-	void OnDeathBroadcasted(AActor* DeadActor);
+	// UFUNCTION()
+	// void OnDeathBroadcasted(AActor* DeadActor);
 
 protected:
 	/* ------------- UI/UMG Widget Relative ---------------- */

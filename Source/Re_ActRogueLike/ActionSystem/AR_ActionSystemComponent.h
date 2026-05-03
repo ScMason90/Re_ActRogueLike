@@ -27,7 +27,6 @@ struct FAR_AttributeSet
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(
 	FOnHealthChanged, AActor*, Instigator, UAR_ActionSystemComponent*, OwingComp, float, NewHealth, float, Delta);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDeath, AActor*, OwningActor);
 
 /*
  *
@@ -61,14 +60,6 @@ protected:
 	TArray<TObjectPtr<UAR_ActionSystem>> Actions;
 
 public:
-	UPROPERTY(BlueprintAssignable, Category = "Events")
-	FOnDeath OnDeath;   // Broadcast when a character dies
-	
-	// May be redundant??
-	UFUNCTION(BlueprintCallable, Category = "Attributes")
-	void BroadcastDeath();   // Manual trigger (for safety's sake)
-
-	
 	/*--------------- Attributes Relative ------------------*/
 	/* Health */
 	

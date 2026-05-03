@@ -14,7 +14,6 @@
 #include "Engine/World.h"
 #include "GameFramework/PawnMovementComponent.h"
 #include "Materials/MaterialInstanceDynamic.h"
-#include "Re_ActRogueLike/Re_ActRoguelikeType.h"
 #include "Re_ActRogueLike/ActionSystem/AR_ActionSystemComponent.h"
 #include "Re_ActRogueLike/UI/AR_WorldUserWidget.h"
 
@@ -34,19 +33,7 @@ void AAR_AICharacter::PostInitializeComponents()
 	
 	ActionSystemComponent->OnHealthChanged.AddDynamic(this, &AAR_AICharacter::OnHealthChanged);
 	
-	// Subscribe to our own death events (Notify others)
-	ActionSystemComponent->OnDeath.AddDynamic(this, &AAR_AICharacter::OnDeathBroadcasted);
-	
 	InitializeMIDs();
-}
-
-void AAR_AICharacter::OnDeathBroadcasted(AActor* DeadActor) // -> can't receive the broadcast????  
-{
-	// Notify the current Controller: I'm dead. Someone might need to switch targets
-	if (AAR_AIController* AICon = Cast<AAR_AIController>(GetController()))
-	{
-		AICon->OnAllyOrTargetDied(DeadActor);
-	}
 }
 
 void AAR_AICharacter::BeginPlay()

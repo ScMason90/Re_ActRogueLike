@@ -257,7 +257,11 @@ void AAR_PlayerCharacter::OnHealthChanged(
 			PlayAnimMontage(DeathMontage);
 			
 			// Disable Collision...
-			CapsuleComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			// CapsuleComp->SetCollisionEnabled(ECollisionEnabled::NoCollision); 
+			/*↑ if you turn this on, it will be just work if you horizontally dead, 
+			 * and you'll fall of the floor if you vertically dead(jump, moving in the air)
+			 * Engine level stopping the game is a better one?
+			 */
 			
 			// Optional
 		

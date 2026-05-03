@@ -23,13 +23,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "AI|Target")
 	void SetTargetActor(AActor* NewTarget);
 	
-	UFUNCTION()
-	void OnAllyOrTargetDied(AActor* DeadActor);
-	
-	// Redundant || Deprecated
-	UFUNCTION(BlueprintCallable, Category = "AI|Target")
-	AActor* GetTargetActor() const;
-	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
