@@ -34,40 +34,25 @@ void AAR_AICharacter::PostInitializeComponents()
 	
 	ActionSystemComponent->OnHealthChanged.AddDynamic(this, &AAR_AICharacter::OnHealthChanged);
 	
+	// Subscribe to our own death events (Notify others)
+	ActionSystemComponent->OnDeath.AddDynamic(this, &AAR_AICharacter::OnDeathBroadcasted);
+	
 	InitializeMIDs();
+}
+
+void AAR_AICharacter::OnDeathBroadcasted(AActor* DeadActor) // -> can't receive the broadcast????  
+{
+	// Notify the current Controller: I'm dead. Someone might need to switch targets
+	if (AAR_AIController* AICon = Cast<AAR_AIController>(GetController()))
+	{
+		AICon->OnAllyOrTargetDied(DeadActor);
+	}
 }
 
 void AAR_AICharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
-}
-
-/*@bug: AI will freeze when 'TargetActor' Dead(need 'Dynamic...Multicast...Delegate...Broadcast'),
- * And still try to attack 'TargetActor' when it's actually just implement some death logic(anim, dissolve etc.)
- */ 
-void AAR_AICharacter::SetTargetActor(AActor* NewTarget)
-{
-	if (!IsValid(NewTarget)) return;
-	
-	AAR_AIController* AIController = Cast<AAR_AIController>(GetController());
-	if (!AIController) return;
-	
-	UBlackboardComponent* BlackboardComp = AIController->GetBlackboardComponent();
-	if (!BlackboardComp) return;
-	
-	AActor* ValidTarget = NewTarget;
-	AIController->StopMovement();
-	if (NewTarget->IsPendingKillPending() || IsValid(NewTarget))
-	{
-		if (AActor* instigator = NewTarget->GetInstigator()) ValidTarget = instigator;
-		else UE_LOG(LogTemp, Error, TEXT("AAR_AICharacter::SetTargetActor, NewTarget->GetInstigator():%s is invalid!"), *instigator->GetActorNameOrLabel()); 
-	}
-	
-	BlackboardComp->SetValueAsObject(NAME_TargetActor, ValidTarget);
-	AIController->SetFocus(ValidTarget, EAIFocusPriority::Gameplay);
-	
-	UE_LOG(LogTemp, Warning, TEXT("AAR_AICharacter::SetTargetActor, SetTargetActor -> %s"), *NewTarget->GetActorNameOrLabel());
 }
 
 float AAR_AICharacter::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent,
@@ -93,7 +78,8 @@ void AAR_AICharacter::OnHealthChanged(AActor* InstigatorActor, UAR_ActionSystemC
 	
 	if (Delta < 0.0f)
 	{
-		if (IsValid(InstigatorActor)) SetTargetActor(InstigatorActor);
+		if (AAR_AIController* AICon = Cast<AAR_AIController>(GetController()))
+			AICon->SetTargetActor(InstigatorActor);
 		
 		if (ActiveHealthBar == nullptr)
 		{

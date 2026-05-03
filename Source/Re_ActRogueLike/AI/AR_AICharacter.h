@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "Re_ActRogueLike/Core/AR_TargetableInterface.h"
 #include "AR_AICharacter.generated.h"
 
 class UAR_WorldUserWidget;
@@ -21,11 +20,13 @@ public:
 	AAR_AICharacter();
 	
 	virtual void PostInitializeComponents() override;
+	
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, 
+		class AController* EventInstigator, AActor* DamageCauser) override;
+
+	virtual void BeginPlay() override;
 
 protected:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	TObjectPtr<UAR_ActionSystemComponent> ActionSystemComponent;
-	
 	UFUNCTION(BlueprintCallable)
 	void OnHealthChanged(
 		AActor* InstigatorActor, UAR_ActionSystemComponent* OwningComp, float NewHealth, float Delta);
@@ -37,14 +38,15 @@ protected:
 	void StartDissolve();
 	void UpdateDissolve();
 	FTimerHandle TimerHandle_Dissolve;
-	
-	void SetTargetActor(AActor* NewTarget);
 
 public:
-	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, 
-		class AController* EventInstigator, AActor* DamageCauser) override;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	TObjectPtr<UAR_ActionSystemComponent> ActionSystemComponent;
 
-	virtual void BeginPlay() override;
+	/** @bug Can't trigger this delegate within build...idk, must be something with ue5 engine itself.
+	 */
+	UFUNCTION()
+	void OnDeathBroadcasted(AActor* DeadActor);
 
 protected:
 	/* ------------- UI/UMG Widget Relative ---------------- */

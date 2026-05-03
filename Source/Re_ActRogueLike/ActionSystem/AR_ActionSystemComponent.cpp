@@ -29,7 +29,15 @@ bool UAR_ActionSystemComponent::ApplyHealthChange(AActor* Instigator, float Delt
 	
 	OnHealthChanged.Broadcast(Instigator, this, Attributes.Health, ActualDelta);
 	
+	// Dead and not dead before
+	if (FMath::IsNearlyZero(Attributes.Health) && !FMath::IsNearlyZero(OldHealth))BroadcastDeath();
+	
 	return ActualDelta != 0;
+}
+
+void UAR_ActionSystemComponent::BroadcastDeath()
+{
+	if (OnDeath.IsBound()) OnDeath.Broadcast(GetOwner());   // Broadcast himself dead
 }
 
 // return FMath::IsNearlyZero(Attributes.Health)...Restrictively check using return Attributes.Health == 0.0f; 
