@@ -4,6 +4,7 @@
 #include "AR_ActionSystemComponent.h"
 
 #include "AR_ActionSystem.h"
+#include "GameFramework/Actor.h"
 
 
 // Sets default values for this component's properties
@@ -21,6 +22,8 @@ void UAR_ActionSystemComponent::InitializeComponent()
 
 bool UAR_ActionSystemComponent::ApplyHealthChange(AActor* Instigator, float Delta)
 {
+	if (!GetOwner()->CanBeDamaged()) return false;
+	
 	float OldHealth = Attributes.Health;
 	
 	/* Simply clamp to validate Health variable.*/
@@ -37,6 +40,17 @@ bool UAR_ActionSystemComponent::IsDead() const {return FMath::IsNearlyZero(GetHe
 float UAR_ActionSystemComponent::GetMaxHealth() const {return Attributes.MaxHealth;}
 float UAR_ActionSystemComponent::GetHealth() const {return Attributes.Health;}
 bool UAR_ActionSystemComponent::IsFullHealth() const {return GetHealth() == GetMaxHealth();}
+
+UAR_ActionSystemComponent* UAR_ActionSystemComponent::GetASComp(AActor* FromActor)
+{
+	if (FromActor) return Cast<UAR_ActionSystemComponent>(FromActor->GetComponentByClass(StaticClass()));
+	return nullptr;
+}
+
+bool UAR_ActionSystemComponent::Kill(AActor* InstigatorActor)
+{
+	return ApplyHealthChange(InstigatorActor, -GetMaxHealth());
+}
 
 void UAR_ActionSystemComponent::StartAction(FName InActionName)
 {

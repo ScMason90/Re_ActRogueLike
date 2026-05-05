@@ -81,6 +81,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Attributes | Getters")
 	bool IsFullHealth() const;
 	
+	UFUNCTION(BlueprintCallable, Category = "Attributes | Getters")
+	static UAR_ActionSystemComponent* GetASComp(AActor* FromActor);
+	
+	UFUNCTION(BlueprintCallable, Category = "Attributes | ExecInterface")
+	bool Kill(AActor* InstigatorActor);
+	
 	/*---------------------- Actions Relative ---------------------*/
 	void StartAction(FName InActionName);
 };

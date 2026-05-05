@@ -141,6 +141,15 @@ public:
 	virtual void BeginPlay() override;
 	
 	virtual void PostInitializeComponents() override;
+	
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
+
+	// Called to bind functionality to input
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, 
+		class AController* EventInstigator, AActor* DamageCauser) override;
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
@@ -170,14 +179,8 @@ protected:
 		AActor* InstigatorActor, UAR_ActionSystemComponent* OwningComp, float NewHealth, float Delta);
 
 public:
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-	
-	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, 
-		class AController* EventInstigator, AActor* DamageCauser) override;
-	
 	void StartAction(FName InActionName);
+	
+	UFUNCTION(Exec)
+	void HealSelf(float Amount = 100.0f);
 };

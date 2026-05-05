@@ -65,6 +65,7 @@ void AAR_AICharacter::OnHealthChanged(AActor* InstigatorActor, UAR_ActionSystemC
 	
 	if (Delta < 0.0f)
 	{
+		// Target the 'InstigatorActor' who damaged self.
 		if (AAR_AIController* AICon = Cast<AAR_AIController>(GetController()))
 			AICon->SetTargetActor(InstigatorActor);
 		

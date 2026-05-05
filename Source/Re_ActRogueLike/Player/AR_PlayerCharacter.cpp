@@ -9,7 +9,6 @@
 #include "NiagaraFunctionLibrary.h"
 #include "TimerManager.h"
 #include "Camera/CameraComponent.h"
-#include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -18,10 +17,10 @@
 #include "Re_ActRogueLike/Re_ActRoguelikeType.h"
 #include "Re_ActRogueLike/ActionSystem/AR_ActionSystemComponent.h"
 
-TAutoConsoleVariable<float> CVarProjectileAdjustmentDebugDrawing(TEXT("game.projectile.DebugDraw"), 0.0f,
+static TAutoConsoleVariable<float> CVarProjectileAdjustmentDebugDrawing(TEXT("game.projectile.DebugDraw"), 0.0f,
 	TEXT("Enable projectile aim adjustment debug rendering. (0 = off, > 0 is duration)"), ECVF_Cheat);
 
-TAutoConsoleVariable<bool> CVarGodMode(TEXT("game.debugcheat.god"), false,
+static TAutoConsoleVariable<bool> CVarGodMode(TEXT("game.cheat.god"), false,
 	TEXT("Enable god mode for inf-health... (false = off, true = on)"), ECVF_Cheat);
 
 // Sets default values
@@ -212,7 +211,11 @@ float AAR_PlayerCharacter::TakeDamage(float DamageAmount, struct FDamageEvent co
 	class AController* EventInstigator, AActor* DamageCauser)
 {
 #if !UE_BUILD_SHIPPING
-	if (bool bEnableGodMode = CVarGodMode.GetValueOnGameThread()) return 0;
+	if (bool bEnableGodMode = CVarGodMode.GetValueOnGameThread())
+	{
+		SetCanBeDamaged(!bEnableGodMode);
+		return 0;
+	}
 #endif
 	float ActualDamage =  Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	
@@ -225,9 +228,6 @@ float AAR_PlayerCharacter::TakeDamage(float DamageAmount, struct FDamageEvent co
 void AAR_PlayerCharacter::OnHealthChanged(
 	AActor* InstigatorActor, UAR_ActionSystemComponent* OwningComp, float NewHealth, float Delta)
 {
-#if !UE_BUILD_SHIPPING
-	if (bool bEnableGodMode = CVarGodMode.GetValueOnGameThread()) return;
-#endif
 	if (!IsPlayerDead)
 	{
 		// Flash when damaged
@@ -243,7 +243,7 @@ void AAR_PlayerCharacter::OnHealthChanged(
 			IsPlayerDead = ActionSystemComponent->IsDead();
 		
 			USkeletalMeshComponent* MeshComp = GetMesh(); 
-			UCapsuleComponent* CapsuleComp = GetCapsuleComponent();
+			// UCapsuleComponent* CapsuleComp = GetCapsuleComponent();
 			
 			// Disable Player Input
 			if (APlayerController* PC = Cast<APlayerController>(GetController())) DisableInput(PC);
@@ -285,4 +285,9 @@ void AAR_PlayerCharacter::OnHealthChanged(
 void AAR_PlayerCharacter::StartAction(FName InActionName)
 {
 	ActionSystemComponent->StartAction(InActionName);
+}
+
+void AAR_PlayerCharacter::HealSelf(float Amount /* = 100.0f */)
+{
+	ActionSystemComponent->ApplyHealthChange(this, Amount);
 }

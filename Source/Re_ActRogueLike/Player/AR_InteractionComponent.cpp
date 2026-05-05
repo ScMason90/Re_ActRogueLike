@@ -10,7 +10,7 @@
 #include "Re_ActRogueLike/Re_ActRoguelikeType.h"
 #include "Re_ActRogueLike/Core/AR_InteractionInterface.h"
 
-TAutoConsoleVariable<bool> CVarInteractionDebugDrawing(TEXT("game.interaction.DebugDraw"), false,
+static TAutoConsoleVariable<bool> CVarInteractionDebugDrawing(TEXT("game.interaction.DebugDraw"), false,
 	TEXT("Enable interaction component debug rendering. (0 = off, 1 = enabled)"), ECVF_Cheat);
 
 UAR_InteractionComponent::UAR_InteractionComponent()

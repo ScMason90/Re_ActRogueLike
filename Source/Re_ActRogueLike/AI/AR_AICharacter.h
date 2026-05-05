@@ -44,7 +44,8 @@ public:
 	TObjectPtr<UAR_ActionSystemComponent> ActionSystemComponent;
 
 	/** @bug Can't trigger this delegate within build...Could be the problem of 
-	 * subscription relationship within ue5 event system.
+	 * subscription relationship within ue5 event system.Maybe you should try 'AI Perception' module in ue5?
+	 * And watch some tutorial videos about it?
 	 */
 	// UFUNCTION()
 	// void OnDeathBroadcasted(AActor* DeadActor);

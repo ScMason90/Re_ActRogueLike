@@ -90,3 +90,37 @@ void AAR_GameModeBase::OnQueryFinished(UEnvQueryInstanceBlueprintWrapper* QueryI
 	}
 	else UE_LOG(LogTemp, Warning, TEXT("AAR_GameModeBase::OnQueryFinished, EQS returned no valid locations!"));
 }
+
+void AAR_GameModeBase::KillAllOfClass(TSubclassOf<AActor> ClassToKill)
+{
+	UWorld* World = GetWorld();
+	if (!World || !ClassToKill)
+	{
+		UE_LOG(LogGameMode, Warning, TEXT("AAR_GameModeBase::KillAllOfClass, Invalid World or Class"));
+		return;
+	}
+	
+	int32 KilledCount = 0, SkippedCount = 0;
+	for (TActorIterator<AActor> It(World, ClassToKill); It; ++It)
+	{
+		AActor* ActorToKill = *It;
+		if (!IsValid(ActorToKill))
+		{
+			SkippedCount++;
+			continue;
+		}
+		UAR_ActionSystemComponent* ASComp = UAR_ActionSystemComponent::GetASComp(ActorToKill);
+		if (!ASComp)
+		{
+			SkippedCount++;
+			continue;
+		}
+		if (!ASComp->IsDead())
+		{
+			KilledCount++;
+			ASComp->Kill(ActorToKill);
+		}
+	}
+	UE_LOG(LogGameMode, Warning, TEXT("AAR_GameModeBase::KillAllOfClass(%s) => Killed: %d | Skipped: %d"),
+		*ClassToKill->GetName(), KilledCount, SkippedCount);
+}
