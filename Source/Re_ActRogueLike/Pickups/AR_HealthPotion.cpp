@@ -5,9 +5,11 @@
 
 #include "Components/SphereComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "Engine/GameEngine.h"
 #include "GameFramework/Pawn.h"
 #include "Kismet/GameplayStatics.h"
 #include "Re_ActRogueLike/ActionSystem/AR_ActionSystemComponent.h"
+#include "Re_ActRogueLike/Player/AR_PlayerState.h"
 
 
 // Sets default values
@@ -29,20 +31,40 @@ void AAR_HealthPotion::OnActorOverlapped(UPrimitiveComponent* OverlappedComponen
 {
 	Super::OnActorOverlapped(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult);
 	
-	UAR_ActionSystemComponent* AttributeComp = OtherActor->GetComponentByClass<UAR_ActionSystemComponent>();
+	UAR_ActionSystemComponent* ASComp = OtherActor->GetComponentByClass<UAR_ActionSystemComponent>();
 	
-	// Assert if null, then we misconfigured what we can overlap with, any Pawn should have an action component
-	// Skip Health Potion pickup if already full health
-	if (IsValid(AttributeComp)/*ensure(AttributeComp != nullptr)*/ && !AttributeComp->IsFullHealth())
+	APawn* Pawn = Cast<APawn>(OtherActor);
+	if (!Pawn) return;
+	AController* Controller = Pawn->GetController();
+	if (!Controller) return;
+	AAR_PlayerState* PS = Controller->GetPlayerState<AAR_PlayerState>();
+	if (!PS) return;
+	
+	// Skip Health Potion pickup if already full health or lacking of required credits
+	if (PS->RemoveCredits(CreditCost))
+	{	// Should we open to AI Pawn for pickup this?
+		if (IsValid(ASComp) && !ASComp->IsFullHealth())
+		{
+			// TODO: Considering add heal up material flash VFX...or SFX for both damaged and healed?
+			ASComp->ApplyHealthChange(this, HealingAmount);
+		
+			// Play(valid context and location) before destroying actor
+			UGameplayStatics::PlaySoundAtLocation(
+				this, PickupSound, GetActorLocation(), FRotator::ZeroRotator);
+		
+			// Remove Actor from world, eventually memory will be freed (garbage collection)
+			Destroy();
+		}	
+	}
+	else
 	{
-		// TODO: Considering add heal up material flash VFX...or SFX for both damaged and healed?
-		AttributeComp->ApplyHealthChange(this, HealingAmount);
+		// UI Hint for 'not enough credit'...?
+		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Magenta, 
+			TEXT("AAR_HealthPotion::OnActorOverlapped, Lack of Credit to pickup"));
 		
-		// Play(valid context and location) before destroying actor
+		// Play(valid context and location)
 		UGameplayStatics::PlaySoundAtLocation(
-			this, PickupSound, GetActorLocation(), FRotator::ZeroRotator);
+			this, PickupFailedSound, GetActorLocation(), FRotator::ZeroRotator);
 		
-		// Remove Actor from world, eventually memory will be freed (garbage collection)
-		Destroy();
 	}
 }

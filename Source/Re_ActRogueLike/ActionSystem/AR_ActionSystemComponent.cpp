@@ -4,8 +4,11 @@
 #include "AR_ActionSystemComponent.h"
 
 #include "AR_ActionSystem.h"
+#include "Engine/World.h"
 #include "GameFramework/Actor.h"
+#include "Re_ActRogueLike/Core/AR_GameModeBase.h"
 
+static TAutoConsoleVariable<float> CVarDamageMultiplier(TEXT("game.DamageMultiplier"), 1.0f, TEXT("Global Damage Modifier for ASComponent."), ECVF_Cheat);
 
 // Sets default values for this component's properties
 UAR_ActionSystemComponent::UAR_ActionSystemComponent()
@@ -22,7 +25,11 @@ void UAR_ActionSystemComponent::InitializeComponent()
 
 bool UAR_ActionSystemComponent::ApplyHealthChange(AActor* Instigator, float Delta)
 {
-	if (!GetOwner()->CanBeDamaged()) return false;
+	if (Delta < 0.0f)
+	{
+		if (!GetOwner()->CanBeDamaged()) return false;
+		Delta *= CVarDamageMultiplier.GetValueOnGameThread();
+	}
 	
 	float OldHealth = Attributes.Health;
 	
@@ -31,6 +38,14 @@ bool UAR_ActionSystemComponent::ApplyHealthChange(AActor* Instigator, float Delt
 	float ActualDelta = Attributes.Health - OldHealth;
 	
 	OnHealthChanged.Broadcast(Instigator, this, Attributes.Health, ActualDelta);
+	
+	// Died
+	if (ActualDelta < 0.0f && GetHealth() == 0.0f)
+	{
+		AAR_GameModeBase* GM = GetWorld()->GetAuthGameMode<AAR_GameModeBase>();
+		/*Passing 'Instigator->GetInstigator()' as Killer since 'Instigator' is quite like the direct 'HitActor' throughout damage system*/
+		if (GM) GM->OnActorKilled(GetOwner(), IsValid(Instigator->GetInstigator()) ? Instigator->GetInstigator() : Instigator);
+	}
 	
 	return ActualDelta != 0;
 }
