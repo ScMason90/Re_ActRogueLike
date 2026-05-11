@@ -160,6 +160,6 @@ void AAR_AICharacter::UpdateDissolve()
 	if (DissolveAmount >= 1.0f)
 	{
 		GetWorldTimerManager().ClearTimer(TimerHandle_Dissolve);
-		Destroy();	// 'Delayed Destruction'...
+		SetLifeSpan(3.0f);	// 'Delayed Destruction'...
 	}
 }

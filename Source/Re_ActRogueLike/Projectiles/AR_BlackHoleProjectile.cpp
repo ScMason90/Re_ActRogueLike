@@ -48,7 +48,7 @@ void AAR_BlackHoleProjectile::PostInitializeComponents()
 }
 
 void AAR_BlackHoleProjectile::OnProjBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-                                                 UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	// Skip base implementation, we handle our own as we just need play looped VFX&SFX then 'suck' objects in black hole
 	// Super::OnProjBeginOverlap(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult);

@@ -215,6 +215,7 @@ void AAR_GameModeBase::RespawnPlayerElapsed(AController* Controller)
 
 void AAR_GameModeBase::OnActorKilled(AActor* VictimActor, AActor* Killer)
 {
+	// And for somehow, i just keep get 'bugged' here...
 	UE_LOG(LogTemp, Log, TEXT("AAR_GameModeBase::OnActorKilled,Victim: %s, Killer: %s"), 
 		*GetNameSafe(VictimActor), *GetNameSafe(Killer));
 	

@@ -42,9 +42,17 @@ bool UAR_ActionSystemComponent::ApplyHealthChange(AActor* Instigator, float Delt
 	// Died
 	if (ActualDelta < 0.0f && GetHealth() == 0.0f)
 	{
+		AActor* Killer = nullptr;
+		if (IsValid(Instigator) && !Instigator->IsPendingKillPending()) Killer = Instigator;
+		if (IsValid(Instigator->GetInstigator())) Killer = Instigator->GetInstigator();
+		
 		AAR_GameModeBase* GM = GetWorld()->GetAuthGameMode<AAR_GameModeBase>();
-		/*Passing 'Instigator->GetInstigator()' as Killer since 'Instigator' is quite like the direct 'HitActor' throughout damage system*/
-		if (GM) GM->OnActorKilled(GetOwner(), IsValid(Instigator->GetInstigator()) ? Instigator->GetInstigator() : Instigator);
+		/*Passing 'Instigator->GetInstigator()' as Killer since 'Instigator' is quite like the direct 'HitActor' throughout damage system...
+		 * Or maybe we should improve our projectile class implementation?
+		 * Because right now, it has an issue when you wanna pass 'MagicProj.GetInstigator()' to 'AAR_GameModeBase::OnActorKilled()'
+		 * as 'Killer'.And the 'MagicProj' just got 'Destroy()'ed before safe passing it...Introducing DataOriented?
+		 */
+		if (GM) GM->OnActorKilled(GetOwner(), Killer);
 	}
 	
 	return ActualDelta != 0;
