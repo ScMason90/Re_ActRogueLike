@@ -217,7 +217,7 @@ void AAR_GameModeBase::OnActorKilled(AActor* VictimActor, AActor* Killer)
 {
 	// And for somehow, i just keep get 'bugged' here...
 	UE_LOG(LogTemp, Log, TEXT("AAR_GameModeBase::OnActorKilled,Victim: %s, Killer: %s"), 
-		*GetNameSafe(VictimActor), *GetNameSafe(Killer));
+		*VictimActor->GetActorNameOrLabel(), *Killer->GetActorNameOrLabel());
 	
 	// Respawn Player after delay
 	AAR_PlayerCharacter* Player = Cast<AAR_PlayerCharacter>(VictimActor);
