@@ -215,7 +215,7 @@ void AAR_GameModeBase::RespawnPlayerElapsed(AController* Controller)
 
 void AAR_GameModeBase::OnActorKilled(AActor* VictimActor, AActor* Killer)
 {
-	// And for somehow, i just keep get 'bugged' here...
+	// And for somehow, I just keep get 'bugged' here...
 	UE_LOG(LogTemp, Log, TEXT("AAR_GameModeBase::OnActorKilled,Victim: %s, Killer: %s"), 
 		*VictimActor->GetActorNameOrLabel(), *Killer->GetActorNameOrLabel());
 	
@@ -237,7 +237,7 @@ void AAR_GameModeBase::OnActorKilled(AActor* VictimActor, AActor* Killer)
 	// Give Credits for Kill
 	AAR_PlayerState* PS = nullptr;
 	Player = Cast<AAR_PlayerCharacter>(Killer);
-	UE_LOG(LogTemp, Log, TEXT("%s"), *Player->GetActorNameOrLabel());
+	// Do not 'UE_LOG' out or access 'ActorName(Safe)OrLabel' here.It's invalid
 	if (Player) PS = Cast<AAR_PlayerState>(Player->GetPlayerState());
 	if (PS) PS->AddCredits(CreditsPerKill);
 }

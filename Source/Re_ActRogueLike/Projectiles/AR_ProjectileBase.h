@@ -17,6 +17,9 @@ class UParticleSystemComponent;
 class UParticleSystem;
 class USoundBase;
 
+/**
+ * Considering introduce 'DataOrient' projectile style
+ */
 UCLASS(Abstract)
 class RE_ACTROGUELIKE_API AAR_ProjectileBase : public AActor
 {
