@@ -5,7 +5,7 @@
 
 #include "Components/SphereComponent.h"
 #include "Components/StaticMeshComponent.h"
-#include "Engine/GameEngine.h"
+#include "Engine/Engine.h"
 #include "GameFramework/Pawn.h"
 #include "Kismet/GameplayStatics.h"
 #include "Re_ActRogueLike/ActionSystem/AR_ActionSystemComponent.h"
@@ -41,9 +41,9 @@ void AAR_HealthPotion::OnActorOverlapped(UPrimitiveComponent* OverlappedComponen
 	if (!PS) return;
 	
 	// Skip Health Potion pickup if already full health or lacking of required credits
-	if (PS->RemoveCredits(CreditCost))
+	if (IsValid(ASComp) && !ASComp->IsFullHealth())
 	{	// Should we open to AI Pawn for pickup this?
-		if (IsValid(ASComp) && !ASComp->IsFullHealth())
+		if (PS->RemoveCredits(CreditCost))
 		{
 			// TODO: Considering add heal up material flash VFX...or SFX for both damaged and healed?
 			ASComp->ApplyHealthChange(this, HealingAmount);
@@ -54,17 +54,16 @@ void AAR_HealthPotion::OnActorOverlapped(UPrimitiveComponent* OverlappedComponen
 		
 			// Remove Actor from world, eventually memory will be freed (garbage collection)
 			Destroy();
+		} else 
+		{
+			// UI Hint for 'not enough credit'...?
+			GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Magenta, 
+				TEXT("AAR_HealthPotion::OnActorOverlapped, Lack of Credit to pickup"));
+		
+			// Play(valid context and location)
+			UGameplayStatics::PlaySoundAtLocation(
+				this, PickupFailedSound, GetActorLocation(), FRotator::ZeroRotator);
+		
 		}	
-	}
-	else
-	{
-		// UI Hint for 'not enough credit'...?
-		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Magenta, 
-			TEXT("AAR_HealthPotion::OnActorOverlapped, Lack of Credit to pickup"));
-		
-		// Play(valid context and location)
-		UGameplayStatics::PlaySoundAtLocation(
-			this, PickupFailedSound, GetActorLocation(), FRotator::ZeroRotator);
-		
 	}
 }

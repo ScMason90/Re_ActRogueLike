@@ -83,7 +83,7 @@ public:
 	UFUNCTION()
 	void RespawnPlayerElapsed(AController* Controller);
 	
-	// @bug - PlayerHealthBar won't sync the respawn player state.
+	// @bug - PlayerHealthBar won't sync the new respawn player 'Health'.
 	virtual void OnActorKilled(AActor* VictimActor, AActor* Killer);
 
 };
