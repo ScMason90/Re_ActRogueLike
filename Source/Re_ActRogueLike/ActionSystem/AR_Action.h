@@ -4,22 +4,26 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Object.h"
-#include "AR_ActionSystem.generated.h"
+#include "AR_Action.generated.h"
 
+class UAR_ActionSystemComponent;
 /**
  * 
  */
-UCLASS()
-class RE_ACTROGUELIKE_API UAR_ActionSystem : public UObject
+UCLASS(Blueprintable, Abstract)
+class RE_ACTROGUELIKE_API UAR_Action : public UObject
 {
 	GENERATED_BODY()
 
 protected:
+	/* Action nickname to start/stop without a reference to the object */
 	UPROPERTY(EditDefaultsOnly, Category = "Actions")
 	FName ActionName = FName("PrimaryAttack");
 
 public:
-	void StartAction();
+	UAR_ActionSystemComponent* GetOwningASComponent() const;
+
+	virtual void StartAction();
 	
 	FName GetActionName() const {return ActionName;}
 	

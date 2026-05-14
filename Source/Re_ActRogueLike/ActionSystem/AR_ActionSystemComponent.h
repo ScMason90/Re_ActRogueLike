@@ -6,7 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "AR_ActionSystemComponent.generated.h"
 
-class UAR_ActionSystem;
+class UAR_Action;
 
 USTRUCT(BlueprintType)
 struct FAR_AttributeSet
@@ -57,7 +57,10 @@ protected:
 	FAR_AttributeSet Attributes;
 	
 	UPROPERTY()
-	TArray<TObjectPtr<UAR_ActionSystem>> Actions;
+	TArray<TObjectPtr<UAR_Action>> Actions;
+	
+	UPROPERTY(EditAnywhere, Category = "Actions")
+	TArray<TSubclassOf<UAR_Action>> DefaultActions;
 
 public:
 	/*--------------- Attributes Relative ------------------*/
@@ -88,5 +91,8 @@ public:
 	bool Kill(AActor* InstigatorActor);
 	
 	/*---------------------- Actions Relative ---------------------*/
+	
 	void StartAction(FName InActionName);
+	
+	void GrantAction(TSubclassOf<UAR_Action> NewActionClass);
 };

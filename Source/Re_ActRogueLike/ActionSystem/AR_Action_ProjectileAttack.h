@@ -1,0 +1,61 @@
+﻿// Fill out your copyright notice in the Description page of Project Settings.
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "AR_Action.h"
+#include "Templates/SubclassOf.h"
+#include "AR_Action_ProjectileAttack.generated.h"
+
+class ACharacter;
+class USoundBase;
+class AAR_ProjectileBase;
+class UNiagaraSystem;
+class UAnimMontage;
+class AActor;
+
+/**
+ * 
+ */
+UCLASS()
+class RE_ACTROGUELIKE_API UAR_Action_ProjectileAttack : public UAR_Action
+{
+	GENERATED_BODY()
+	
+	UAR_Action_ProjectileAttack();
+
+public:
+	virtual void StartAction() override;
+	
+protected:
+	UPROPERTY(EditAnywhere, Category = "ProjectileAttack")
+	FName MuzzleSocketName;
+	
+	UPROPERTY(EditAnywhere, Category = "ProjectileAttack")
+	float LineTraceEndOffset;
+	
+	/* -------------- Projectile Sources ------------------- */
+	
+	UPROPERTY(EditDefaultsOnly, Category = "ProjectileSource")
+	TSubclassOf<AAR_ProjectileBase> ProjectileClass;
+	
+	/* -------------Effects---------------- */
+	/* Anim&VFXs */
+	// TODO: May considering using separate 'anim montage & casting effect & spawn socket' for each proj action
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Effects | Anim&VFXs")
+	TObjectPtr<UAnimMontage> FireMontage;
+	
+	// NiagaraSystem played during attack animation
+	UPROPERTY(EditDefaultsOnly, Category = "Effects | Anim&VFXs")
+	TObjectPtr<UNiagaraSystem> CastingVFX;
+	
+	/* Sounds(SFX)&Audios */
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Effects | Sounds(SFX)&Audios")
+	TObjectPtr<USoundBase> CastingSFX;
+	
+public:
+	FTransform AdjustedProjSpawnTransform(ACharacter& Character, FName InSocketName, float InLineTraceEndOffset);
+	
+};

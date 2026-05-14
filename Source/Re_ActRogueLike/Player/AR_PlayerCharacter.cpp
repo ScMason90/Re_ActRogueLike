@@ -14,11 +14,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "Re_ActRogueLike/Re_ActRoguelikeType.h"
 #include "Re_ActRogueLike/ActionSystem/AR_ActionSystemComponent.h"
-
-static TAutoConsoleVariable<float> CVarProjectileAdjustmentDebugDrawing(TEXT("game.projectile.DebugDraw"), 0.0f,
-	TEXT("Enable projectile aim adjustment debug rendering. (0 = off, > 0 is duration)"), ECVF_Cheat);
 
 static TAutoConsoleVariable<bool> CVarGodMode(TEXT("game.cheat.god"), false,
 	TEXT("Enable god mode for inf-health... (false = off, true = on)"), ECVF_Cheat);
@@ -57,89 +53,7 @@ void AAR_PlayerCharacter::PostInitializeComponents()
 	ActionSystemComponent->OnHealthChanged.AddDynamic(this, &AAR_PlayerCharacter::OnHealthChanged);
 	
 	TimeToHitParamName = "TimeToHit";
-	MuzzleSocketName = "Muzzle_01";
-}
-
-void AAR_PlayerCharacter::FireProj(const FFireProjSpawnSourceConfig& Config)
-{
-	PlayAnimMontage(Config.AnimMontageToPlay);
 	
-	UNiagaraFunctionLibrary::SpawnSystemAttached(Config.EffectWhenCast, GetMesh(), Config.SocketName, 
-		FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget, true);
-	UGameplayStatics::PlaySound2D(this, SharedCastingSFX);
-	
-	FTimerHandle TimerHandle_FireProj;
-	GetWorldTimerManager().SetTimer(TimerHandle_FireProj, 
-		[this, Config]()
-		{
-			FTransform SpawnTM = AdjustedProjSpawnTransform(Config.SocketName, Config.LineTraceEndOffset);
-	
-			FActorSpawnParameters SpawnParams;
-			SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-			SpawnParams.Instigator = this;
-
-			GetWorld()->SpawnActor<AActor>(Config.ProjClassToSpawn, SpawnTM, SpawnParams);
-			
-		}, Config.TimeBeforeProj, false);
-	
-	/* GetWorldTimerManager().ClearTimer(TimerHandle_FireProj);*/
-}
-
-void AAR_PlayerCharacter::FireMagicProj()	
-{FireProj(FFireProjSpawnSourceConfig(MagicProjectileClass, SharedFireMontage, 0.2f, 
-	SharedCastingVFX, MuzzleSocketName, 10000.f));}
-void AAR_PlayerCharacter::FireBlackHole()	
-{FireProj(FFireProjSpawnSourceConfig(BlackHoleProjectileClass, SharedFireMontage, 0.2f, 
-	SharedCastingVFX, MuzzleSocketName, 10000.f));}
-void AAR_PlayerCharacter::FireTeleportProj()	
-{FireProj(FFireProjSpawnSourceConfig(TeleportProjectileClass, SharedFireMontage, 0.2f, 
-	SharedCastingVFX, MuzzleSocketName, 1000.f));}
-
-FTransform AAR_PlayerCharacter::AdjustedProjSpawnTransform(FName InSocketName, float LineTraceEndOffset)
-{
-	FVector HandLocation = GetMesh()->GetSocketLocation(InSocketName),
-	TraceStart = CameraComponent->GetComponentLocation(),
-	TraceEnd = TraceStart + (CameraComponent->GetForwardVector() * LineTraceEndOffset),
-	AimShot = TraceEnd;
-	
-	FHitResult Hit;
-	UWorld* World = GetWorld();
-	/* Legacy bug - Wrong behavior when LineTrace 'Hit' any actor derived from class AR_MagicProjectile,
-	 * It will cause proj actor spawn into an odd direction.May need fix it with specified Trace Channel
-	 * ↑ Nah, after 2h struggling on collision channel/preset/object type.I initially repair it.--26.3.13*/ 
-	if (GetWorld()->LineTraceSingleByChannel(
-		Hit, TraceStart, AimShot, COLLISION_PROJECTILE))
-	{
-		AimShot = Hit.ImpactPoint;
-	}
-	/* TODO: Now there is a problem when spawn a MagicProj in a position which camera was too close to something,
-	 * The proj will go to the item that closely block around camera.And it's not a stable trace adjustment when
-	 * third person camera is close to player character.*/
-	FQuat UnderCrossHairQuat = (AimShot - HandLocation).GetSafeNormal().ToOrientationQuat();
-	FTransform SpawnTM;
-	SpawnTM.SetLocation(HandLocation);
-	SpawnTM.SetRotation(UnderCrossHairQuat);
-	
-#if !UE_BUILD_SHIPPING
-	float DebugDrawDuration = CVarProjectileAdjustmentDebugDrawing.GetValueOnGameThread();
-	if (DebugDrawDuration > 0.0f)
-	{
-		// The hit location or trace end
-		DrawDebugBox(World, AimShot, FVector(20.0f), FColor::Green, false, DebugDrawDuration);
-		
-		// Adjustment line trace
-		DrawDebugLine(World, TraceStart, TraceEnd, FColor::Green, false, DebugDrawDuration);
-		
-		// New projectile path
-		DrawDebugLine(World, HandLocation, AimShot, FColor::Yellow, false, DebugDrawDuration);
-		
-		// The original path of the projectile
-		DrawDebugLine(World, HandLocation, HandLocation + (GetControlRotation().Vector() * 5000.0f), 
-			FColor::Purple, false, DebugDrawDuration);
-	}
-#endif
-	
-	return SpawnTM;
 }
 
 // Called every frame
@@ -179,9 +93,12 @@ void AAR_PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 	EnhancedInput->BindAction(IA_Jump, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 	
 	// TODO: Considering add self-banned(tag, GAS cooldown etc.) to avoid convulsive shooting
-	EnhancedInput->BindAction(IA_FireMagicProj, ETriggerEvent::Triggered, this, &AAR_PlayerCharacter::FireMagicProj);
-	EnhancedInput->BindAction(IA_FireTeleportProj, ETriggerEvent::Triggered, this, &AAR_PlayerCharacter::FireTeleportProj);
-	EnhancedInput->BindAction(IA_FireBlackHole, ETriggerEvent::Triggered, this, &AAR_PlayerCharacter::FireBlackHole);
+	EnhancedInput->BindAction(IA_FireMagicProj, ETriggerEvent::Triggered, this, 
+		&ThisClass::StartAction, FName("FireMagicProj"));
+	EnhancedInput->BindAction(IA_FireTeleportProj, ETriggerEvent::Triggered, this, 
+		&ThisClass::StartAction, FName("FireTeleportProj"));
+	EnhancedInput->BindAction(IA_FireBlackHole, ETriggerEvent::Triggered, this, 
+		&ThisClass::StartAction, FName("FireBlackHole"));
 }
 
 void AAR_PlayerCharacter::Move(const FInputActionValue& InValue)

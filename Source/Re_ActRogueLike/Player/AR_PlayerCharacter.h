@@ -12,43 +12,7 @@ class UAR_ActionSystemComponent;
 class UAnimMontage;
 class UCameraComponent;
 class UInputAction;
-class UNiagaraSystem;
-class UParticleSystem;
 class USpringArmComponent;
-
-USTRUCT(BlueprintType)
-struct FFireProjSpawnSourceConfig
-{
-	GENERATED_BODY()
-	
-public:
-	// Default constructor that forces parameter passing.
-	FFireProjSpawnSourceConfig(TSubclassOf<AActor> InProjClassToSpawn, 
-		TObjectPtr<UAnimMontage> InAnimMontageToPlay,float InTimeBeforeProj,
-		TObjectPtr<UNiagaraSystem> InEffectWhenCast, FName InSocketName, float InLineTraceEndOffset)
-	:ProjClassToSpawn(InProjClassToSpawn), AnimMontageToPlay(InAnimMontageToPlay), TimeBeforeProj(InTimeBeforeProj),
-	EffectWhenCast(InEffectWhenCast), SocketName(InSocketName), LineTraceEndOffset(InLineTraceEndOffset){}
-
-	// The UE reflection system requires a default constructor (which can be empty).
-	FFireProjSpawnSourceConfig() = default;
-	
-	/*------------------struct variables----------------------*/
-	
-	TSubclassOf<AActor> ProjClassToSpawn;
-	
-	UPROPERTY()
-	TObjectPtr<UAnimMontage> AnimMontageToPlay;
-	
-	float TimeBeforeProj = 0.0f;
-	
-	UPROPERTY()
-	TObjectPtr<UNiagaraSystem> EffectWhenCast;
-	
-	/* And there are params passing to internal func-AdjustedProjSpawnTransform */
-	
-	FName SocketName;
-	float LineTraceEndOffset = 10000.0f;
-};
 
 /**
  * 
@@ -59,25 +23,8 @@ class RE_ACTROGUELIKE_API AAR_PlayerCharacter : public ACharacter
 	GENERATED_BODY()
 	
 protected:
-	/* -------------- Projectile Sources -------------------
-	 * Three projectile class/instance in cpp/bp are all ultimately derived from AAcotr class. 
-	 * For keeping relative snippet work smoothly, no need to change the variable type. */
-	
-	UPROPERTY(EditDefaultsOnly, Category = "FireProjectile | SpawnSources")
-	TSubclassOf<AActor> MagicProjectileClass;
-	
-	UPROPERTY(EditDefaultsOnly, Category = "FireProjectile | SpawnSources")
-	TSubclassOf<AActor> BlackHoleProjectileClass;
-	
-	UPROPERTY(EditDefaultsOnly, Category = "FireProjectile | SpawnSources")
-	TSubclassOf<AActor> TeleportProjectileClass;
-	
 	/* -------------Effects---------------- */
 	/* Anim&VFXs */
-	// TODO: May considering using separate 'anim montage & casting effect & spawn socket' for each proj action
-	
-	UPROPERTY(EditDefaultsOnly, Category = "Effects | FireProjectile | Anim&VFXs")
-	TObjectPtr<UAnimMontage> SharedFireMontage;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Effects | FireProjectile | Anim&VFXs")
 	TObjectPtr<UAnimMontage> DeathMontage;
@@ -86,18 +33,6 @@ protected:
 	float DeathMontageDuration = 1.0f;
 	
 	FTimerHandle TimerHandle_Ragdoll;
-	
-	// NiagaraSystem played during attack animation
-	UPROPERTY(EditDefaultsOnly, Category = "Effects | FireProjectile | Anim&VFXs")
-	TObjectPtr<UNiagaraSystem> SharedCastingVFX;
-	
-	UPROPERTY(VisibleAnywhere, Category = "Effects | FireProjectile | Anim&VFXs")
-	FName MuzzleSocketName;
-	
-	/* Sounds(SFX)&Audios */
-	
-	UPROPERTY(EditDefaultsOnly, Category = "Effects | FireProjectile | Sounds(SFX)&Audios")
-	TObjectPtr<USoundBase> SharedCastingSFX;
 	
 	/* ---------------------- Input Action ----------------------- */
 	/* Movements */
@@ -163,16 +98,6 @@ protected:
 	
 	void Move(const FInputActionValue& InValue);
 	void Look(const FInputActionInstance& InValue);
-	
-	// TODO: May considering introduce different AnimMontage for each proj attack?
-	
-	void FireProj(const FFireProjSpawnSourceConfig& Config);
-	
-	void FireMagicProj();
-	void FireBlackHole();
-	void FireTeleportProj();
-	
-	FTransform AdjustedProjSpawnTransform(FName InSocketName, float LineTraceEndOffset);
 	
 	UFUNCTION()
 	void OnHealthChanged(
