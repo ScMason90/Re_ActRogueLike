@@ -92,7 +92,7 @@ public:
 	
 	/*---------------------- Actions Relative ---------------------*/
 	
-	void StartAction(FName InActionName);
-	
 	void GrantAction(TSubclassOf<UAR_Action> NewActionClass);
+	void StartAction(FName InActionName);
+	void StopAction(FName InActionName);
 };

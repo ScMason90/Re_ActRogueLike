@@ -23,9 +23,9 @@ UAR_Action_ProjectileAttack::UAR_Action_ProjectileAttack()
 	LineTraceEndOffset = 10000.0f;
 }
 
-void UAR_Action_ProjectileAttack::StartAction()
+void UAR_Action_ProjectileAttack::StartAction_Implementation()
 {
-	Super::StartAction();
+	Super::StartAction_Implementation();
 	
 	UAR_ActionSystemComponent* ASComp = GetOwningASComponent();
 	ACharacter* Character = CastChecked<ACharacter>(ASComp->GetOwner());

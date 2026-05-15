@@ -46,6 +46,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
 	TObjectPtr<UInputAction> IA_Look;
 	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
+	TObjectPtr<UInputAction> IA_Sprint;
+	
 	/* Combat and fight */
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
@@ -105,6 +108,7 @@ protected:
 
 public:
 	void StartAction(FName InActionName);
+	void StopAction(FName InActionName);
 	
 	UFUNCTION(Exec)
 	void HealSelf(float Amount = 100.0f);

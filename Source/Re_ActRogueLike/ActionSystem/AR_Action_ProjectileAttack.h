@@ -25,7 +25,7 @@ class RE_ACTROGUELIKE_API UAR_Action_ProjectileAttack : public UAR_Action
 	UAR_Action_ProjectileAttack();
 
 public:
-	virtual void StartAction() override;
+	virtual void StartAction_Implementation() override;
 	
 protected:
 	UPROPERTY(EditAnywhere, Category = "ProjectileAttack")

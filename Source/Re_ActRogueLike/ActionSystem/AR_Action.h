@@ -18,12 +18,17 @@ class RE_ACTROGUELIKE_API UAR_Action : public UObject
 protected:
 	/* Action nickname to start/stop without a reference to the object */
 	UPROPERTY(EditDefaultsOnly, Category = "Actions")
-	FName ActionName = FName("PrimaryAttack");
+	FName ActionName = FName("ActionNameTemp");
 
 public:
+	UFUNCTION(BlueprintCallable, Category = "Utilities")
 	UAR_ActionSystemComponent* GetOwningASComponent() const;
 
-	virtual void StartAction();
+	UFUNCTION(BlueprintNativeEvent, Category = "Actions")
+	void StartAction();
+	
+	UFUNCTION(BlueprintNativeEvent, Category = "Actions")
+	void StopAction();
 	
 	FName GetActionName() const {return ActionName;}
 	

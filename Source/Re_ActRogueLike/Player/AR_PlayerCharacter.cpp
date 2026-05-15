@@ -92,6 +92,11 @@ void AAR_PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 	EnhancedInput->BindAction(IA_Jump, ETriggerEvent::Started, this, &ACharacter::Jump);
 	EnhancedInput->BindAction(IA_Jump, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 	
+	EnhancedInput->BindAction(IA_Sprint, ETriggerEvent::Started, this, 
+		&ThisClass::StartAction, FName("Sprint"));
+	EnhancedInput->BindAction(IA_Sprint, ETriggerEvent::Completed, this,
+		&ThisClass::StopAction, FName("Sprint"));
+	
 	// TODO: Considering add self-banned(tag, GAS cooldown etc.) to avoid convulsive shooting
 	EnhancedInput->BindAction(IA_FireMagicProj, ETriggerEvent::Triggered, this, 
 		&ThisClass::StartAction, FName("FireMagicProj"));
@@ -202,6 +207,11 @@ void AAR_PlayerCharacter::OnHealthChanged(
 void AAR_PlayerCharacter::StartAction(FName InActionName)
 {
 	ActionSystemComponent->StartAction(InActionName);
+}
+
+void AAR_PlayerCharacter::StopAction(FName InActionName)
+{
+	ActionSystemComponent->StopAction(InActionName);
 }
 
 void AAR_PlayerCharacter::HealSelf(float Amount /* = 100.0f */)
