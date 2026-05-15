@@ -9,7 +9,7 @@ AAR_TeleportProjectile::AAR_TeleportProjectile()
 {
 	InitialLifeSpan = 0.0f;
 	
-	ProjectileMovementComponent->InitialSpeed = 1300.0f;
+	ProjectileMovementComponent->InitialSpeed = 3000.0f;
 }
 
 void AAR_TeleportProjectile::BeginPlay()
