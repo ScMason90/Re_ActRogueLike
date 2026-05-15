@@ -3,6 +3,7 @@
 
 #include "AR_WorldUserWidget.h"
 
+#include "VectorTypes.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "Components/SizeBox.h"
 #include "Kismet/GameplayStatics.h"
@@ -35,28 +36,33 @@ void UAR_WorldUserWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaT
 		return;
 	}
 	
+	// Dot product: 'Hide' if the widget is outside the viewport
 	FVector CameraLocation;
 	FRotator CameraRotation;
 	GetOwningPlayer()->GetPlayerViewPoint(CameraLocation, CameraRotation);
-
-	FVector ToActor = AttachedActor->GetActorLocation() - CameraLocation;
-	ToActor.Normalize();
-
-	if (const float Dot = FVector::DotProduct(CameraRotation.Vector(), ToActor); Dot < 0.f)
-	{
-		SetRenderOpacity(0.0f);
-		return;
-	}
-	SetRenderOpacity(1.0f);
-
-	const float Distance = FVector::Dist(CameraLocation, AttachedActor->GetActorLocation());
-	if (Distance > 2000.f)
+	
+	FVector ToAttachedActor = AttachedActor->GetActorLocation() - CameraLocation;
+	ToAttachedActor.Normalize();
+	
+	if (const float Dot = FVector::DotProduct(ToAttachedActor, CameraRotation.Vector()); Dot <= 0.0f)
 	{
 		SetRenderOpacity(0.0f);
 		return;
 	}
 
+	// Distance Threshold: 'Hide' if overstepped
+	const float Distance = FVector::Dist(AttachedActor->GetActorLocation(), CameraLocation);
+	if (Distance > DistRenderThreshold)
+	{
+		SetRenderOpacity(0.0f);
+		return;
+	}
+	
 	// Distance scaling: The farther away, the smaller
-	const float ScaleFactor = FMath::Clamp(1000.f / Distance, 0.5f, 1.0f);
+	const float ScaleFactor = FMath::Clamp(DistRenderScaleMultiplier / Distance, 0.5f, 1.0f);
 	if (ParentSizeBox) ParentSizeBox->SetRenderScale(FVector2D(ScaleFactor, ScaleFactor));
+	
+	SetRenderOpacity(1.0f);
 }
+
+void UAR_WorldUserWidget::SetWidgetVisible(bool bVisible) {SetRenderOpacity(bVisible ? 1.0f : 0.0f);}
