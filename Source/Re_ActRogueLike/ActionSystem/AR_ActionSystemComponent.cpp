@@ -41,8 +41,8 @@ void UAR_ActionSystemComponent::GrantAction(TSubclassOf<UAR_Action> NewActionCla
 
 void UAR_ActionSystemComponent::StartAction(FName InActionName)
 {
-	UE_LOGFMT(LogCore, Warning, 
-		"UAR_ActionSystemComponent::StartAction,Is Actions empty?{Answer}", Actions.IsEmpty()?"Yes":"No");
+	// UE_LOGFMT(LogCore, Warning, 
+	// 	"UAR_ActionSystemComponent::StartAction,Is Actions empty?{Answer}", Actions.IsEmpty()?"Yes":"No");
 	
 	for (UAR_Action* Action : Actions)
 	{
@@ -59,8 +59,8 @@ void UAR_ActionSystemComponent::StartAction(FName InActionName)
 
 void UAR_ActionSystemComponent::StopAction(FName InActionName)
 {
-	UE_LOGFMT(LogCore, Warning, 
-		"UAR_ActionSystemComponent::StopAction,Is Actions empty?{Answer}", Actions.IsEmpty()?"Yes":"No");
+	// UE_LOGFMT(LogCore, Warning, 
+	// 	"UAR_ActionSystemComponent::StopAction,Is Actions empty?{Answer}", Actions.IsEmpty()?"Yes":"No");
 	
 	for (UAR_Action* Action : Actions)
 	{
