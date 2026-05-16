@@ -15,6 +15,7 @@ UAR_ActionSystemComponent* UAR_Action::GetOwningASComponent() const
 
 void UAR_Action::StartAction_Implementation()
 {
+	bIsRunning = true;
 	float GameTime = GetWorld()->TimeSeconds;
 	
 	UE_LOGFMT(LogTemp, Log, "UAR_Action::StartAction_Implementation(), Started Action {ActionName} - {WorldTime}", 
@@ -23,8 +24,28 @@ void UAR_Action::StartAction_Implementation()
 
 void UAR_Action::StopAction_Implementation()
 {
+	bIsRunning = false;
 	float GameTime = GetWorld()->TimeSeconds;
 	
 	UE_LOGFMT(LogTemp, Log, "UAR_Action::StopAction_Implementation(), Stopped Action {ActionName} - {WorldTime}", 
 		("ActionName", ActionName), ("WorldTime", GameTime));
+	
+	CooldownThreshold = GameTime + CooldownTime;
+}
+
+bool UAR_Action::CanStart() const
+{
+	if (IsRunning()) return false;
+	if (GetCooldownTimeRemaining() > 0.0f)
+	{
+		UE_LOG(LogTemp, Log, TEXT("UAR_Action::CanStart(),Cooldown remaining: %f"), GetCooldownTimeRemaining());
+		return false;
+	}
+	
+	return true;
+}
+
+float UAR_Action::GetCooldownTimeRemaining() const
+{
+	return FMath::Max(0.0f, CooldownThreshold - GetWorld()->TimeSeconds);	
 }

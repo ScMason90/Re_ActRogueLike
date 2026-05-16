@@ -21,6 +21,7 @@ UAR_Action_ProjectileAttack::UAR_Action_ProjectileAttack()
 {
 	MuzzleSocketName = "Muzzle_01";
 	LineTraceEndOffset = 10000.0f;
+	CooldownTime = 0.5f;
 }
 
 void UAR_Action_ProjectileAttack::StartAction_Implementation()
@@ -53,6 +54,8 @@ void UAR_Action_ProjectileAttack::StartAction_Implementation()
 			Character->MoveIgnoreActorAdd(NewProjectile);
 			
 		}, AttackDelay, false);
+	
+	StopAction();
 }
 
 FTransform UAR_Action_ProjectileAttack::AdjustedProjSpawnTransform(

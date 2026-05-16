@@ -19,10 +19,15 @@ protected:
 	/* Action nickname to start/stop without a reference to the object */
 	UPROPERTY(EditDefaultsOnly, Category = "Actions")
 	FName ActionName = FName("ActionNameTemp");
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Actions")
+	float CooldownTime = 0.0f;
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "Utilities")
 	UAR_ActionSystemComponent* GetOwningASComponent() const;
+	
+	FName GetActionName() const {return ActionName;}
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Actions")
 	void StartAction();
@@ -30,6 +35,16 @@ public:
 	UFUNCTION(BlueprintNativeEvent, Category = "Actions")
 	void StopAction();
 	
-	FName GetActionName() const {return ActionName;}
+	bool CanStart() const;
+	bool IsRunning() const {return bIsRunning;}
+	float GetCooldownTimeRemaining() const;
+	
+protected:
+	/* GameTime until the Action is available again */	
+	UPROPERTY(Transient)
+	float CooldownThreshold = 0.0f;
+	
+	UPROPERTY(Transient)
+	bool bIsRunning = false;
 	
 };
