@@ -20,6 +20,8 @@ void UAR_Action::StartAction_Implementation()
 	
 	UE_LOGFMT(LogTemp, Log, "UAR_Action::StartAction_Implementation(), Started Action {ActionName} - {WorldTime}", 
 		("ActionName", ActionName.ToString()), ("WorldTime", GameTime));
+	
+	GetOwningASComponent()->ActiveGameplayTags.AppendTags(GrantTags);
 }
 
 void UAR_Action::StopAction_Implementation()
@@ -31,11 +33,14 @@ void UAR_Action::StopAction_Implementation()
 		("ActionName", ActionName.ToString()), ("WorldTime", GameTime));
 	
 	CooldownThreshold = GameTime + CooldownTime;
+	
+	GetOwningASComponent()->ActiveGameplayTags.RemoveTags(GrantTags);
 }
 
 bool UAR_Action::CanStart() const
 {
 	if (IsRunning()) return false;
+	if (GetOwningASComponent()->ActiveGameplayTags.HasAny(BlockedTags)) return false;
 	if (GetCooldownTimeRemaining() > 0.0f)
 	{
 		UE_LOG(LogTemp, Log, TEXT("UAR_Action::CanStart(),Cooldown remaining: %f"), GetCooldownTimeRemaining());

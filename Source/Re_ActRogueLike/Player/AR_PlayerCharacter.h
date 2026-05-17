@@ -68,7 +68,7 @@ protected:
 	FName TimeToHitParamName;
 	
 	/* -------------Player State---------------- */
-	
+	// I think this will be replaced in future with GameplayTags in our 'GAS'.
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Player State")
 	bool IsPlayerDead = false;
 

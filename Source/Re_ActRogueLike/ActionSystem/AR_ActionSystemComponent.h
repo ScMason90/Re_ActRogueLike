@@ -93,6 +93,8 @@ public:
 	
 	/*---------------------- Actions Relative ---------------------*/
 	
+	FGameplayTagContainer ActiveGameplayTags;
+	
 	void GrantAction(TSubclassOf<UAR_Action> NewActionClass);
 	void StartAction(FGameplayTag InActionName);
 	void StopAction(FGameplayTag InActionName);
