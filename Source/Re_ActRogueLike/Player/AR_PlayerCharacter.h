@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "AR_PlayerCharacter.generated.h"
 
+struct FGameplayTag;
 struct FInputActionInstance;
 struct FInputActionValue;
 class UAR_ActionSystemComponent;
@@ -107,8 +108,10 @@ protected:
 		AActor* InstigatorActor, UAR_ActionSystemComponent* OwningComp, float NewHealth, float Delta);
 
 public:
-	void StartAction(FName InActionName);
-	void StopAction(FName InActionName);
+	UFUNCTION()
+	void StartAction(const FInputActionInstance& Instance, FGameplayTag InActionName);
+	UFUNCTION()
+	void StopAction(const FInputActionInstance& Instance, FGameplayTag InActionName);
 	
 	UFUNCTION(Exec)
 	void HealSelf(float Amount = 100.0f);

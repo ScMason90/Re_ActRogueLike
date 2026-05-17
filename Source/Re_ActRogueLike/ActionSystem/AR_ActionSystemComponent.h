@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 #include "Components/ActorComponent.h"
 #include "AR_ActionSystemComponent.generated.h"
 
@@ -93,6 +94,6 @@ public:
 	/*---------------------- Actions Relative ---------------------*/
 	
 	void GrantAction(TSubclassOf<UAR_Action> NewActionClass);
-	void StartAction(FName InActionName);
-	void StopAction(FName InActionName);
+	void StartAction(FGameplayTag InActionName);
+	void StopAction(FGameplayTag InActionName);
 };

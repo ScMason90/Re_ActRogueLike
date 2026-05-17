@@ -3,10 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 #include "UObject/Object.h"
 #include "AR_Action.generated.h"
 
 class UAR_ActionSystemComponent;
+
 /**
  * 
  */
@@ -18,7 +20,7 @@ class RE_ACTROGUELIKE_API UAR_Action : public UObject
 protected:
 	/* Action nickname to start/stop without a reference to the object */
 	UPROPERTY(EditDefaultsOnly, Category = "Actions")
-	FName ActionName = FName("ActionNameTemp");
+	FGameplayTag ActionName;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Actions")
 	float CooldownTime = 0.0f;
@@ -27,7 +29,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Utilities")
 	UAR_ActionSystemComponent* GetOwningASComponent() const;
 	
-	FName GetActionName() const {return ActionName;}
+	FGameplayTag GetActionName() const {return ActionName;}
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Actions")
 	void StartAction();

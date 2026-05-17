@@ -39,7 +39,7 @@ void UAR_ActionSystemComponent::GrantAction(TSubclassOf<UAR_Action> NewActionCla
 	Actions.Add(NewAction);
 }
 
-void UAR_ActionSystemComponent::StartAction(FName InActionName)
+void UAR_ActionSystemComponent::StartAction(FGameplayTag InActionName)
 {
 	// UE_LOGFMT(LogCore, Warning, 
 	// 	"UAR_ActionSystemComponent::StartAction,Is Actions empty?{Answer}", Actions.IsEmpty()?"Yes":"No");
@@ -57,7 +57,7 @@ void UAR_ActionSystemComponent::StartAction(FName InActionName)
 		TEXT("UAR_ActionSystemComponent::StartAction,No Action found with name %s"), *InActionName.ToString());
 }
 
-void UAR_ActionSystemComponent::StopAction(FName InActionName)
+void UAR_ActionSystemComponent::StopAction(FGameplayTag InActionName)
 {
 	// UE_LOGFMT(LogCore, Warning, 
 	// 	"UAR_ActionSystemComponent::StopAction,Is Actions empty?{Answer}", Actions.IsEmpty()?"Yes":"No");

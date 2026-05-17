@@ -19,7 +19,7 @@ void UAR_Action::StartAction_Implementation()
 	float GameTime = GetWorld()->TimeSeconds;
 	
 	UE_LOGFMT(LogTemp, Log, "UAR_Action::StartAction_Implementation(), Started Action {ActionName} - {WorldTime}", 
-		("ActionName", ActionName), ("WorldTime", GameTime));
+		("ActionName", ActionName.ToString()), ("WorldTime", GameTime));
 }
 
 void UAR_Action::StopAction_Implementation()
@@ -28,7 +28,7 @@ void UAR_Action::StopAction_Implementation()
 	float GameTime = GetWorld()->TimeSeconds;
 	
 	UE_LOGFMT(LogTemp, Log, "UAR_Action::StopAction_Implementation(), Stopped Action {ActionName} - {WorldTime}", 
-		("ActionName", ActionName), ("WorldTime", GameTime));
+		("ActionName", ActionName.ToString()), ("WorldTime", GameTime));
 	
 	CooldownThreshold = GameTime + CooldownTime;
 }

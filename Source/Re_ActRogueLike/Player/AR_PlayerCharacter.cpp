@@ -11,9 +11,11 @@
 #include "Camera/CameraComponent.h"
 #include "Components/InputComponent.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "GameplayTagContainer.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Re_ActRogueLike/SharedGameplayTags.h"
 #include "Re_ActRogueLike/ActionSystem/AR_ActionSystemComponent.h"
 
 static TAutoConsoleVariable<bool> CVarGodMode(TEXT("game.cheat.god"), false,
@@ -93,17 +95,17 @@ void AAR_PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 	EnhancedInput->BindAction(IA_Jump, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 	
 	EnhancedInput->BindAction(IA_Sprint, ETriggerEvent::Started, this, 
-		&ThisClass::StartAction, FName("Sprint"));
+		&ThisClass::StartAction, SharedGameplayTags::Action_Sprint.GetTag());
 	EnhancedInput->BindAction(IA_Sprint, ETriggerEvent::Completed, this,
-		&ThisClass::StopAction, FName("Sprint"));
+		&ThisClass::StopAction, SharedGameplayTags::Action_Sprint.GetTag());
 	
 	// TODO: Considering add self-banned(tag, GAS cooldown etc.) to avoid convulsive shooting
 	EnhancedInput->BindAction(IA_FireMagicProj, ETriggerEvent::Triggered, this, 
-		&ThisClass::StartAction, FName("FireMagicProj"));
+		&ThisClass::StartAction, SharedGameplayTags::Action_FireMagicProj.GetTag());
 	EnhancedInput->BindAction(IA_FireTeleportProj, ETriggerEvent::Triggered, this, 
-		&ThisClass::StartAction, FName("FireTeleportProj"));
+		&ThisClass::StartAction, SharedGameplayTags::Action_FireTeleportProj.GetTag());
 	EnhancedInput->BindAction(IA_FireBlackHole, ETriggerEvent::Triggered, this, 
-		&ThisClass::StartAction, FName("FireBlackHole"));
+		&ThisClass::StartAction, SharedGameplayTags::Action_FireBlackHole.GetTag());
 }
 
 void AAR_PlayerCharacter::Move(const FInputActionValue& InValue)
@@ -204,12 +206,12 @@ void AAR_PlayerCharacter::OnHealthChanged(
 	}
 }
 
-void AAR_PlayerCharacter::StartAction(FName InActionName)
+void AAR_PlayerCharacter::StartAction(const FInputActionInstance& Instance, FGameplayTag InActionName)
 {
 	ActionSystemComponent->StartAction(InActionName);
 }
 
-void AAR_PlayerCharacter::StopAction(FName InActionName)
+void AAR_PlayerCharacter::StopAction(const FInputActionInstance& Instance, FGameplayTag InActionName)
 {
 	ActionSystemComponent->StopAction(InActionName);
 }
