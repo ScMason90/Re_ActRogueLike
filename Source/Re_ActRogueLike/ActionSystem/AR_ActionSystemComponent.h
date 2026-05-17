@@ -7,24 +7,8 @@
 #include "Components/ActorComponent.h"
 #include "AR_ActionSystemComponent.generated.h"
 
+class UAR_AttributeSet;
 class UAR_Action;
-
-USTRUCT(BlueprintType)
-struct FAR_AttributeSet
-{
-	GENERATED_BODY()
-	
-	FAR_AttributeSet():Health(100.0f),MaxHealth(100.0f){}
-	
-	UPROPERTY(BlueprintReadOnly)
-	float Health;
-	
-	UPROPERTY(BlueprintReadOnly)
-	float MaxHealth;
-	
-	// Stamina, Strength
-};
-
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(
 	FOnHealthChanged, AActor*, Instigator, UAR_ActionSystemComponent*, OwingComp, float, NewHealth, float, Delta);
@@ -54,8 +38,12 @@ protected:
 	// --
 	// Category = "" - display only for detail panels and blueprint context menu.
 	
-	UPROPERTY(EditAnywhere,BlueprintReadOnly, Category = "Attributes")
-	FAR_AttributeSet Attributes;
+	UPROPERTY()
+	TObjectPtr<UAR_AttributeSet> Attributes;	// The actual held attribute instance during runtime(cpp only,GC)
+
+	// Config used to specify which 'UAR_AttributeSet' derived class to create
+	UPROPERTY(EditAnywhere, Category = Attributes, NoClear)
+	TSubclassOf<UAR_AttributeSet> AttributeSetClass;	
 	
 	UPROPERTY()
 	TArray<TObjectPtr<UAR_Action>> Actions;

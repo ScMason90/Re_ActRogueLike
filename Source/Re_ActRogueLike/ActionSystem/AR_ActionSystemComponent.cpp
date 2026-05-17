@@ -4,6 +4,7 @@
 #include "AR_ActionSystemComponent.h"
 
 #include "AR_Action.h"
+#include "AR_AttributeSet.h"
 #include "Engine/World.h"
 #include "GameFramework/Actor.h"
 #include "Logging/StructuredLog.h"
@@ -18,12 +19,14 @@ UAR_ActionSystemComponent::UAR_ActionSystemComponent()
 	which should be its consequence call*/ 
 	bWantsInitializeComponent = true;
 	
-	Attributes = FAR_AttributeSet();
+	AttributeSetClass = UAR_AttributeSet::StaticClass();
 }
 
 void UAR_ActionSystemComponent::InitializeComponent()
 {
 	Super::InitializeComponent();
+	
+	Attributes = NewObject<UAR_AttributeSet>(this, AttributeSetClass);
 	
 	// UE_LOGFMT(LogTemp, Error, 
 	// 	"UAR_ActionSystemComponent::InitializeComponent(), Is DefaultActions empty?{Answer}", DefaultActions.IsEmpty()?"Yes":"No");
@@ -77,55 +80,55 @@ void UAR_ActionSystemComponent::StopAction(FGameplayTag InActionName)
 
 bool UAR_ActionSystemComponent::ApplyHealthChange(AActor* Instigator, float Delta)
 {
-	if (Delta < 0.0f)
-	{
-		if (!GetOwner()->CanBeDamaged()) return false;
-		Delta *= CVarDamageMultiplier.GetValueOnGameThread();
-	}
+	// if (Delta < 0.0f)
+	// {
+	// 	if (!GetOwner()->CanBeDamaged()) return false;
+	// 	Delta *= CVarDamageMultiplier.GetValueOnGameThread();
+	// }
+	//
+	// float OldHealth = Attributes.Health;
+	//
+	// /* Simply clamp to validate Health variable.*/
+	// Attributes.Health = FMath::Clamp(Attributes.Health + Delta, 0, Attributes.MaxHealth);
+	// float ActualDelta = Attributes.Health - OldHealth;
+	//
+	// OnHealthChanged.Broadcast(Instigator, this, Attributes.Health, ActualDelta);
+	//
+	// // Died
+	// if (ActualDelta < 0.0f && GetHealth() == 0.0f)
+	// {
+	// 	AActor* Killer = nullptr;
+	// 	if (IsValid(Instigator) && !Instigator->IsPendingKillPending()) Killer = Instigator;
+	// 	if (IsValid(Instigator->GetInstigator())) Killer = Instigator->GetInstigator();
+	// 	
+	// 	AAR_GameModeBase* GM = GetWorld()->GetAuthGameMode<AAR_GameModeBase>();
+	// 	/*Passing 'Instigator->GetInstigator()' as Killer since 'Instigator' is quite like the 
+	// 	 *direct 'HitActor' throughout damage system... Or maybe we should improve our projectile class implementation?*/
+	// 	if (GM) GM->OnActorKilled(GetOwner(), Killer);
+	// }
 	
-	float OldHealth = Attributes.Health;
-	
-	/* Simply clamp to validate Health variable.*/
-	Attributes.Health = FMath::Clamp(Attributes.Health + Delta, 0, Attributes.MaxHealth);
-	float ActualDelta = Attributes.Health - OldHealth;
-	
-	OnHealthChanged.Broadcast(Instigator, this, Attributes.Health, ActualDelta);
-	
-	// Died
-	if (ActualDelta < 0.0f && GetHealth() == 0.0f)
-	{
-		AActor* Killer = nullptr;
-		if (IsValid(Instigator) && !Instigator->IsPendingKillPending()) Killer = Instigator;
-		if (IsValid(Instigator->GetInstigator())) Killer = Instigator->GetInstigator();
-		
-		AAR_GameModeBase* GM = GetWorld()->GetAuthGameMode<AAR_GameModeBase>();
-		/*Passing 'Instigator->GetInstigator()' as Killer since 'Instigator' is quite like the 
-		 *direct 'HitActor' throughout damage system... Or maybe we should improve our projectile class implementation?*/
-		if (GM) GM->OnActorKilled(GetOwner(), Killer);
-	}
-	
-	return ActualDelta != 0;
+	return true;//ActualDelta != 0;
 }
 
 // return FMath::IsNearlyZero(Attributes.Health)...Restrictively check using return Attributes.Health == 0.0f; 
 bool UAR_ActionSystemComponent::IsDead() const
 {
-	return FMath::IsNearlyZero(Attributes.Health);
+	return true;//FMath::IsNearlyZero(Attributes.Health);
 }
 
 float UAR_ActionSystemComponent::GetMaxHealth() const
 {
-	return Attributes.MaxHealth;
+	return 0.0f;//Attributes.MaxHealth;
 }
 
 float UAR_ActionSystemComponent::GetHealth() const
 {
-	return Attributes.Health;
+	return 0.0f;//Attributes.Health;
 }
 
 bool UAR_ActionSystemComponent::IsFullHealth() const
 {
-	return FMath::IsNearlyEqual(Attributes.Health, Attributes.MaxHealth);
+	return true;//FMath::IsNearlyEqual(Attributes.Health, Attributes.MaxHealth);
 }
 
 UAR_ActionSystemComponent* UAR_ActionSystemComponent::GetASComp(AActor* FromActor)
