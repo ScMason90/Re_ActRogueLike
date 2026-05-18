@@ -7,6 +7,7 @@
 #include "Components/ActorComponent.h"
 #include "AR_ActionSystemComponent.generated.h"
 
+struct FAR_Attribute;
 class UAR_AttributeSet;
 class UAR_Action;
 
@@ -22,6 +23,7 @@ class RE_ACTROGUELIKE_API UAR_ActionSystemComponent : public UActorComponent
 	GENERATED_BODY()
 
 public:
+	
 	UAR_ActionSystemComponent();
 	
 	virtual void InitializeComponent() override;
@@ -40,6 +42,8 @@ protected:
 	
 	UPROPERTY()
 	TObjectPtr<UAR_AttributeSet> Attributes;	// The actual held attribute instance during runtime(cpp only,GC)
+	
+	TMap<FGameplayTag, FAR_Attribute*> CachedAttributes;
 
 	// Config used to specify which 'UAR_AttributeSet' derived class to create
 	UPROPERTY(EditAnywhere, Category = Attributes, NoClear)
@@ -65,12 +69,6 @@ public:
 	bool IsDead() const;
 	
 	UFUNCTION(BlueprintCallable, Category = "Attributes | Getters")
-	float GetMaxHealth() const;
-	
-	UFUNCTION(BlueprintCallable, Category = "Attributes | Getters")
-	float GetHealth() const;
-	
-	UFUNCTION(BlueprintCallable, Category = "Attributes | Getters")
 	bool IsFullHealth() const;
 	
 	UFUNCTION(BlueprintCallable, Category = "Attributes | Getters")
@@ -86,4 +84,7 @@ public:
 	void GrantAction(TSubclassOf<UAR_Action> NewActionClass);
 	void StartAction(FGameplayTag InActionName);
 	void StopAction(FGameplayTag InActionName);
+	
+	FAR_Attribute* GetAttribute(FGameplayTag InAttributeTag);
+	
 };

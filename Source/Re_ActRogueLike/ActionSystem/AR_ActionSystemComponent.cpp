@@ -28,12 +28,29 @@ void UAR_ActionSystemComponent::InitializeComponent()
 	
 	Attributes = NewObject<UAR_AttributeSet>(this, AttributeSetClass);
 	
+	for (TFieldIterator<FStructProperty> PropIt(Attributes.GetClass()); PropIt; ++PropIt)
+	{
+		FAR_Attribute* FoundAttribute = PropIt->ContainerPtrToValuePtr<FAR_Attribute>(Attributes);
+		
+		FName AttributeTagName = FName("Attribute." + PropIt->GetName());
+		FGameplayTag AttributeTag = FGameplayTag::RequestGameplayTag(AttributeTagName);
+		
+		CachedAttributes.Add(AttributeTag, FoundAttribute);
+	}
+	
 	// UE_LOGFMT(LogTemp, Error, 
 	// 	"UAR_ActionSystemComponent::InitializeComponent(), Is DefaultActions empty?{Answer}", DefaultActions.IsEmpty()?"Yes":"No");
 	for (TSubclassOf<UAR_Action> ActionClass : DefaultActions)
 	{
 		if (ensure(ActionClass)) GrantAction(ActionClass);
 	}
+}
+
+FAR_Attribute* UAR_ActionSystemComponent::GetAttribute(FGameplayTag InAttributeTag)
+{
+	if (FAR_Attribute** FoundAttribute = CachedAttributes.Find(InAttributeTag)) return *FoundAttribute;
+	
+	return nullptr;
 }
 
 void UAR_ActionSystemComponent::GrantAction(TSubclassOf<UAR_Action> NewActionClass)
@@ -116,16 +133,6 @@ bool UAR_ActionSystemComponent::IsDead() const
 	return true;//FMath::IsNearlyZero(Attributes.Health);
 }
 
-float UAR_ActionSystemComponent::GetMaxHealth() const
-{
-	return 0.0f;//Attributes.MaxHealth;
-}
-
-float UAR_ActionSystemComponent::GetHealth() const
-{
-	return 0.0f;//Attributes.Health;
-}
-
 bool UAR_ActionSystemComponent::IsFullHealth() const
 {
 	return true;//FMath::IsNearlyEqual(Attributes.Health, Attributes.MaxHealth);
@@ -139,5 +146,5 @@ UAR_ActionSystemComponent* UAR_ActionSystemComponent::GetASComp(AActor* FromActo
 
 bool UAR_ActionSystemComponent::Kill(AActor* InstigatorActor)
 {
-	return ApplyHealthChange(InstigatorActor, -GetMaxHealth());
+	return ApplyHealthChange(InstigatorActor, -100.0f/*-GetMaxHealth()*/);
 }
