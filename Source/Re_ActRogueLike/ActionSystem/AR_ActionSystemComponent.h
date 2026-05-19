@@ -20,8 +20,8 @@ enum EAttributeModifyType
 	/* ErrorType */Invalid
 };
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(
-	FOnHealthChanged, AActor*, Instigator, UAR_ActionSystemComponent*, OwingComp, float, NewHealth, float, Delta);
+DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnAttributeChanged, 
+	FGameplayTag/*AttributeTag*/, float/*NewAttributeValue*/, float/*OldAttributeValue*/)
 
 /*
  *
@@ -56,7 +56,9 @@ protected:
 
 	// Config used to specify which 'UAR_AttributeSet' derived class to create
 	UPROPERTY(EditAnywhere, Category = Attributes, NoClear)
-	TSubclassOf<UAR_AttributeSet> AttributeSetClass;	
+	TSubclassOf<UAR_AttributeSet> AttributeSetClass;
+	
+	TMap<FGameplayTag, FOnAttributeChanged> AttributeListeners;
 	
 	UPROPERTY()
 	TArray<TObjectPtr<UAR_Action>> Actions;
@@ -65,20 +67,16 @@ protected:
 	TArray<TSubclassOf<UAR_Action>> DefaultActions;
 
 public:
-	/*--------------- Attributes Relative ------------------*/
+	/*--------------- Attributes & Actions Relative ------------------*/
 	
-	UPROPERTY(BlueprintAssignable)
-	FOnHealthChanged OnHealthChanged;
+	FAR_Attribute* GetAttribute(FGameplayTag InAttributeTag);
+	
+	FOnAttributeChanged& GetAttributeListener(FGameplayTag AttributeTag);
 	
 	void ApplyAttributeChanged(FGameplayTag AttributeTag, float Delta, EAttributeModifyType ModifyType);
 	
 	UFUNCTION(BlueprintCallable, Category = "Attributes | Getters")
 	static UAR_ActionSystemComponent* GetASComp(AActor* FromActor);
-	
-	UFUNCTION(BlueprintCallable, Category = "Attributes | ExecInterface")
-	bool Kill(AActor* InstigatorActor);
-	
-	/*---------------------- Actions Relative ---------------------*/
 	
 	FGameplayTagContainer ActiveGameplayTags;
 	
@@ -86,6 +84,9 @@ public:
 	void StartAction(FGameplayTag InActionName);
 	void StopAction(FGameplayTag InActionName);
 	
-	FAR_Attribute* GetAttribute(FGameplayTag InAttributeTag);
+	/*------------- Legacy unfixed ----------------*/
+	
+	UFUNCTION(BlueprintCallable, Category = "Attributes | ExecInterface")
+	bool Kill(AActor* InstigatorActor);
 	
 };

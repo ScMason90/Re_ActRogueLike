@@ -10,7 +10,6 @@
 #include "Blueprint/UserWidget.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
-#include "Engine/Engine.h"
 #include "Engine/World.h"
 #include "GameFramework/PawnMovementComponent.h"
 #include "Materials/MaterialInstanceDynamic.h"
@@ -33,9 +32,10 @@ void AAR_AICharacter::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 	
-	ActionSystemComponent->OnHealthChanged.AddDynamic(this, &AAR_AICharacter::OnHealthChanged);
-	
 	InitializeMIDs();
+	
+	FOnAttributeChanged& Event = ActionSystemComponent->GetAttributeListener(SharedGameplayTags::Attribute_Health);
+	Event.AddUObject(this, &ThisClass::OnHealthChanged);
 }
 
 void AAR_AICharacter::BeginPlay()
@@ -49,29 +49,30 @@ float AAR_AICharacter::TakeDamage(float DamageAmount, struct FDamageEvent const&
 {
 	float ActualDamage =  Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	
+	// Target the 'InstigatorActor' who damaged self.
+	if (AAR_AIController* AICon = Cast<AAR_AIController>(GetController()))
+		AICon->SetTargetActor(DamageCauser);
+	
 	// ActionSystemComponent->ApplyHealthChange(DamageCauser, -ActualDamage);
 	ActionSystemComponent->ApplyAttributeChanged(SharedGameplayTags::Attribute_Health, -ActualDamage, Base);
 	
 	return ActualDamage;
 }
 
-void AAR_AICharacter::OnHealthChanged(AActor* InstigatorActor, UAR_ActionSystemComponent* OwningComp, float NewHealth,
-                                      float Delta)
+void AAR_AICharacter::OnHealthChanged(FGameplayTag AttributeTag, float NewHealth, float OldHealth)
 {
+	float Delta = OldHealth - NewHealth;
+	
 	if (AIPawnDying) return;
-	if (UAR_GameplayStatics::IsDead(OwningComp))
+	if (UAR_GameplayStatics::IsDead(ActionSystemComponent))
 	{
-		AIPawnDying = UAR_GameplayStatics::IsDead(OwningComp)/*OwningComp->IsDead()*/;	// Marked as already dead
+		AIPawnDying = UAR_GameplayStatics::IsDead(ActionSystemComponent);	// Marked as already dead
 		HandleDeath();
 		return;
 	}
 	
 	if (Delta < 0.0f)
 	{
-		// Target the 'InstigatorActor' who damaged self.
-		if (AAR_AIController* AICon = Cast<AAR_AIController>(GetController()))
-			AICon->SetTargetActor(InstigatorActor);
-		
 		if (ActiveHealthBar == nullptr)
 		{
 			ActiveHealthBar = CreateWidget<UAR_WorldUserWidget>(GetWorld(), HealthBarWidgetClass);

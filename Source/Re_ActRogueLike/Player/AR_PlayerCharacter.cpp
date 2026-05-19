@@ -53,10 +53,10 @@ void AAR_PlayerCharacter::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 	
-	ActionSystemComponent->OnHealthChanged.AddDynamic(this, &AAR_PlayerCharacter::OnHealthChanged);
-	
 	TimeToHitParamName = "TimeToHit";
 	
+	FOnAttributeChanged& Event = ActionSystemComponent->GetAttributeListener(SharedGameplayTags::Attribute_Health);
+	Event.AddUObject(this, &ThisClass::OnHealthChanged);
 }
 
 // Called every frame
@@ -133,7 +133,7 @@ void AAR_PlayerCharacter::Look(const FInputActionInstance& InValue)
 }
 
 float AAR_PlayerCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent,
-	class AController* EventInstigator, AActor* DamageCauser)
+                                      class AController* EventInstigator, AActor* DamageCauser)
 {
 #if !UE_BUILD_SHIPPING
 	if (bool bEnableGodMode = CVarGodMode.GetValueOnGameThread())
@@ -154,9 +154,10 @@ float AAR_PlayerCharacter::TakeDamage(float DamageAmount, struct FDamageEvent co
 	
 }
 
-void AAR_PlayerCharacter::OnHealthChanged(
-	AActor* InstigatorActor, UAR_ActionSystemComponent* OwningComp, float NewHealth, float Delta)
+void AAR_PlayerCharacter::OnHealthChanged(FGameplayTag AttributeTag, float NewHealth, float OldHealth)
 {
+	float Delta = OldHealth - NewHealth;
+	
 	if (!IsPlayerDead)
 	{
 		// Flash when damaged

@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "AR_AICharacter.generated.h"
 
+struct FGameplayTag;
 class UAR_WorldUserWidget;
 class UAR_ActionSystemComponent;
 class UMaterialInstanceDynamic;
@@ -27,9 +28,7 @@ public:
 	virtual void BeginPlay() override;
 
 protected:
-	UFUNCTION(BlueprintCallable)
-	void OnHealthChanged(
-		AActor* InstigatorActor, UAR_ActionSystemComponent* OwningComp, float NewHealth, float Delta);
+	void OnHealthChanged(FGameplayTag AttributeTag, float NewHealth, float OldHealth);
 	
 	void HandleDeath();
 	

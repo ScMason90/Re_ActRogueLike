@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "AR_TargetDummy.generated.h"
 
+struct FGameplayTag;
 class UAR_ActionSystemComponent;
 
 UCLASS()
@@ -24,9 +25,7 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UAR_ActionSystemComponent> ActionSystemComponent;
 	
-	UFUNCTION()
-	void OnHealthChanged(
-		AActor* InstigatorActor, UAR_ActionSystemComponent* OwningComp, float NewHealth, float Delta);
+	void OnHealthChanged(FGameplayTag AttributeTag, float NewHealth, float OldHealth);
 
 public:
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, 

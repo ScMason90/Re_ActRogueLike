@@ -9,6 +9,7 @@
 #include "GameFramework/Actor.h"
 #include "Logging/StructuredLog.h"
 #include "Re_ActRogueLike/Core/AR_GameModeBase.h"
+#include "../SharedGameplayTags.h"
 
 static TAutoConsoleVariable<float> CVarDamageMultiplier(TEXT("game.DamageMultiplier"), 1.0f, TEXT("Global Damage Modifier for ASComponent."), ECVF_Cheat);
 
@@ -68,6 +69,11 @@ void UAR_ActionSystemComponent::ApplyAttributeChanged(FGameplayTag AttributeTag,
 	
 	Attributes->PostAttributeChanged();
 	
+	if (FOnAttributeChanged* Event = AttributeListeners.Find(AttributeTag))
+	{
+		Event->Broadcast(AttributeTag, FoundAttribute->GetValue(), OldValue);
+	}
+	
 	UE_LOGFMT(LogTemp, Log, "Attribute : {0}, New : {1}, Old : {2}",
 		AttributeTag.ToString(),
 		FoundAttribute->GetValue(),
@@ -79,6 +85,11 @@ FAR_Attribute* UAR_ActionSystemComponent::GetAttribute(FGameplayTag InAttributeT
 	if (FAR_Attribute** FoundAttribute = CachedAttributes.Find(InAttributeTag)) return *FoundAttribute;
 	
 	return nullptr;
+}
+
+FOnAttributeChanged& UAR_ActionSystemComponent::GetAttributeListener(FGameplayTag AttributeTag)
+{
+	return AttributeListeners.FindOrAdd(AttributeTag);
 }
 
 void UAR_ActionSystemComponent::GrantAction(TSubclassOf<UAR_Action> NewActionClass)

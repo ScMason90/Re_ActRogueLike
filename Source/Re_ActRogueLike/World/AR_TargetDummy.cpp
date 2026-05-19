@@ -20,13 +20,15 @@ AAR_TargetDummy::AAR_TargetDummy()
 	
 	ActionSystemComponent = CreateDefaultSubobject<UAR_ActionSystemComponent>("ActionSystemComp");
 	// Trigger when health is changed (damage/healing)
-	ActionSystemComponent->OnHealthChanged.AddDynamic(this, &AAR_TargetDummy::OnHealthChanged);
+	FOnAttributeChanged& Event = ActionSystemComponent->GetAttributeListener(SharedGameplayTags::Attribute_Health);
+	Event.AddUObject(this, &ThisClass::OnHealthChanged);
 	
 }
 
-void AAR_TargetDummy::OnHealthChanged(
-	AActor* InstigatorActor, UAR_ActionSystemComponent* OwningComp, float NewHealth, float Delta)
+void AAR_TargetDummy::OnHealthChanged(FGameplayTag AttributeTag, float NewHealth, float OldHealth)
 {
+	float Delta = OldHealth - NewHealth;
+	
 	if (Delta < 0.0f)
 	{
 		MeshComponent->SetScalarParameterValueOnMaterials("TimeToHit", GetWorld()->TimeSeconds);
