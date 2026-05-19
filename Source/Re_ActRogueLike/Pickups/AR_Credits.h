@@ -12,12 +12,11 @@ class RE_ACTROGUELIKE_API AAR_Credits : public AAR_PickupActorBase
 	GENERATED_BODY()
 
 public:
+	
 	// Sets default values for this actor's properties
 	AAR_Credits();
 
 protected:	
-	UPROPERTY(VisibleAnywhere, Category = "Components")
-	TObjectPtr<UStaticMeshComponent> MeshComponent;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "SFXs&Audios")
 	TObjectPtr<USoundBase> PickupSound;

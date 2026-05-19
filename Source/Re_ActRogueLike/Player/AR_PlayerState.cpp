@@ -22,3 +22,8 @@ bool AAR_PlayerState::RemoveCredits(int32 Delta)
 	OnCreditsChanged.Broadcast(this, Credits, -Delta);
 	return true;
 }
+
+int32 AAR_PlayerState::GetCredits() const
+{
+	return Credits;
+}

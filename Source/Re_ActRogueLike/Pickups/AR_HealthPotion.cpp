@@ -17,15 +17,11 @@
 // Sets default values
 AAR_HealthPotion::AAR_HealthPotion()
 {
-	PickupMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
-	PickupMeshComponent->SetupAttachment(RootComponent);
-	// Using 'SphereComp' in parent class for collision query instead of subclass.Disable it.
-	PickupMeshComponent->SetCollisionProfileName("NoCollision");
-	PickupMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	// Using 'SphereComp' in parent class for collision query instead of subclass...
 	
 	// Set collision profile(object type), make this in Project Settings, "Overlap" only to Pawn
 	OverlapComponent->SetCollisionProfileName("Pickups");
-	OverlapComponent->SetupAttachment(PickupMeshComponent);
+
 }
 
 void AAR_HealthPotion::OnActorOverlapped(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,

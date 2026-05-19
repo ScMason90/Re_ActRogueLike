@@ -18,9 +18,7 @@ public:
 	AAR_HealthPotion();
 
 protected:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	TObjectPtr<UStaticMeshComponent> PickupMeshComponent;
-	
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "SFXs&Audios")
 	TObjectPtr<USoundBase> PickupSound;
 	
@@ -31,6 +29,7 @@ protected:
 		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) override;
 	
 public:
+	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "PowerUp")
 	float HealingAmount = 50.0f;
 	

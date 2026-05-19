@@ -5,6 +5,7 @@
 
 #include "TimerManager.h"
 #include "Components/SphereComponent.h"
+#include "Components/StaticMeshComponent.h"
 
 
 // Sets default values
@@ -14,6 +15,13 @@ AAR_PickupActorBase::AAR_PickupActorBase()
 	// Always start with decent defaults, let Blueprint decide the final tweaked values
 	OverlapComponent->SetSphereRadius(128.0f);
 	RootComponent = OverlapComponent;
+	
+	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
+	// Disable collision, instead we use SphereComp(Named as OverlapComp) to handle interaction queries
+	MeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	MeshComponent->SetCollisionProfileName("NoCollision");
+	MeshComponent->SetupAttachment(OverlapComponent);
+	
 }
 
 void AAR_PickupActorBase::PostInitializeComponents()

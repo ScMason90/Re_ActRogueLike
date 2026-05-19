@@ -8,6 +8,7 @@
 #include "AR_PickupActorBase.generated.h"
 
 class USphereComponent;
+class UStaticMeshComponent;
 
 UCLASS(Abstract)
 class RE_ACTROGUELIKE_API AAR_PickupActorBase : public AActor
@@ -15,12 +16,17 @@ class RE_ACTROGUELIKE_API AAR_PickupActorBase : public AActor
 	GENERATED_BODY()
 
 public:
+	
 	// Sets default values for this actor's properties
 	AAR_PickupActorBase();
 
 protected:
+	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<USphereComponent> OverlapComponent;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	TObjectPtr<UStaticMeshComponent> MeshComponent;
 	
 	// UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Pickup")
 	// float RespawnTime;
@@ -39,5 +45,7 @@ protected:
 		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 public:
+	
 	virtual void PostInitializeComponents() override;
+	
 };

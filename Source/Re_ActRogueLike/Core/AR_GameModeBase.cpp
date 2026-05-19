@@ -238,7 +238,7 @@ void AAR_GameModeBase::OnActorKilled(AActor* VictimActor, AActor* Killer)
 	// Give Credits for Kill
 	AAR_PlayerState* PS = nullptr;
 	Player = Cast<AAR_PlayerCharacter>(Killer);
-	// Do not 'UE_LOG' out or access 'ActorName(Safe)OrLabel' here.It's invalid
+	// Do not 'UE_LOG' out here or access 'ActorName(Safe)OrLabel' here.It's invalid
 	if (Player) PS = Cast<AAR_PlayerState>(Player->GetPlayerState());
 	if (PS) PS->AddCredits(CreditsPerKill);
 }

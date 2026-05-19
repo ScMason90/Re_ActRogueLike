@@ -13,11 +13,7 @@
 // Sets default values
 AAR_Credits::AAR_Credits()
 {
-	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
-	MeshComponent->SetupAttachment(RootComponent);
-	// Using 'SphereComp' in parent class for collision query instead of subclass.Disable it.
-	MeshComponent->SetCollisionProfileName("NoCollision");
-	MeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	// Using 'SphereComp' in parent class for collision query instead of subclass...
 	
 	// Set collision profile(object type), make this in Project Settings, "Overlap" only to Pawn
 	OverlapComponent->SetCollisionProfileName("Pickups");

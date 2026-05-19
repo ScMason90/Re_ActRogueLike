@@ -17,13 +17,16 @@ class RE_ACTROGUELIKE_API AAR_PlayerState : public APlayerState
 	GENERATED_BODY()
 	
 public:
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Credits")
 	int32 Credits;
 	
-	UFUNCTION(BlueprintCallable, Category = "PlayerState | Credits")
+	UFUNCTION(BlueprintCallable, Category = "Credits")
+	int32 GetCredits() const;
+	
+	UFUNCTION(BlueprintCallable, Category = "Credits")
 	void AddCredits(int32 Delta);
 	
-	UFUNCTION(BlueprintCallable, Category = "PlayerState | Credits")
+	UFUNCTION(BlueprintCallable, Category = "Credits")
 	bool RemoveCredits(int32 Delta);
 	
 	UPROPERTY(BlueprintAssignable, Category = "Events")
