@@ -5,6 +5,7 @@
 
 #include "Components/StaticMeshComponent.h"
 #include "Engine/World.h"
+#include "Re_ActRogueLike/SharedGameplayTags.h"
 #include "Re_ActRogueLike/ActionSystem/AR_ActionSystemComponent.h"
 
 
@@ -37,8 +38,8 @@ float AAR_TargetDummy::TakeDamage(float DamageAmount, struct FDamageEvent const&
 {
 	float ActualDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	
-	ActionSystemComponent->ApplyHealthChange(DamageCauser, -ActualDamage);
+	// ActionSystemComponent->ApplyHealthChange(DamageCauser, -ActualDamage);
+	ActionSystemComponent->ApplyAttributeChanged(SharedGameplayTags::Attribute_Health, -ActualDamage, Base);
 	
 	return ActualDamage;
 }
-

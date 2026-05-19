@@ -17,9 +17,10 @@
 #include "Kismet/GameplayStatics.h"
 #include "Re_ActRogueLike/SharedGameplayTags.h"
 #include "Re_ActRogueLike/ActionSystem/AR_ActionSystemComponent.h"
+#include "Re_ActRogueLike/Core/AR_GameplayStatics.h"
 
 static TAutoConsoleVariable<bool> CVarGodMode(TEXT("game.cheat.god"), false,
-	TEXT("Enable god mode for inf-health... (false = off, true = on)"), ECVF_Cheat);
+                                              TEXT("Enable god mode for inf-health... (false = off, true = on)"), ECVF_Cheat);
 
 // Sets default values
 AAR_PlayerCharacter::AAR_PlayerCharacter()
@@ -143,7 +144,11 @@ float AAR_PlayerCharacter::TakeDamage(float DamageAmount, struct FDamageEvent co
 #endif
 	float ActualDamage =  Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	
-	if (ActualDamage > 0.0f) ActionSystemComponent->ApplyHealthChange(DamageCauser, -ActualDamage);
+	if (ActualDamage > 0.0f)
+	{
+		// ActionSystemComponent->ApplyHealthChange(DamageCauser, -ActualDamage);
+		ActionSystemComponent->ApplyAttributeChanged(SharedGameplayTags::Attribute_Health, -ActualDamage, Base);
+	}
 	
 	return ActualDamage;
 	
@@ -164,7 +169,7 @@ void AAR_PlayerCharacter::OnHealthChanged(
 		if (FMath::IsNearlyZero(NewHealth)/*NewHealth <= 0.0f*/)
 		{
 			// Mark as Dead
-			IsPlayerDead = ActionSystemComponent->IsDead();
+			IsPlayerDead = UAR_GameplayStatics::IsDead(ActionSystemComponent);
 		
 			USkeletalMeshComponent* MeshComp = GetMesh(); 
 			// UCapsuleComponent* CapsuleComp = GetCapsuleComponent();
@@ -218,5 +223,6 @@ void AAR_PlayerCharacter::StopAction(const FInputActionInstance& Instance, FGame
 
 void AAR_PlayerCharacter::HealSelf(float Amount /* = 100.0f */)
 {
-	ActionSystemComponent->ApplyHealthChange(this, Amount);
+	// ActionSystemComponent->ApplyHealthChange(this, Amount);
+	ActionSystemComponent->ApplyAttributeChanged(SharedGameplayTags::Attribute_Health, Amount, Base);
 }

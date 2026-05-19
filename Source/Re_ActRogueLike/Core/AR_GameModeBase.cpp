@@ -3,6 +3,7 @@
 
 #include "AR_GameModeBase.h"
 
+#include "AR_GameplayStatics.h"
 #include "EngineUtils.h"
 #include "TimerManager.h"
 #include "EnvironmentQuery/EnvQueryManager.h"
@@ -66,7 +67,7 @@ void AAR_GameModeBase::SpawnBotTimerElapsed()
 		if (!Bot) continue;
 
 		UAR_ActionSystemComponent* ASComp = Bot->FindComponentByClass<UAR_ActionSystemComponent>();
-		if (ASComp && !ASComp->IsDead())
+		if (ASComp && !UAR_GameplayStatics::IsDead(ASComp))
 		{
 			NumOfAliveBots++;
 			if (NumOfAliveBots >= MaxBotCount) break;   
@@ -194,7 +195,7 @@ void AAR_GameModeBase::KillAllOfClass(TSubclassOf<AActor> ClassToKill)
 			SkippedCount++;
 			continue;
 		}
-		if (!ASComp->IsDead())
+		if (!UAR_GameplayStatics::IsDead(ASComp))
 		{
 			KilledCount++;
 			ASComp->Kill(ActorToKill);

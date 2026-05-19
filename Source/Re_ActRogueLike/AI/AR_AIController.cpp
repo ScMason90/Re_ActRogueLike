@@ -8,6 +8,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Re_ActRogueLike/Re_ActRoguelikeType.h"
 #include "Re_ActRogueLike/ActionSystem/AR_ActionSystemComponent.h"
+#include "Re_ActRogueLike/Core/AR_GameplayStatics.h"
 
 
 // Sets default values
@@ -46,7 +47,7 @@ void AAR_AIController::SetTargetActor(AActor* NewTarget)
 	// Survival check
 	if (UAR_ActionSystemComponent* ASComp = NewTarget->FindComponentByClass<UAR_ActionSystemComponent>())
 	{
-		if (ASComp && ASComp->IsDead()) return;
+		if (ASComp && UAR_GameplayStatics::IsDead(ASComp)/*ASComp->IsDead()*/) return;
 	}
 
 	AActor* ValidTarget = NewTarget;

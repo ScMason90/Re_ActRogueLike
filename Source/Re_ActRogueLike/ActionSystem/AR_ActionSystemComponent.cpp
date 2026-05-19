@@ -46,6 +46,34 @@ void UAR_ActionSystemComponent::InitializeComponent()
 	}
 }
 
+void UAR_ActionSystemComponent::ApplyAttributeChanged(FGameplayTag AttributeTag, float Delta,
+	EAttributeModifyType ModifyType)
+{
+	FAR_Attribute* FoundAttribute = GetAttribute(AttributeTag);
+	check(FoundAttribute);
+	
+	float OldValue = FoundAttribute->GetValue();
+
+	switch (ModifyType)
+	{
+	case Base:
+		FoundAttribute->Base += Delta;
+	case Modifier:
+		FoundAttribute->Modifier += Delta;
+	case OverrideBase:
+		FoundAttribute->Base = Delta;
+	default:
+		check(false);
+	}
+	
+	Attributes->PostAttributeChanged();
+	
+	UE_LOGFMT(LogTemp, Log, "Attribute : {0}, New : {1}, Old : {2}",
+		AttributeTag.ToString(),
+		FoundAttribute->GetValue(),
+		OldValue);
+}
+
 FAR_Attribute* UAR_ActionSystemComponent::GetAttribute(FGameplayTag InAttributeTag)
 {
 	if (FAR_Attribute** FoundAttribute = CachedAttributes.Find(InAttributeTag)) return *FoundAttribute;
@@ -95,49 +123,6 @@ void UAR_ActionSystemComponent::StopAction(FGameplayTag InActionName)
 		TEXT("UAR_ActionSystemComponent::StopAction,No Action found with name %s"), *InActionName.ToString());
 }
 
-bool UAR_ActionSystemComponent::ApplyHealthChange(AActor* Instigator, float Delta)
-{
-	// if (Delta < 0.0f)
-	// {
-	// 	if (!GetOwner()->CanBeDamaged()) return false;
-	// 	Delta *= CVarDamageMultiplier.GetValueOnGameThread();
-	// }
-	//
-	// float OldHealth = Attributes.Health;
-	//
-	// /* Simply clamp to validate Health variable.*/
-	// Attributes.Health = FMath::Clamp(Attributes.Health + Delta, 0, Attributes.MaxHealth);
-	// float ActualDelta = Attributes.Health - OldHealth;
-	//
-	// OnHealthChanged.Broadcast(Instigator, this, Attributes.Health, ActualDelta);
-	//
-	// // Died
-	// if (ActualDelta < 0.0f && GetHealth() == 0.0f)
-	// {
-	// 	AActor* Killer = nullptr;
-	// 	if (IsValid(Instigator) && !Instigator->IsPendingKillPending()) Killer = Instigator;
-	// 	if (IsValid(Instigator->GetInstigator())) Killer = Instigator->GetInstigator();
-	// 	
-	// 	AAR_GameModeBase* GM = GetWorld()->GetAuthGameMode<AAR_GameModeBase>();
-	// 	/*Passing 'Instigator->GetInstigator()' as Killer since 'Instigator' is quite like the 
-	// 	 *direct 'HitActor' throughout damage system... Or maybe we should improve our projectile class implementation?*/
-	// 	if (GM) GM->OnActorKilled(GetOwner(), Killer);
-	// }
-	
-	return true;//ActualDelta != 0;
-}
-
-// return FMath::IsNearlyZero(Attributes.Health)...Restrictively check using return Attributes.Health == 0.0f; 
-bool UAR_ActionSystemComponent::IsDead() const
-{
-	return true;//FMath::IsNearlyZero(Attributes.Health);
-}
-
-bool UAR_ActionSystemComponent::IsFullHealth() const
-{
-	return true;//FMath::IsNearlyEqual(Attributes.Health, Attributes.MaxHealth);
-}
-
 UAR_ActionSystemComponent* UAR_ActionSystemComponent::GetASComp(AActor* FromActor)
 {
 	if (FromActor) return Cast<UAR_ActionSystemComponent>(FromActor->GetComponentByClass(StaticClass()));
@@ -146,5 +131,5 @@ UAR_ActionSystemComponent* UAR_ActionSystemComponent::GetASComp(AActor* FromActo
 
 bool UAR_ActionSystemComponent::Kill(AActor* InstigatorActor)
 {
-	return ApplyHealthChange(InstigatorActor, -100.0f/*-GetMaxHealth()*/);
+	return true;//ApplyHealthChange(InstigatorActor, -100.0f/*-GetMaxHealth()*/);
 }

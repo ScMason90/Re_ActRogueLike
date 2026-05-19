@@ -11,6 +11,15 @@ struct FAR_Attribute;
 class UAR_AttributeSet;
 class UAR_Action;
 
+UENUM()
+enum EAttributeModifyType
+{
+	/* Correspond struct member variable in FAR_Attribute(Define in AR_Attribute.h) */Base,
+	/* …FAR_Attribute(Define in AR_Attribute.h) */Modifier,
+	/* Specify a new value to override 'Base'*/OverrideBase,
+	/* ErrorType */Invalid
+};
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(
 	FOnHealthChanged, AActor*, Instigator, UAR_ActionSystemComponent*, OwingComp, float, NewHealth, float, Delta);
 
@@ -57,19 +66,11 @@ protected:
 
 public:
 	/*--------------- Attributes Relative ------------------*/
-	/* Health */
 	
 	UPROPERTY(BlueprintAssignable)
 	FOnHealthChanged OnHealthChanged;
 	
-	UFUNCTION(BlueprintCallable, Category = "Attributes | Setters")
-	bool ApplyHealthChange(AActor* Instigator, float Delta);
-	
-	UFUNCTION(BlueprintCallable, Category = "Attributes | Getters")
-	bool IsDead() const;
-	
-	UFUNCTION(BlueprintCallable, Category = "Attributes | Getters")
-	bool IsFullHealth() const;
+	void ApplyAttributeChanged(FGameplayTag AttributeTag, float Delta, EAttributeModifyType ModifyType);
 	
 	UFUNCTION(BlueprintCallable, Category = "Attributes | Getters")
 	static UAR_ActionSystemComponent* GetASComp(AActor* FromActor);

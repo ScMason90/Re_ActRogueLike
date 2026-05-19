@@ -38,6 +38,11 @@ UCLASS()
 class RE_ACTROGUELIKE_API UAR_AttributeSet : public UObject
 {
 	GENERATED_BODY()
+	
+public:
+	
+	virtual void PostAttributeChanged() {};
+	
 };
 
 
@@ -51,6 +56,7 @@ class UAR_HealthAttributeSet : public UAR_AttributeSet
 	GENERATED_BODY()
 
 public:
+	
 	UAR_HealthAttributeSet();
     
 	UPROPERTY(EditAnywhere, Category = Attributes)
@@ -58,5 +64,7 @@ public:
     
 	UPROPERTY(EditAnywhere, Category = Attributes)
 	FAR_Attribute HealthMax;  // Maximum health
+	
+	virtual void PostAttributeChanged() override;
 	
 };

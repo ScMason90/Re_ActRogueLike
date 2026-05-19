@@ -14,7 +14,9 @@
 #include "Engine/World.h"
 #include "GameFramework/PawnMovementComponent.h"
 #include "Materials/MaterialInstanceDynamic.h"
+#include "Re_ActRogueLike/SharedGameplayTags.h"
 #include "Re_ActRogueLike/ActionSystem/AR_ActionSystemComponent.h"
+#include "Re_ActRogueLike/Core/AR_GameplayStatics.h"
 #include "Re_ActRogueLike/UI/AR_WorldUserWidget.h"
 
 // Sets default values
@@ -47,7 +49,8 @@ float AAR_AICharacter::TakeDamage(float DamageAmount, struct FDamageEvent const&
 {
 	float ActualDamage =  Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	
-	ActionSystemComponent->ApplyHealthChange(DamageCauser, -ActualDamage);
+	// ActionSystemComponent->ApplyHealthChange(DamageCauser, -ActualDamage);
+	ActionSystemComponent->ApplyAttributeChanged(SharedGameplayTags::Attribute_Health, -ActualDamage, Base);
 	
 	return ActualDamage;
 }
@@ -56,9 +59,9 @@ void AAR_AICharacter::OnHealthChanged(AActor* InstigatorActor, UAR_ActionSystemC
                                       float Delta)
 {
 	if (AIPawnDying) return;
-	if (OwningComp->IsDead())
+	if (UAR_GameplayStatics::IsDead(OwningComp))
 	{
-		AIPawnDying = OwningComp->IsDead();	// Marked as already dead
+		AIPawnDying = UAR_GameplayStatics::IsDead(OwningComp)/*OwningComp->IsDead()*/;	// Marked as already dead
 		HandleDeath();
 		return;
 	}

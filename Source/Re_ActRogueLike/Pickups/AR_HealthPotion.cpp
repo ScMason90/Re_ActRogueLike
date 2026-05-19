@@ -8,7 +8,9 @@
 #include "Engine/GameEngine.h"
 #include "GameFramework/Pawn.h"
 #include "Kismet/GameplayStatics.h"
+#include "Re_ActRogueLike/SharedGameplayTags.h"
 #include "Re_ActRogueLike/ActionSystem/AR_ActionSystemComponent.h"
+#include "Re_ActRogueLike/Core/AR_GameplayStatics.h"
 #include "Re_ActRogueLike/Player/AR_PlayerState.h"
 
 
@@ -41,12 +43,13 @@ void AAR_HealthPotion::OnActorOverlapped(UPrimitiveComponent* OverlappedComponen
 	if (!PS) return;
 	
 	// Skip Health Potion pickup if already full health or lacking of required credits
-	if (IsValid(ASComp) && !ASComp->IsFullHealth())
+	if (IsValid(ASComp) && !UAR_GameplayStatics::IsFullHealth(ASComp))
 	{	// Should we open to AI Pawn for pickup this?
 		if (PS->RemoveCredits(CreditCost))
 		{
 			// TODO: Considering add heal up material flash VFX...or SFX for both damaged and healed?
-			ASComp->ApplyHealthChange(this, HealingAmount);
+			// ASComp->ApplyHealthChange(this, HealingAmount);
+			ASComp->ApplyAttributeChanged(SharedGameplayTags::Attribute_Health, HealingAmount, Base);
 		
 			// Play(valid context and location) before destroying actor
 			UGameplayStatics::PlaySoundAtLocation(
