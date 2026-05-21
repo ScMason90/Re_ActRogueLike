@@ -11,7 +11,7 @@ struct FAR_Attribute;
 class UAR_AttributeSet;
 class UAR_Action;
 
-UENUM()
+UENUM(BlueprintType)
 enum EAttributeModifyType
 {
 	/* Correspond struct member variable in FAR_Attribute(Define in AR_Attribute.h) */Base,
@@ -36,6 +36,9 @@ public:
 	UAR_ActionSystemComponent();
 	
 	virtual void InitializeComponent() override;
+	
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
 	
 protected:
 	// EditAnywhere - edit in BP editor and per-instance in level.
@@ -73,6 +76,7 @@ public:
 	
 	FOnAttributeChanged& GetAttributeListener(FGameplayTag AttributeTag);
 	
+	UFUNCTION(BlueprintCallable)
 	void ApplyAttributeChanged(FGameplayTag AttributeTag, float Delta, EAttributeModifyType ModifyType);
 	
 	UFUNCTION(BlueprintCallable, Category = "Utilities")
@@ -84,8 +88,10 @@ public:
 	void StartAction(FGameplayTag InActionName);
 	void StopAction(FGameplayTag InActionName);
 	
-	/*------------- Legacy unfixed ----------------*/
+	/*------------- Legacy ----------------*/
 	
+	/** @deprecated : Maybe this's not suitable for our new ActionSystemComponent framework.Moved to another?
+	 * Considering its compatibility and application. */ 
 	UFUNCTION(BlueprintCallable, Category = "ExecInterface")
 	bool Kill(AActor* InstigatorActor);
 	

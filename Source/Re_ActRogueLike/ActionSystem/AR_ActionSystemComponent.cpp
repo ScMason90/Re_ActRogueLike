@@ -12,7 +12,9 @@
 #include "../SharedGameplayTags.h"
 #include "Re_ActRogueLike/Core/AR_GameplayStatics.h"
 
+
 static TAutoConsoleVariable<float> CVarDamageMultiplier(TEXT("game.DamageMultiplier"), 1.0f, TEXT("Global Damage Modifier for ASComponent."), ECVF_Cheat);
+
 
 // Sets default values for this component's properties
 UAR_ActionSystemComponent::UAR_ActionSystemComponent()
@@ -48,8 +50,16 @@ void UAR_ActionSystemComponent::InitializeComponent()
 	}
 }
 
+void UAR_ActionSystemComponent::BeginPlay()
+{
+	Super::BeginPlay();
+	
+	Attributes->InitializeAttributes();
+	
+}
+
 void UAR_ActionSystemComponent::ApplyAttributeChanged(FGameplayTag AttributeTag, float Delta,
-	EAttributeModifyType ModifyType)
+                                                      EAttributeModifyType ModifyType)
 {
 	FAR_Attribute* FoundAttribute = GetAttribute(AttributeTag);
 	check(FoundAttribute);

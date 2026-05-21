@@ -6,6 +6,8 @@
 #include "UObject/Object.h"
 #include "AR_AttributeSet.generated.h"
 
+class UAR_ActionSystemComponent;
+
 /**
  * Attribute unit structure.
  * Holds a base value and a modifier, used to calculate the final attribute value.
@@ -41,6 +43,10 @@ class RE_ACTROGUELIKE_API UAR_AttributeSet : public UObject
 	
 public:
 	
+	UAR_ActionSystemComponent* GetOwningComponent() const;
+	
+	virtual void InitializeAttributes() {};
+	
 	virtual void PostAttributeChanged() {};
 	
 };
@@ -66,5 +72,59 @@ public:
 	FAR_Attribute HealthMax;  // Maximum health
 	
 	virtual void PostAttributeChanged() override;
+	
+};
+
+/**
+ *
+ */
+UCLASS()
+class UAR_PawnAttributeSet : public UAR_HealthAttributeSet
+{
+	GENERATED_BODY()
+
+public:
+	
+	UAR_PawnAttributeSet();
+	
+	/**
+	 * Walk speed directly linked with Character Movement Component
+	 */
+	UPROPERTY(EditAnywhere, Category = Attributes)
+	FAR_Attribute MoveSpeed;
+	
+	virtual void InitializeAttributes() override;
+	
+	virtual void PostAttributeChanged() override;
+	
+	void ApplyMoveSpeed();
+	
+};
+
+/**
+ *
+ */
+UCLASS()
+class UAR_PlayerAttributeSet : public UAR_PawnAttributeSet
+{
+	GENERATED_BODY()
+
+public:
+	
+	UAR_PlayerAttributeSet();
+	
+};
+
+/**
+ *
+ */
+UCLASS()
+class UAR_EnemyAttributeSet : public UAR_PawnAttributeSet
+{
+	GENERATED_BODY()
+
+public:
+	
+	UAR_EnemyAttributeSet();
 	
 };

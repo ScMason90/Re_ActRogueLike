@@ -2,6 +2,20 @@
 
 
 #include "AR_AttributeSet.h"
+#include "AR_ActionSystemComponent.h"
+#include "GameFramework/Character.h"
+#include "GameFramework/CharacterMovementComponent.h"
+
+// class RE_ACTROGUELIKE_API UAR_AttributeSet : public UObject
+// -----------------------------------------------------------
+
+UAR_ActionSystemComponent* UAR_AttributeSet::GetOwningComponent() const
+{
+	return Cast<UAR_ActionSystemComponent>(GetOuter());
+}
+
+// class UAR_HealthAttributeSet : public UAR_AttributeSet
+// ------------------------------------------------------
 
 UAR_HealthAttributeSet::UAR_HealthAttributeSet()
 {
@@ -12,4 +26,50 @@ UAR_HealthAttributeSet::UAR_HealthAttributeSet()
 void UAR_HealthAttributeSet::PostAttributeChanged()
 {
 	Health.Base = FMath::Clamp(Health.Base, 0.0f, HealthMax.GetValue());
+}
+
+// class UAR_PawnAttributeSet : public UAR_HealthAttributeSet
+// ----------------------------------------------------------
+
+UAR_PawnAttributeSet::UAR_PawnAttributeSet()
+{
+	MoveSpeed = FAR_Attribute(550);
+	
+}
+
+void UAR_PawnAttributeSet::InitializeAttributes()
+{
+	Super::InitializeAttributes();
+	
+	ApplyMoveSpeed();
+}
+
+void UAR_PawnAttributeSet::PostAttributeChanged()
+{
+	Super::PostAttributeChanged();
+	
+	ApplyMoveSpeed();
+}
+
+void UAR_PawnAttributeSet::ApplyMoveSpeed()
+{
+	ACharacter* Character = Cast<ACharacter>(GetOwningComponent()->GetOwner());
+	Character->GetCharacterMovement()->MaxWalkSpeed = MoveSpeed.GetValue();
+}
+
+// class UAR_PlayerAttributeSet : public UAR_PawnAttributeSet
+// ----------------------------------------------------------
+
+UAR_PlayerAttributeSet::UAR_PlayerAttributeSet()
+{
+	
+}
+
+// class UAR_EnemyAttributeSet : public UAR_PawnAttributeSet
+// ---------------------------------------------------------
+
+UAR_EnemyAttributeSet::UAR_EnemyAttributeSet()
+{
+	MoveSpeed = FAR_Attribute(450);
+	
 }
