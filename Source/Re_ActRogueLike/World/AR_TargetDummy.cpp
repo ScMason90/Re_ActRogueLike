@@ -40,7 +40,6 @@ float AAR_TargetDummy::TakeDamage(float DamageAmount, struct FDamageEvent const&
 {
 	float ActualDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	
-	// ActionSystemComponent->ApplyHealthChange(DamageCauser, -ActualDamage);
 	ActionSystemComponent->ApplyAttributeChanged(SharedGameplayTags::Attribute_Health, -ActualDamage, Base);
 	
 	return ActualDamage;

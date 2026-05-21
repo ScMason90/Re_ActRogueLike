@@ -20,10 +20,9 @@ EBTNodeResult::Type UAR_BTTask_HealSelf::ExecuteTask(UBehaviorTreeComponent& Own
 	APawn* Pawn = AIController->GetPawn();
 	if (!Pawn) return EBTNodeResult::Failed;
 	
-	UAR_ActionSystemComponent* ASComp/*Mainly for its 'Attribute'*/ = Pawn->FindComponentByClass<UAR_ActionSystemComponent>();
+	UAR_ActionSystemComponent* ASComp = Pawn->FindComponentByClass<UAR_ActionSystemComponent>();
 	if (!ASComp) return EBTNodeResult::Failed;
 	
-	// ASComp->ApplyHealthChange(nullptr, HealAmount);
 	ASComp->ApplyAttributeChanged(SharedGameplayTags::Attribute_Health, HealAmount, Base);
 	
 	return EBTNodeResult::Succeeded;	// Super::ExecuteTask(OwnerComp, NodeMemory) 

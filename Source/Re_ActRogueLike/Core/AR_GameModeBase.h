@@ -23,6 +23,7 @@ class RE_ACTROGUELIKE_API AAR_GameModeBase : public AGameModeBase
 	GENERATED_BODY()
 	
 public:
+	
 	AAR_GameModeBase();
 	
 	virtual void StartPlay() override;
@@ -52,6 +53,7 @@ protected:
 	void OnPickupSpawnQueryFinished(UEnvQueryInstanceBlueprintWrapper* QueryInstance, EEnvQueryStatus::Type QueryStatus);
 	
 public:
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "AI")
 	int32 CreditsPerKill;
 	

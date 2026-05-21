@@ -198,7 +198,7 @@ void AAR_GameModeBase::KillAllOfClass(TSubclassOf<AActor> ClassToKill)
 		if (!UAR_GameplayStatics::IsDead(ASComp))
 		{
 			KilledCount++;
-			ASComp->Kill(ActorToKill);
+			ASComp->Kill(ActorToKill/*'Class Suicide'*/);
 		}
 	}
 	UE_LOG(LogGameMode, Warning, TEXT("AAR_GameModeBase::KillAllOfClass(%s) => Killed: %d | Skipped: %d"),

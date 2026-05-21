@@ -19,6 +19,7 @@ public:
 	AAR_TargetDummy();
 
 protected:
+	
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UStaticMeshComponent> MeshComponent;
 	
@@ -28,6 +29,8 @@ protected:
 	void OnHealthChanged(FGameplayTag AttributeTag, float NewHealth, float OldHealth);
 
 public:
+	
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, 
 		class AController* EventInstigator, AActor* DamageCauser) override;
+	
 };

@@ -11,11 +11,13 @@ class RE_ACTROGUELIKE_API AAR_MagicProjectile : public AAR_ProjectileBase
 	GENERATED_BODY()
 
 public:
+	
 	AAR_MagicProjectile();
 	
 	virtual void LifeSpanExpired() override;
 
 protected:
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Damage")
 	float DamageAmount;
 	

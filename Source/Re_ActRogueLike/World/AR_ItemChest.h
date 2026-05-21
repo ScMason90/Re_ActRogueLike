@@ -19,6 +19,7 @@ public:
 	AAR_ItemChest();
 
 protected:
+	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<UStaticMeshComponent> BaseMesh;
 	
@@ -30,4 +31,5 @@ protected:
 public:
 	
 	virtual void Interact_Implementation(APawn* InstigatorPawn) override;
+	
 };

@@ -15,6 +15,7 @@ class RE_ACTROGUELIKE_API UAR_BTService_CheckRangeTo : public UBTService
 	GENERATED_BODY()
 	
 public:
+	
 	UAR_BTService_CheckRangeTo();
 	
 protected:
@@ -30,4 +31,5 @@ protected:
 	float MaxAttackRange = 500.0f;
 	
 	virtual void TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
+	
 };

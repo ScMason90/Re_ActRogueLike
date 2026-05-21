@@ -62,13 +62,14 @@ protected:
 	TObjectPtr<UInputAction> IA_FireBlackHole;
 	
 	/* -------------Material Relative---------------- */
-	/* VisibleAnywhere = read-only, still useful to view in-editor and enforce a convention. */
 	
 	UPROPERTY(VisibleAnywhere, Category = "Reaction | OnHealthChange")
 	FName TimeToHitParamName;
 	
 	/* -------------Player State---------------- */
-	// I think this will be replaced in future with GameplayTags in our 'GAS'.
+	
+	/** I think this will be replaced in future with GameplayTags in our 'GAS' 
+	 * when we need execute some extern logic based on listener on this. */ 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Player State")
 	bool IsPlayerDead = false;
 
@@ -91,6 +92,7 @@ public:
 		class AController* EventInstigator, AActor* DamageCauser) override;
 
 protected:
+	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<USpringArmComponent> SpringArmComponent;
 	
@@ -106,6 +108,7 @@ protected:
 	void OnHealthChanged(FGameplayTag AttributeTag, float NewHealth, float OldHealth);
 
 public:
+	
 	UFUNCTION()
 	void StartAction(const FInputActionInstance& Instance, FGameplayTag InActionName);
 	UFUNCTION()

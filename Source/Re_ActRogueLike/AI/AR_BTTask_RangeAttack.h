@@ -33,6 +33,7 @@ protected:
 	float MaxBulletSpread = 5.0f;
 	
 public:
+	
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 	
 	UAR_BTTask_RangeAttack();

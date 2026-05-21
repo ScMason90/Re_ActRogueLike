@@ -39,7 +39,7 @@ public:
 	
 protected:
 	// EditAnywhere - edit in BP editor and per-instance in level.
-	// VisibleAnywhere - 'read-only' in editor and level. (Use for Components)
+	// VisibleAnywhere - 'read-only' in editor and level. (Use for Components).Still useful to view in-editor and enforce a convention.
 	// EditDefaultsOnly - hide variable per-instance, edit in BP editor only
 	// VisibleDefaultsOnly - 'read-only' access for variable, only in BP editor (uncommon)
 	// EditInstanceOnly - allow only editing of instance (e.g. when placed in level)
@@ -75,7 +75,7 @@ public:
 	
 	void ApplyAttributeChanged(FGameplayTag AttributeTag, float Delta, EAttributeModifyType ModifyType);
 	
-	UFUNCTION(BlueprintCallable, Category = "Attributes | Getters")
+	UFUNCTION(BlueprintCallable, Category = "Utilities")
 	static UAR_ActionSystemComponent* GetASComp(AActor* FromActor);
 	
 	FGameplayTagContainer ActiveGameplayTags;
@@ -86,7 +86,7 @@ public:
 	
 	/*------------- Legacy unfixed ----------------*/
 	
-	UFUNCTION(BlueprintCallable, Category = "Attributes | ExecInterface")
+	UFUNCTION(BlueprintCallable, Category = "ExecInterface")
 	bool Kill(AActor* InstigatorActor);
 	
 };

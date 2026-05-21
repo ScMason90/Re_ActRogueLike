@@ -16,10 +16,12 @@ public:
 	AAR_AIController();
 
 protected:
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "AI")
 	TObjectPtr<UBehaviorTree> BehaviorTree;
 
 public:
+	
 	UFUNCTION(BlueprintCallable, Category = "AI|Target")
 	void SetTargetActor(AActor* NewTarget);
 	

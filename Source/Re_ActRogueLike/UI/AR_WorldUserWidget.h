@@ -16,6 +16,7 @@ class RE_ACTROGUELIKE_API UAR_WorldUserWidget : public UUserWidget
 	GENERATED_BODY()
 	
 public:
+	
 	UPROPERTY(BlueprintReadOnly, Category = "UI")
 	TObjectPtr<AActor> AttachedActor;
 	
@@ -31,12 +32,14 @@ public:
 	FVector WorldOffset;
 	
 protected:
+	
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<USizeBox> ParentSizeBox;
 	
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 	
 public:
+	
 	// Utility interface for set 'visibility' outside the class object
 	UFUNCTION(BlueprintCallable, Category = "UI")
 	void SetWidgetVisible(bool bVisible);

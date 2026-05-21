@@ -146,7 +146,6 @@ float AAR_PlayerCharacter::TakeDamage(float DamageAmount, struct FDamageEvent co
 	
 	if (ActualDamage > 0.0f)
 	{
-		// ActionSystemComponent->ApplyHealthChange(DamageCauser, -ActualDamage);
 		ActionSystemComponent->ApplyAttributeChanged(SharedGameplayTags::Attribute_Health, -ActualDamage, Base);
 	}
 	
@@ -224,6 +223,5 @@ void AAR_PlayerCharacter::StopAction(const FInputActionInstance& Instance, FGame
 
 void AAR_PlayerCharacter::HealSelf(float Amount /* = 100.0f */)
 {
-	// ActionSystemComponent->ApplyHealthChange(this, Amount);
 	ActionSystemComponent->ApplyAttributeChanged(SharedGameplayTags::Attribute_Health, Amount, Base);
 }

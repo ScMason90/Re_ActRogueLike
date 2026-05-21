@@ -11,7 +11,9 @@ UCLASS(Abstract)
 class RE_ACTROGUELIKE_API AAR_BlackHoleProjectile : public AAR_ProjectileBase
 {
 	GENERATED_BODY()
+	
 protected:
+	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<URadialForceComponent> RadialForceComponent;
 	
@@ -30,4 +32,5 @@ public:
 	
 	// Override Explode() intend to shut down its logic
 	virtual void Explode_Implementation(const FHitResult& Hit) override;
+	
 };

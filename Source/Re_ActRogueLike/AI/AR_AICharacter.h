@@ -28,6 +28,7 @@ public:
 	virtual void BeginPlay() override;
 
 protected:
+	
 	void OnHealthChanged(FGameplayTag AttributeTag, float NewHealth, float OldHealth);
 	
 	void HandleDeath();
@@ -39,6 +40,7 @@ protected:
 	FTimerHandle TimerHandle_Dissolve;
 
 public:
+	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<UAR_ActionSystemComponent> ActionSystemComponent;
 

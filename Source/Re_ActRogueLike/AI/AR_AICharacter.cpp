@@ -15,6 +15,7 @@
 #include "Materials/MaterialInstanceDynamic.h"
 #include "Re_ActRogueLike/SharedGameplayTags.h"
 #include "Re_ActRogueLike/ActionSystem/AR_ActionSystemComponent.h"
+#include "Re_ActRogueLike/ActionSystem/AR_AttributeSet.h"
 #include "Re_ActRogueLike/Core/AR_GameplayStatics.h"
 #include "Re_ActRogueLike/UI/AR_WorldUserWidget.h"
 
@@ -53,7 +54,6 @@ float AAR_AICharacter::TakeDamage(float DamageAmount, struct FDamageEvent const&
 	if (AAR_AIController* AICon = Cast<AAR_AIController>(GetController()))
 		AICon->SetTargetActor(DamageCauser);
 	
-	// ActionSystemComponent->ApplyHealthChange(DamageCauser, -ActualDamage);
 	ActionSystemComponent->ApplyAttributeChanged(SharedGameplayTags::Attribute_Health, -ActualDamage, Base);
 	
 	return ActualDamage;
@@ -86,8 +86,8 @@ void AAR_AICharacter::OnHealthChanged(FGameplayTag AttributeTag, float NewHealth
 		// Flash when damaged - PS:this design was too rough
 		GetMesh()->SetScalarParameterValueOnMaterials(TimeToHitParamName, GetWorld()->TimeSeconds);
 		// GEngine->AddOnScreenDebugMessage(01, 3, FColor::Emerald, 
-		// 	FString::Printf(
-		// 		TEXT("AAR_AICharacter::OnHealthChanged(), Current health: %.2f"), ActionSystemComponent->GetHealth()));
+		// 	FString::Printf(TEXT("AAR_AICharacter::OnHealthChanged(), Current health: %.2f"), 
+		// 		ActionSystemComponent->GetAttribute(SharedGameplayTags::Attribute_Health)->GetValue()));
 	}
 }
 

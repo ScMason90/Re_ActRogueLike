@@ -14,9 +14,11 @@ class URadialForceComponent;
 UCLASS(Abstract)
 class RE_ACTROGUELIKE_API AAR_ExplosiveBarrel : public AActor
 {
+	
 	GENERATED_BODY()
 
 protected:
+	
 	// Barrel mesh with physics simulation enabled
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	TObjectPtr<UStaticMeshComponent> MeshComponent;
@@ -68,4 +70,5 @@ public:
 	
 	// TODO: Considering make a explosive object base cpp class and implement 'DamageSystem' when explode after hit?
 	// virtual void OnImpact(AActor* Instigator, const FHitResult& Hit);
+	
 };

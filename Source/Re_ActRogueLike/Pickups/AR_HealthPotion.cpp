@@ -44,7 +44,6 @@ void AAR_HealthPotion::OnActorOverlapped(UPrimitiveComponent* OverlappedComponen
 		if (PS->RemoveCredits(CreditCost))
 		{
 			// TODO: Considering add heal up material flash VFX...or SFX for both damaged and healed?
-			// ASComp->ApplyHealthChange(this, HealingAmount);
 			ASComp->ApplyAttributeChanged(SharedGameplayTags::Attribute_Health, HealingAmount, Base);
 		
 			// Play(valid context and location) before destroying actor

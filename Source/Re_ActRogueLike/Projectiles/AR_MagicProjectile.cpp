@@ -30,15 +30,4 @@ void AAR_MagicProjectile::OnImpact(AActor* OtherActor, const FHitResult& Hit)
 	UGameplayStatics::ApplyPointDamage(OtherActor, DamageAmount, HitFromDirection, Hit, 
 		InstigatorPawnActorRef->GetInstigatorController(), this, DmgTypeClass);
 	
-	// Legacy Damage Logic
-	// if (OtherActor && OtherActor != InstigatorPawnActorRef)
-	// {
-	// 	if (UAR_AttributeComponent* AttributeComp = Cast<UAR_AttributeComponent>(
-	// 		OtherActor->GetComponentByClass(UAR_AttributeComponent::StaticClass())))
-	// 	{
-	// 		AttributeComp->ApplyHealthChange(this, -DamageAmount);
-	// 		Explode(Hit);
-	// 		if (IsValid(this))Destroy();
-	// 	}
-	// }
 }

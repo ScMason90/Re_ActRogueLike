@@ -10,9 +10,11 @@ class RE_ACTROGUELIKE_API AAR_TeleportProjectile : public AAR_ProjectileBase
 	GENERATED_BODY()
 
 public:
+	
 	AAR_TeleportProjectile();
 
 protected:
+	
 	/* re-usable handle for the initial explosion delay and the teleportation (only 1 timer must be active) */
 	FTimerHandle TimerHandle_TeleportProj;
 	

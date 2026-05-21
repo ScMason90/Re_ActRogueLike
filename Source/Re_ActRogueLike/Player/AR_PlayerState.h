@@ -17,6 +17,7 @@ class RE_ACTROGUELIKE_API AAR_PlayerState : public APlayerState
 	GENERATED_BODY()
 	
 public:
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Credits")
 	int32 Credits;
 	

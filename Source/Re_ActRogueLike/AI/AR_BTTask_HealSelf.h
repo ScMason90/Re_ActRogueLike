@@ -17,6 +17,7 @@ class RE_ACTROGUELIKE_API UAR_BTTask_HealSelf : public UBTTaskNode
 	GENERATED_BODY()
 
 public:
+	
 	UAR_BTTask_HealSelf();
 
 	UPROPERTY(EditAnywhere, Category = "Magnitude")

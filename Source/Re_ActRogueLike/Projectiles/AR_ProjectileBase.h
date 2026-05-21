@@ -8,7 +8,6 @@
 
 
 class UNiagaraSystem;
-// Forward declarations
 class UNiagaraComponent;
 class UAudioComponent;
 class USphereComponent;

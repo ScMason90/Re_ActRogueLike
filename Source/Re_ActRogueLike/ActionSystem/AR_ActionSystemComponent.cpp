@@ -10,6 +10,7 @@
 #include "Logging/StructuredLog.h"
 #include "Re_ActRogueLike/Core/AR_GameModeBase.h"
 #include "../SharedGameplayTags.h"
+#include "Re_ActRogueLike/Core/AR_GameplayStatics.h"
 
 static TAutoConsoleVariable<float> CVarDamageMultiplier(TEXT("game.DamageMultiplier"), 1.0f, TEXT("Global Damage Modifier for ASComponent."), ECVF_Cheat);
 
@@ -142,5 +143,8 @@ UAR_ActionSystemComponent* UAR_ActionSystemComponent::GetASComp(AActor* FromActo
 
 bool UAR_ActionSystemComponent::Kill(AActor* InstigatorActor)
 {
-	return true;//ApplyHealthChange(InstigatorActor, -100.0f/*-GetMaxHealth()*/);
+	ApplyAttributeChanged(SharedGameplayTags::Attribute_Health, 
+		GetAttribute(SharedGameplayTags::Attribute_HealthMax)->GetValue(), Base);
+	
+	return UAR_GameplayStatics::IsDead(this);
 }

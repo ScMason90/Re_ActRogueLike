@@ -18,6 +18,7 @@ class RE_ACTROGUELIKE_API AAR_PlayerController : public APlayerController
 	GENERATED_BODY()
 	
 protected:
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	TObjectPtr<UInputMappingContext> DefaultMappingContext;
 	
@@ -36,4 +37,5 @@ protected:
 public:
 	
 	AAR_PlayerController();
+	
 };

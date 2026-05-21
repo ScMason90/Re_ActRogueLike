@@ -15,6 +15,7 @@ class RE_ACTROGUELIKE_API UAR_EnvQueryContext_TargetActor : public UEnvQueryCont
 	GENERATED_BODY()
 	
 public:
+	
 	virtual void ProvideContext(FEnvQueryInstance& QueryInstance, FEnvQueryContextData& ContextData) const override;
 	
 };

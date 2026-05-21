@@ -20,6 +20,7 @@ class RE_ACTROGUELIKE_API UAR_BTDecorator_IsLowHealthAndCoolDown : public UBTDec
 	GENERATED_BODY()
 	
 public:
+	
 	UAR_BTDecorator_IsLowHealthAndCoolDown();
 	
 	virtual uint16 GetInstanceMemorySize() const override;

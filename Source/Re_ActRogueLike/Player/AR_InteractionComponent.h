@@ -16,6 +16,7 @@ public:
 	UAR_InteractionComponent();
 
 protected:
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Interaction")
 	float InteractionRadius = 800.0f;
 	
