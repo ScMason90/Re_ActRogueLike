@@ -90,4 +90,5 @@ protected:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Effects | Anim&VFXs")
 	TObjectPtr<UAnimMontage> DeathMontage;
+	
 };

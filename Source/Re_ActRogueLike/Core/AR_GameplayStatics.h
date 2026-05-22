@@ -17,8 +17,16 @@ class RE_ACTROGUELIKE_API UAR_GameplayStatics : public UBlueprintFunctionLibrary
 	
 public:
 	
+	/**
+	 * @param ASComp ActionSystemComponent derived from UAR_ActionSystemComponent class.
+	 */
+	UFUNCTION(BlueprintCallable)
 	static bool IsFullHealth(UAR_ActionSystemComponent* ASComp);
 	
+	/**
+	 * @param ASComp ActionSystemComponent derived from UAR_ActionSystemComponent class.
+	 */
+	UFUNCTION(BlueprintCallable)
 	static bool IsDead(UAR_ActionSystemComponent* ASComp);
 	
 };

@@ -20,8 +20,13 @@ enum EAttributeModifyType
 	/* ErrorType */Invalid
 };
 
+// Native C++ Delegates
 DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnAttributeChanged, 
 	FGameplayTag/*AttributeTag*/, float/*NewAttributeValue*/, float/*OldAttributeValue*/)
+
+// Blueprint Delegates
+DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnAttributeDynamicChanged, 
+	FGameplayTag, AttributeTag, float, NewAttributeValue, float, OldAttributeValue);
 
 /*
  *
@@ -61,7 +66,11 @@ protected:
 	UPROPERTY(EditAnywhere, Category = Attributes, NoClear)
 	TSubclassOf<UAR_AttributeSet> AttributeSetClass;
 	
+	// C++ Native Listeners
 	TMap<FGameplayTag, FOnAttributeChanged> AttributeListeners;
+	
+	// Blueprint Listeners
+	TMap<FGameplayTag, TArray<FOnAttributeDynamicChanged>> AttributeDynamicListeners; 
 	
 	UPROPERTY()
 	TArray<TObjectPtr<UAR_Action>> Actions;
@@ -72,9 +81,15 @@ protected:
 public:
 	/*--------------- Attributes & Actions Relative ------------------*/
 	
-	FAR_Attribute* GetAttribute(FGameplayTag InAttributeTag);
+	FAR_Attribute* GetAttribute(FGameplayTag InAttributeTag) const;
+	
+	UFUNCTION(BlueprintCallable)
+	float GetAttributeValue(FGameplayTag InAttributeTag) const;
 	
 	FOnAttributeChanged& GetAttributeListener(FGameplayTag AttributeTag);
+	
+	UFUNCTION(BlueprintCallable, DisplayName = "Add Attribute Listener", meta = (Keywords = "events,delegate"))
+	void AddDynamicAttributeListener(FOnAttributeDynamicChanged Event, FGameplayTag AttributeTag);
 	
 	UFUNCTION(BlueprintCallable)
 	void ApplyAttributeChanged(FGameplayTag AttributeTag, float Delta, EAttributeModifyType ModifyType);

@@ -9,7 +9,7 @@
 // class RE_ACTROGUELIKE_API UAR_AttributeSet : public UObject
 // -----------------------------------------------------------
 
-UAR_ActionSystemComponent* UAR_AttributeSet::GetOwningComponent() const
+UAR_ActionSystemComponent* UAR_AttributeSet::GetOwningASComponent() const
 {
 	return Cast<UAR_ActionSystemComponent>(GetOuter());
 }
@@ -53,7 +53,7 @@ void UAR_PawnAttributeSet::PostAttributeChanged()
 
 void UAR_PawnAttributeSet::ApplyMoveSpeed()
 {
-	ACharacter* Character = Cast<ACharacter>(GetOwningComponent()->GetOwner());
+	ACharacter* Character = Cast<ACharacter>(GetOwningASComponent()->GetOwner());
 	Character->GetCharacterMovement()->MaxWalkSpeed = MoveSpeed.GetValue();
 }
 

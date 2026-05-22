@@ -18,6 +18,7 @@ class RE_ACTROGUELIKE_API UAR_Action : public UObject
 	GENERATED_BODY()
 
 protected:
+	
 	/* Action nickname to start/stop without a reference to the object */
 	UPROPERTY(EditDefaultsOnly, Category = "Actions")
 	FGameplayTag ActionName;
@@ -32,6 +33,10 @@ protected:
 	float CooldownTime = 0.0f;
 
 public:
+	
+	/** Since we load 'UAR_AttributeSet' and 'UAR_Action' or their derived classes only in 'UAR_ActionSystemComponent'
+	 * , No need of any error check and validation.Keep that in mind we always restore database and
+	 * execute relative application in 'ASComp' */
 	UFUNCTION(BlueprintCallable, Category = "Utilities")
 	UAR_ActionSystemComponent* GetOwningASComponent() const;
 	
@@ -48,6 +53,7 @@ public:
 	float GetCooldownTimeRemaining() const;
 	
 protected:
+	
 	/* GameTime until the Action is available again */	
 	UPROPERTY(Transient)
 	float CooldownThreshold = 0.0f;

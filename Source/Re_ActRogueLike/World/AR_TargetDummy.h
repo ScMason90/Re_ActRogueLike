@@ -23,7 +23,7 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UStaticMeshComponent> MeshComponent;
 	
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<UAR_ActionSystemComponent> ActionSystemComponent;
 	
 	void OnHealthChanged(FGameplayTag AttributeTag, float NewHealth, float OldHealth);
