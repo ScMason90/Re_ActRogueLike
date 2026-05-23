@@ -91,6 +91,12 @@ public:
 	UFUNCTION(BlueprintCallable, DisplayName = "Add Attribute Listener", meta = (Keywords = "events,delegate"))
 	void AddDynamicAttributeListener(FOnAttributeDynamicChanged Event, FGameplayTag AttributeTag);
 	
+	UFUNCTION(BlueprintCallable, DisplayName = "Remove Attribute Listener", meta = (Keywords = "events,delegate"))
+	void RemoveDynamicAttributeListener(FOnAttributeDynamicChanged Event);
+	
+	/**
+	 * @param ModifyType Check Source Enum for details.Whether it is C++ or a blueprint, this parameter must be specified; otherwise, an error will be triggered from the check(false) enumeration result within the function.
+	 */
 	UFUNCTION(BlueprintCallable)
 	void ApplyAttributeChanged(FGameplayTag AttributeTag, float Delta, EAttributeModifyType ModifyType);
 	

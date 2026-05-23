@@ -89,9 +89,16 @@ void UAR_ActionSystemComponent::ApplyAttributeChanged(FGameplayTag AttributeTag,
 	// Blueprint Delegates
 	if (TArray<FOnAttributeDynamicChanged>* Events = AttributeDynamicListeners.Find(AttributeTag))
 	{
-		for (FOnAttributeDynamicChanged& Event : *Events)
+		for (int i = Events->Num() - 1; i >= 0; --i)
 		{
-			Event.Execute(AttributeTag, FoundAttribute->GetValue(), OldValue);
+			FOnAttributeDynamicChanged& Event = (*Events)[i];
+			bool bIsBound = Event.ExecuteIfBound(AttributeTag, FoundAttribute->GetValue(), OldValue);
+			if (!bIsBound)
+			{
+				Events->RemoveAt(i);
+				UE_LOG(LogTemp, Log, TEXT("UAR_ActionSystemComponent::ApplyAttributeChanged,"
+							  "Clean up expired dynamic(BP) attribute delegate for %s"), *GetNameSafe(GetOwner()));
+			}
 		}
 	}
 	
@@ -124,6 +131,19 @@ void UAR_ActionSystemComponent::AddDynamicAttributeListener(FOnAttributeDynamicC
 {
 	TArray<FOnAttributeDynamicChanged>& Events = AttributeDynamicListeners.FindOrAdd(AttributeTag);
 	Events.Add(Event);
+}
+
+void UAR_ActionSystemComponent::RemoveDynamicAttributeListener(FOnAttributeDynamicChanged Event)
+{
+	for (TPair<FGameplayTag, TArray<FOnAttributeDynamicChanged>>& Listener : AttributeDynamicListeners)
+	{
+		if (Listener.Value.RemoveSingle(Event) > 0)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("UAR_ActionSystemComponent::RemoveDynamicAttributeListener,"
+								 "successfully removed blueprint binding."));
+			break;
+		}
+	}
 }
 
 void UAR_ActionSystemComponent::GrantAction(TSubclassOf<UAR_Action> NewActionClass)
