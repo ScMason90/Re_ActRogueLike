@@ -85,7 +85,7 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "AI Pawn State")
 	float DeathAnimDuration = 3.0f;
 	
-	/* -------------Effects---------------- */
+	/* ------------- Effects -------------- */
 	/* Anim&VFXs */
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Effects | Anim&VFXs")

@@ -9,7 +9,8 @@
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnCreditsChanged, AAR_PlayerState*, PlayerState, int32, NewCredits, int32, Delta);
 
 /**
- * 
+ * This hole CreditSystem would be refactored later on.We'll use our own ActionSystem to rebuild it.
+ * By then, this class would be redundant.Fortunately, it doesn't have much code now.
  */
 UCLASS()
 class RE_ACTROGUELIKE_API AAR_PlayerState : public APlayerState

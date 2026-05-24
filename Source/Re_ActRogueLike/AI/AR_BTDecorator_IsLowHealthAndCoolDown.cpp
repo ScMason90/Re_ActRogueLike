@@ -4,7 +4,9 @@
 #include "AR_BTDecorator_IsLowHealthAndCoolDown.h"
 
 #include "AIController.h"
+#include "AR_AICharacter.h"
 #include "Engine/World.h"
+#include "Re_ActRogueLike/SharedGameplayTags.h"
 #include "Re_ActRogueLike/ActionSystem/AR_ActionSystemComponent.h"
 
 UAR_BTDecorator_IsLowHealthAndCoolDown::UAR_BTDecorator_IsLowHealthAndCoolDown()
@@ -18,31 +20,28 @@ bool UAR_BTDecorator_IsLowHealthAndCoolDown::CalculateRawConditionValue(UBehavio
 	AAIController* AICon = OwnerComp.GetAIOwner();
 	if (!AICon) return false;
 	
-	APawn* Pawn = AICon->GetPawn();
+	AAR_AICharacter* Pawn = Cast<AAR_AICharacter>(AICon->GetPawn());
 	if (!Pawn) return false;
 	
-	// idk, but tomlooman just comment out these code, so i do the same, 
-	// maybe he just wants them be void before the hole 'AttributeSet' class/system been set up well.   
-	
-	// Mainly for its Attributes variable
 	UAR_ActionSystemComponent* ASComp = Pawn->FindComponentByClass<UAR_ActionSystemComponent>();
-	// if (!ASComp) return false;
-	if (ensure(ASComp)) check(false);
+	if (!ASComp) return false;
+	ensure(ASComp);
 	
 	// Low Health Check - adjust threshold if changing design
-	// bool bLowHealth = ASComp->GetHealth() <= ASComp->GetMaxHealth() * LowHealthThreshold;
-	// if (!bLowHealth) return false;
+	float CurHealth = ASComp->GetAttributeValue(SharedGameplayTags::Attribute_Health),
+		  MaxHealth = ASComp->GetAttributeValue(SharedGameplayTags::Attribute_HealthMax);
+	bool bLowHealth = CurHealth <= MaxHealth * LowHealthThreshold;
+	if (!bLowHealth) return false;
 	
 	// Cooldown check - We can't precisely check equality of float number.
 	FBTDecoratorLowHealthMemory* MyMemory = reinterpret_cast<FBTDecoratorLowHealthMemory*>(NodeMemory);
-	float PresentTime = Pawn->GetWorld()->GetTimeSeconds();
-	// if (PresentTime - MyMemory->LastTriggerTime < CoolDownTime) return false;
+	float PresentTime = ASComp->GetWorld()->GetTimeSeconds();
+	if (PresentTime - MyMemory->LastTriggerTime < CoolDownTime) return false;
 	
 	// Update Cooldown time
 	MyMemory->LastTriggerTime = PresentTime;
 	
-	//return true;// Super::CalculateRawConditionValue(OwnerComp, NodeMemory)
-	return false;
+	return true;// Super::CalculateRawConditionValue(OwnerComp, NodeMemory)
 }
 
 uint16 UAR_BTDecorator_IsLowHealthAndCoolDown::GetInstanceMemorySize() const

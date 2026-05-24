@@ -84,8 +84,9 @@ public:
 	
 	UFUNCTION()
 	void RespawnPlayerElapsed(AController* Controller);
-	
-	// @bug - PlayerHealthBar won't sync the new respawn player 'Health'.
+
+	/** @deprecated This isn't working for now in new our own GAS framework - ActionSystem (26.5.24)
+	 * @bug - PlayerHealthBar won't sync the new respawn player 'Health'. */
 	virtual void OnActorKilled(AActor* VictimActor, AActor* Killer);
 
 };

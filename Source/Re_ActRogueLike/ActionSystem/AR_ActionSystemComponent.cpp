@@ -70,10 +70,13 @@ void UAR_ActionSystemComponent::ApplyAttributeChanged(FGameplayTag AttributeTag,
 	{
 	case Base:
 		FoundAttribute->Base += Delta;
+		break;
 	case Modifier:
 		FoundAttribute->Modifier += Delta;
+		break;
 	case OverrideBase:
 		FoundAttribute->Base = Delta;
+		break;
 	default:
 		check(false);
 	}

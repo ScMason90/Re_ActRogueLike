@@ -61,12 +61,12 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
 	TObjectPtr<UInputAction> IA_FireBlackHole;
 	
-	/* -------------Material Relative---------------- */
+	/* ------------- Material Relative ---------------- */
 	
 	UPROPERTY(VisibleAnywhere, Category = "Reaction | OnHealthChange")
 	FName TimeToHitParamName;
 	
-	/* -------------Player State---------------- */
+	/* --------------- Player State ----------------- */
 	
 	/** I think this will be replaced in future with GameplayTags in our 'GAS' 
 	 * when we need execute some extern logic based on listener on this. */ 

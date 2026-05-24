@@ -20,7 +20,7 @@ public:
 
 protected:
 	
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<UStaticMeshComponent> MeshComponent;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)

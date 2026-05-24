@@ -13,7 +13,7 @@
 #include "Re_ActRogueLike/Player/AR_PlayerController.h"
 #include "Re_ActRogueLike/Player/AR_PlayerState.h"
 
-static TAutoConsoleVariable<bool> CVarSpawnBots(TEXT("game.mode.spawnbots"), true, TEXT("Enable AI bot spawning. 0 = disabled.This only works before PIE in editor"), ECVF_Default);
+static TAutoConsoleVariable<bool> CVarSpawnBots(TEXT("game.mode.spawnbots"), true, TEXT("Enable AI bot spawning. false = disabled.This only works before PIE in editor"), ECVF_Default);
 
 AAR_GameModeBase::AAR_GameModeBase()
 {
@@ -216,9 +216,7 @@ void AAR_GameModeBase::RespawnPlayerElapsed(AController* Controller)
 
 void AAR_GameModeBase::OnActorKilled(AActor* VictimActor, AActor* Killer)
 {
-	// And for somehow, I just keep get 'bugged' here...
-	UE_LOG(LogTemp, Log, TEXT("AAR_GameModeBase::OnActorKilled,Victim: %s, Killer: %s"), 
-		*VictimActor->GetActorNameOrLabel(), *Killer->GetActorNameOrLabel());
+	// Deprecated...
 	
 	// Respawn Player after delay
 	AAR_PlayerCharacter* Player = Cast<AAR_PlayerCharacter>(VictimActor);

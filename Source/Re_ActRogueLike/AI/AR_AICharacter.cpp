@@ -15,7 +15,6 @@
 #include "Materials/MaterialInstanceDynamic.h"
 #include "Re_ActRogueLike/SharedGameplayTags.h"
 #include "Re_ActRogueLike/ActionSystem/AR_ActionSystemComponent.h"
-#include "Re_ActRogueLike/ActionSystem/AR_AttributeSet.h"
 #include "Re_ActRogueLike/Core/AR_GameplayStatics.h"
 #include "Re_ActRogueLike/UI/AR_WorldUserWidget.h"
 
@@ -61,8 +60,6 @@ float AAR_AICharacter::TakeDamage(float DamageAmount, struct FDamageEvent const&
 
 void AAR_AICharacter::OnHealthChanged(FGameplayTag AttributeTag, float NewHealth, float OldHealth)
 {
-	float Delta = OldHealth - NewHealth;
-	
 	if (AIPawnDying) return;
 	if (UAR_GameplayStatics::IsDead(ActionSystemComponent))
 	{
@@ -70,8 +67,8 @@ void AAR_AICharacter::OnHealthChanged(FGameplayTag AttributeTag, float NewHealth
 		HandleDeath();
 		return;
 	}
-	
-	if (Delta < 0.0f)
+
+	if (float Delta = NewHealth - OldHealth; Delta < 0.0f)
 	{
 		if (ActiveHealthBar == nullptr)
 		{

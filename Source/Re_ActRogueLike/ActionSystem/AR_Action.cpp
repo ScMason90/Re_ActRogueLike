@@ -40,7 +40,7 @@ void UAR_Action::StopAction_Implementation()
 bool UAR_Action::CanStart() const
 {
 	if (IsRunning()) return false;
-	if (GetOwningASComponent()->ActiveGameplayTags.HasAny(BlockedTags)) return false;
+	if (GetOwningASComponent()->ActiveGameplayTags.HasAny(BlockedTags)/*hierarchy involved*/) return false;
 	if (GetCooldownTimeRemaining() > 0.0f)
 	{
 		UE_LOG(LogTemp, Log, TEXT("UAR_Action::CanStart(),Cooldown remaining: %f"), GetCooldownTimeRemaining());
