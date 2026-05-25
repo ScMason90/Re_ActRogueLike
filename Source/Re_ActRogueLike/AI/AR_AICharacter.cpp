@@ -60,15 +60,16 @@ float AAR_AICharacter::TakeDamage(float DamageAmount, struct FDamageEvent const&
 
 void AAR_AICharacter::OnHealthChanged(FGameplayTag AttributeTag, float NewHealth, float OldHealth)
 {
-	if (AIPawnDying) return;
-	if (UAR_GameplayStatics::IsDead(ActionSystemComponent))
+	if (bAIPawnDying) return;
+	if (const bool bIsDead = UAR_GameplayStatics::IsDead(ActionSystemComponent))
 	{
-		AIPawnDying = UAR_GameplayStatics::IsDead(ActionSystemComponent);	// Marked as already dead
+		bAIPawnDying = bIsDead;	// Marked as already dead
 		HandleDeath();
 		return;
 	}
-
-	if (float Delta = NewHealth - OldHealth; Delta < 0.0f)
+	
+	// 'HandleDamaged()'?
+	if (const float Delta = NewHealth - OldHealth; Delta < 0.0f)
 	{
 		if (ActiveHealthBar == nullptr)
 		{

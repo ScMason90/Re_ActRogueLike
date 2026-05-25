@@ -80,7 +80,7 @@ protected:
 	/* -------------AI Pawn State---------------- */
 	
 	UPROPERTY(VisibleAnywhere, Category = "AI Pawn State")
-	bool AIPawnDying = false;
+	bool bAIPawnDying = false;
 	
 	UPROPERTY(EditAnywhere, Category = "AI Pawn State")
 	float DeathAnimDuration = 3.0f;

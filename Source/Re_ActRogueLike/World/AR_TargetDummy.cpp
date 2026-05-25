@@ -7,6 +7,7 @@
 #include "Engine/World.h"
 #include "Re_ActRogueLike/SharedGameplayTags.h"
 #include "Re_ActRogueLike/ActionSystem/AR_ActionSystemComponent.h"
+#include "Re_ActRogueLike/Core/AR_GameplayStatics.h"
 
 
 // Sets default values
@@ -27,9 +28,17 @@ AAR_TargetDummy::AAR_TargetDummy()
 
 void AAR_TargetDummy::OnHealthChanged(FGameplayTag AttributeTag, float NewHealth, float OldHealth)
 {
-	float Delta = OldHealth - NewHealth;
+	if (bDummyDying)return;
 	
-	if (Delta < 0.0f)
+	if (const bool bIsDead = UAR_GameplayStatics::IsDead(ActionSystemComponent))
+	{
+		bDummyDying = bIsDead;
+		// 'HandleDeath()' for test something?
+		return;
+	}
+
+	// 'HandleDamage()'?
+	if (const float Delta = NewHealth - OldHealth; Delta < 0.0f)
 	{
 		MeshComponent->SetScalarParameterValueOnMaterials("TimeToHit", GetWorld()->TimeSeconds);
 	}

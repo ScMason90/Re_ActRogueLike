@@ -20,11 +20,14 @@ public:
 
 protected:
 	
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<UStaticMeshComponent> MeshComponent;
 	
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<UAR_ActionSystemComponent> ActionSystemComponent;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Dummy State")
+	bool bDummyDying = false;
 	
 	void OnHealthChanged(FGameplayTag AttributeTag, float NewHealth, float OldHealth);
 

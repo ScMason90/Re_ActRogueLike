@@ -71,7 +71,7 @@ protected:
 	/** I think this will be replaced in future with GameplayTags in our 'GAS' 
 	 * when we need execute some extern logic based on listener on this. */ 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Player State")
-	bool IsPlayerDead = false;
+	bool bPlayerDying = false;
 
 public:
 	// Sets default values for this character's properties
@@ -101,6 +101,9 @@ protected:
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<UAR_ActionSystemComponent> ActionSystemComponent;
+	
+	/** Death logic (RAW) */
+	void HandleDeath();
 	
 	void Move(const FInputActionValue& InValue);
 	void Look(const FInputActionInstance& InValue);

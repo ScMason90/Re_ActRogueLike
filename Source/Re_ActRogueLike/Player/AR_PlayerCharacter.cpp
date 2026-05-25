@@ -144,10 +144,7 @@ float AAR_PlayerCharacter::TakeDamage(float DamageAmount, struct FDamageEvent co
 #endif
 	float ActualDamage =  Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	
-	if (ActualDamage > 0.0f)
-	{
-		ActionSystemComponent->ApplyAttributeChanged(SharedGameplayTags::Attribute_Health, -ActualDamage, Base);
-	}
+	ActionSystemComponent->ApplyAttributeChanged(SharedGameplayTags::Attribute_Health, -ActualDamage, Base);
 	
 	return ActualDamage;
 	
@@ -155,59 +152,61 @@ float AAR_PlayerCharacter::TakeDamage(float DamageAmount, struct FDamageEvent co
 
 void AAR_PlayerCharacter::OnHealthChanged(FGameplayTag AttributeTag, float NewHealth, float OldHealth)
 {
-	float Delta = NewHealth - OldHealth;
+	if (bPlayerDying) return;
 	
-	if (!IsPlayerDead)
+	if (const bool bIsDead = UAR_GameplayStatics::IsDead(ActionSystemComponent))
+	{
+		bPlayerDying = bIsDead;	// Mark as Dead
+		HandleDeath();
+		return;
+	}
+
+	// 'HandleDamaged()'?
+	if (const float Delta = NewHealth - OldHealth; Delta < 0.0f)
 	{
 		// Flash when damaged
-		if (Delta < 0.0f)
-		{
-			GetMesh()->SetScalarParameterValueOnMaterials(TimeToHitParamName, GetWorld()->TimeSeconds);
-		}
-	
-		// Death logic (RAW), Currently remained as null?
-		if (FMath::IsNearlyZero(NewHealth)/*NewHealth <= 0.0f*/)
-		{
-			// Mark as Dead
-			IsPlayerDead = UAR_GameplayStatics::IsDead(ActionSystemComponent);
-		
-			USkeletalMeshComponent* MeshComp = GetMesh(); 
-			// UCapsuleComponent* CapsuleComp = GetCapsuleComponent();
-			
-			// Disable Player Input
-			if (APlayerController* PC = Cast<APlayerController>(GetController())) DisableInput(PC);
-		
-			// Disable Movement
-			GetMovementComponent()->StopActiveMovement();
-		
-			// Honestly all post-death appearances depend on your game type/design
-			
-			// Play Death Anim in Anim Class of PlayerCharacter...
-			PlayAnimMontage(DeathMontage);
-			
-			// Disable Collision...
-			// CapsuleComp->SetCollisionEnabled(ECollisionEnabled::NoCollision); 
-			/*↑ if you turn this on, it will be just work if you horizontally dead, 
-			 * and you'll fall off the floor if you vertically dead(jump, moving in the air).
-			 * This happened sometimes, not steady.Engine level stopping the game is a better one? */
-			
-			// Optional
-		
-			// Play ragdoll
-			GetWorldTimerManager().SetTimer(TimerHandle_Ragdoll, 
-				[this, MeshComp]()
-				{
-					if (!IsValid(this) || IsPendingKillPending()) return;
-					
-					MeshComp->SetAllBodiesSimulatePhysics(true);
-					MeshComp->SetCollisionProfileName("Ragdoll");
-				}, 
-				DeathMontageDuration, false);
-
-			// Delayed destruction
-			SetLifeSpan(10.0f);
-		}
+		GetMesh()->SetScalarParameterValueOnMaterials(TimeToHitParamName, GetWorld()->TimeSeconds);
 	}
+}
+
+void AAR_PlayerCharacter::HandleDeath()
+{
+	USkeletalMeshComponent* MeshComp = GetMesh(); 
+	// UCapsuleComponent* CapsuleComp = GetCapsuleComponent();
+			
+	// Disable Player Input
+	if (APlayerController* PC = Cast<APlayerController>(GetController())) DisableInput(PC);
+		
+	// Disable Movement
+	GetMovementComponent()->StopActiveMovement();
+		
+	// Honestly all post-death appearances depend on your game type/design
+			
+	// Play Death Anim in Anim Class of PlayerCharacter...
+	PlayAnimMontage(DeathMontage);
+			
+	// Disable Collision...
+	// CapsuleComp->SetCollisionEnabled(ECollisionEnabled::NoCollision); 
+	/*↑ if you turn this on, it will be just work if you horizontally dead, 
+	 * and you'll fall off the floor if you vertically dead(jump, moving in the air).
+	 * Because default collision profile of 'CapsuleComp' is 'Pawn' different by 'CharacterMesh' for 'MeshComp'  
+	 * This happened sometimes, not steady.Engine level stopping the game is a better one? */
+			
+	// Optional
+		
+	// Play ragdoll
+	GetWorldTimerManager().SetTimer(TimerHandle_Ragdoll, 
+		[this, MeshComp]()
+		{
+			if (!IsValid(this) || IsPendingKillPending()) return;
+					
+			MeshComp->SetAllBodiesSimulatePhysics(true);
+			MeshComp->SetCollisionProfileName("Ragdoll");
+		}, 
+		DeathMontageDuration, false);
+
+	// Delayed destruction
+	SetLifeSpan(10.0f);
 }
 
 void AAR_PlayerCharacter::StartAction(const FInputActionInstance& Instance, FGameplayTag InActionName)
