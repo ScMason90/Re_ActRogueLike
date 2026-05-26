@@ -21,7 +21,14 @@ void UAR_Action::StartAction_Implementation()
 	UE_LOGFMT(LogTemp, Log, "UAR_Action::StartAction_Implementation(), Started Action {ActionName} - {WorldTime}", 
 		("ActionName", ActionName.ToString()), ("WorldTime", GameTime));
 	
-	GetOwningASComponent()->ActiveGameplayTags.AppendTags(GrantTags);
+	UAR_ActionSystemComponent* OwningComp = GetOwningASComponent();
+	OwningComp->ActiveGameplayTags.AppendTags(GrantTags);
+	
+	// Consume required resources
+	for (TPair<FGameplayTag, float> Cost : ActivationCost)
+	{
+		OwningComp->ApplyAttributeChanged(Cost.Key, -Cost.Value, Modifier);
+	}
 }
 
 void UAR_Action::StopAction_Implementation()
@@ -34,17 +41,36 @@ void UAR_Action::StopAction_Implementation()
 	
 	CooldownThreshold = GameTime + CooldownTime;
 	
-	GetOwningASComponent()->ActiveGameplayTags.RemoveTags(GrantTags);
+	UAR_ActionSystemComponent* OwningComp = GetOwningASComponent();
+	OwningComp->ActiveGameplayTags.RemoveTags(GrantTags);
+	
 }
 
 bool UAR_Action::CanStart() const
 {
 	if (IsRunning()) return false;
-	if (GetOwningASComponent()->ActiveGameplayTags.HasAny(BlockedTags)/*hierarchy involved*/) return false;
 	if (GetCooldownTimeRemaining() > 0.0f)
 	{
 		UE_LOG(LogTemp, Log, TEXT("UAR_Action::CanStart(),Cooldown remaining: %f"), GetCooldownTimeRemaining());
 		return false;
+	}
+	
+	UAR_ActionSystemComponent* OwningComp = GetOwningASComponent();
+	if (OwningComp->ActiveGameplayTags.HasAny(BlockedTags)/*hierarchy involved*/) return false;
+	
+	for (TPair<FGameplayTag, float> Cost : ActivationCost)
+	{
+		float AvailableAttributeAmount = OwningComp->GetAttributeValue(Cost.Key);
+		if (AvailableAttributeAmount < Cost.Value)
+		{
+			// Not enough resources
+			UE_LOGFMT(LogTemp, Log, "UAR_Action::CanStart(), Not enough {AttributeName} to activate {Action}, "
+						   "Have {AvailableAttributeAmount} and need {RequiredAttributeValue}",
+						   ("AttributeName", Cost.Key.ToString()), ("Action", ActionName.ToString()),
+						   ("AvailableAttributeAmount", AvailableAttributeAmount), ("RequiredAttributeValue", Cost.Value));
+			
+			return false;
+		}
 	}
 	
 	return true;

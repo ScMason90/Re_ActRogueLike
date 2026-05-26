@@ -34,6 +34,7 @@ void UAR_HealthAttributeSet::PostAttributeChanged()
 UAR_PawnAttributeSet::UAR_PawnAttributeSet()
 {
 	MoveSpeed = FAR_Attribute(550);
+	MoveSpeedMultiplier = FAR_Attribute(1.0f);
 	
 }
 
@@ -54,7 +55,7 @@ void UAR_PawnAttributeSet::PostAttributeChanged()
 void UAR_PawnAttributeSet::ApplyMoveSpeed()
 {
 	ACharacter* Character = Cast<ACharacter>(GetOwningASComponent()->GetOwner());
-	Character->GetCharacterMovement()->MaxWalkSpeed = MoveSpeed.GetValue();
+	Character->GetCharacterMovement()->MaxWalkSpeed = MoveSpeed.GetValue() * MoveSpeedMultiplier.GetValue();
 }
 
 // class UAR_PlayerAttributeSet : public UAR_PawnAttributeSet

@@ -21,6 +21,7 @@ UAR_Action_ProjectileAttack::UAR_Action_ProjectileAttack()
 {
 	MuzzleSocketName = "Muzzle_01";
 	LineTraceEndOffset = 10000.0f;
+	FireDelay = 0.2f;
 	CooldownTime = 0.5f;
 }
 
@@ -39,8 +40,6 @@ void UAR_Action_ProjectileAttack::StartAction_Implementation()
 	UGameplayStatics::PlaySound2D(this, CastingSFX);
 	
 	FTimerHandle TimerHandle_FireProj;
-	const/*constexpr*/ float AttackDelay = 0.2f;
-	
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle_FireProj, 
 		[this, Character]()/*FireProjTimeElapsed()*/
 		{
@@ -53,9 +52,9 @@ void UAR_Action_ProjectileAttack::StartAction_Implementation()
 			AActor* NewProjectile = GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTM, SpawnParams);
 			Character->MoveIgnoreActorAdd(NewProjectile);
 			
-		}, AttackDelay, false);
-	
-	StopAction();
+			StopAction();
+			
+		}, FireDelay, false);
 }
 
 FTransform UAR_Action_ProjectileAttack::AdjustedProjSpawnTransform(

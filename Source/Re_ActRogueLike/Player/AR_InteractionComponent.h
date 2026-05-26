@@ -12,6 +12,7 @@ class RE_ACTROGUELIKE_API UAR_InteractionComponent : public UActorComponent
 	GENERATED_BODY()
 
 public:
+	
 	// Sets default values for this component's properties
 	UAR_InteractionComponent();
 
@@ -30,9 +31,11 @@ protected:
 	TObjectPtr<AActor> SelectedActor;
 
 public:
+	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
 	                           FActorComponentTickFunction* ThisTickFunction) override;
 	
 	void PrimaryInteraction();
+	
 };

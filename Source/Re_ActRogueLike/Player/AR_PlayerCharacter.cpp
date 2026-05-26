@@ -146,6 +146,11 @@ float AAR_PlayerCharacter::TakeDamage(float DamageAmount, struct FDamageEvent co
 	
 	ActionSystemComponent->ApplyAttributeChanged(SharedGameplayTags::Attribute_Health, -ActualDamage, Base);
 	
+	// Damage to Rage Ratio
+	// (We could expose '0..f' as a global/general ratio or as an Attribute that can be improved through gameplay)
+	const float RageToAdd = DamageAmount * 0.5f;
+	ActionSystemComponent->ApplyAttributeChanged(SharedGameplayTags::Attribute_Rage, RageToAdd, Modifier);
+	
 	return ActualDamage;
 	
 }

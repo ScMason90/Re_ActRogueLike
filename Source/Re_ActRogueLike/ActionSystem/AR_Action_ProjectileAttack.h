@@ -25,9 +25,11 @@ class RE_ACTROGUELIKE_API UAR_Action_ProjectileAttack : public UAR_Action
 	UAR_Action_ProjectileAttack();
 
 public:
+	
 	virtual void StartAction_Implementation() override;
 	
 protected:
+	
 	UPROPERTY(EditAnywhere, Category = "ProjectileAttack")
 	FName MuzzleSocketName;
 	
@@ -44,7 +46,10 @@ protected:
 	// TODO: May considering using separate 'anim montage & casting effect & spawn socket' for each proj action
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Effects | Anim&VFXs")
-	TObjectPtr<UAnimMontage> FireMontage;
+	TObjectPtr<UAnimMontage> FireMontage;	// Casting Anim
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Effects | Anim&VFXs")
+	float FireDelay = 0.0f;	// Casting Duration - Depend on how long 'FireMontage' takes
 	
 	// NiagaraSystem played during attack animation
 	UPROPERTY(EditDefaultsOnly, Category = "Effects | Anim&VFXs")
@@ -56,6 +61,7 @@ protected:
 	TObjectPtr<USoundBase> CastingSFX;
 	
 public:
+	
 	FTransform AdjustedProjSpawnTransform(ACharacter& Character, FName InSocketName, float InLineTraceEndOffset);
 	
 };

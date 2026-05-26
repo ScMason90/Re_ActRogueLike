@@ -105,10 +105,8 @@ void UAR_ActionSystemComponent::ApplyAttributeChanged(FGameplayTag AttributeTag,
 		}
 	}
 	
-	UE_LOGFMT(LogTemp, Log, "Attribute : {0}, New : {1}, Old : {2}",
-		AttributeTag.ToString(),
-		FoundAttribute->GetValue(),
-		OldValue);
+	UE_LOGFMT(LogTemp, Log, "UAR_ActionSystemComponent::ApplyAttributeChanged, Attribute : {0}, New : {1}, Old : {2}",
+		AttributeTag.ToString(), FoundAttribute->GetValue(), OldValue);
 }
 
 FAR_Attribute* UAR_ActionSystemComponent::GetAttribute(FGameplayTag InAttributeTag) const

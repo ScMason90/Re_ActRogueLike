@@ -9,6 +9,7 @@ namespace SharedGameplayTags
 	// Attributes
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Attribute_Health);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Attribute_HealthMax);
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Attribute_Rage);
 	
 	// Actions
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Action_FireMagicProj);

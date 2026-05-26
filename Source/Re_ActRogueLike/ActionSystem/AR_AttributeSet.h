@@ -96,6 +96,9 @@ public:
 	UPROPERTY(EditAnywhere, Category = Attributes)
 	FAR_Attribute MoveSpeed;
 	
+	UPROPERTY(EditAnywhere, Category = Attributes)
+	FAR_Attribute MoveSpeedMultiplier;
+	
 	virtual void InitializeAttributes() override;
 	
 	virtual void PostAttributeChanged() override;
@@ -115,6 +118,9 @@ class UAR_PlayerAttributeSet : public UAR_PawnAttributeSet
 public:
 	
 	UAR_PlayerAttributeSet();
+	
+	UPROPERTY(EditAnywhere, Category = Attributes)
+	FAR_Attribute Rage;
 	
 };
 

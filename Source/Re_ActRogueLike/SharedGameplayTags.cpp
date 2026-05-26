@@ -6,6 +6,7 @@ namespace SharedGameplayTags
 	// Attributes
 	UE_DEFINE_GAMEPLAY_TAG(Attribute_Health, "Attribute.Health");
 	UE_DEFINE_GAMEPLAY_TAG(Attribute_HealthMax, "Attribute.HealthMax");
+	UE_DEFINE_GAMEPLAY_TAG(Attribute_Rage, "Attribute.Rage");
 	
 	// Actions
 	UE_DEFINE_GAMEPLAY_TAG(Action_FireMagicProj, "Action.FireMagicProj");
