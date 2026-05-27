@@ -23,14 +23,19 @@ UAR_ActionSystemComponent::UAR_ActionSystemComponent()
 	which should be its consequence call*/ 
 	bWantsInitializeComponent = true;
 	
-	AttributeSetClass = UAR_AttributeSet::StaticClass();
 }
 
 void UAR_ActionSystemComponent::InitializeComponent()
 {
 	Super::InitializeComponent();
 	
-	Attributes = NewObject<UAR_AttributeSet>(this, AttributeSetClass);
+	// Fallback for BP and CPP having not yet defined a default
+	if (Attributes == nullptr)
+	{
+		Attributes = NewObject<UAR_AttributeSet>(this, UAR_AttributeSet::StaticClass());
+		UE_LOG(LogTemp, Warning, TEXT("No default 'AttributeSet' defined. Set using 'SetDefaultAttributeSet()'"
+								"during Actor Construction or assign in Blueprint 'ActionComponent' for %s."), *GetNameSafe(GetOwner()));
+	}
 	
 	for (TFieldIterator<FStructProperty> PropIt(Attributes.GetClass()); PropIt; ++PropIt)
 	{
@@ -48,6 +53,16 @@ void UAR_ActionSystemComponent::InitializeComponent()
 	{
 		if (ensure(ActionClass)) GrantAction(ActionClass);
 	}
+}
+
+void UAR_ActionSystemComponent::SetDefaultAttributeSet(TSubclassOf<UAR_AttributeSet> AttributeSetClass)
+{
+	check(!HasBeenInitialized());
+	
+	// Only available during constructors of UObject
+	FObjectInitializer& ObjectInitializer = FObjectInitializer::Get();
+	Attributes = Cast<UAR_AttributeSet>(ObjectInitializer.CreateDefaultSubobject(
+		this, TEXT("Attributes"), AttributeSetClass, AttributeSetClass));
 }
 
 void UAR_ActionSystemComponent::BeginPlay()

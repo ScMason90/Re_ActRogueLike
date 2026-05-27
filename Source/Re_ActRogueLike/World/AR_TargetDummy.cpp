@@ -7,19 +7,20 @@
 #include "Engine/World.h"
 #include "Re_ActRogueLike/SharedGameplayTags.h"
 #include "Re_ActRogueLike/ActionSystem/AR_ActionSystemComponent.h"
+#include "Re_ActRogueLike/ActionSystem/AR_AttributeSet.h"
 #include "Re_ActRogueLike/Core/AR_GameplayStatics.h"
 
 
 // Sets default values
 AAR_TargetDummy::AAR_TargetDummy()
 {
-	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
-	
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>("MeshComp");
 	RootComponent = MeshComponent;
 	
 	ActionSystemComponent = CreateDefaultSubobject<UAR_ActionSystemComponent>("ActionSystemComp");
+	// Do not assign to 'UAR_Pawn/Player/EnemyAttributeSet::StaticClass'...Any attribute set has potential UObject instances required.
+	ActionSystemComponent->SetDefaultAttributeSet(UAR_HealthAttributeSet::StaticClass());
+	
 	// Trigger when health is changed (damage/healing)
 	FOnAttributeChanged& Event = ActionSystemComponent->GetAttributeListener(SharedGameplayTags::Attribute_Health);
 	Event.AddUObject(this, &ThisClass::OnHealthChanged);

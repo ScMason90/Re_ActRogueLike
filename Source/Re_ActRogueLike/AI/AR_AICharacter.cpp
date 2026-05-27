@@ -15,6 +15,7 @@
 #include "Materials/MaterialInstanceDynamic.h"
 #include "Re_ActRogueLike/SharedGameplayTags.h"
 #include "Re_ActRogueLike/ActionSystem/AR_ActionSystemComponent.h"
+#include "Re_ActRogueLike/ActionSystem/AR_AttributeSet.h"
 #include "Re_ActRogueLike/Core/AR_GameplayStatics.h"
 #include "Re_ActRogueLike/UI/AR_WorldUserWidget.h"
 
@@ -22,6 +23,8 @@
 AAR_AICharacter::AAR_AICharacter()
 {
 	ActionSystemComponent = CreateDefaultSubobject<UAR_ActionSystemComponent>("ActionSystemComp");
+	ActionSystemComponent->SetDefaultAttributeSet(UAR_EnemyAttributeSet::StaticClass());
+	
 	TimeToHitParamName = "TimeToHit";
 	
 	AIControllerClass = AAR_AIController::StaticClass();

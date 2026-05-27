@@ -17,6 +17,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Re_ActRogueLike/SharedGameplayTags.h"
 #include "Re_ActRogueLike/ActionSystem/AR_ActionSystemComponent.h"
+#include "Re_ActRogueLike/ActionSystem/AR_AttributeSet.h"
 #include "Re_ActRogueLike/Core/AR_GameplayStatics.h"
 
 static TAutoConsoleVariable<bool> CVarGodMode(TEXT("game.cheat.god"), false,
@@ -34,12 +35,14 @@ AAR_PlayerCharacter::AAR_PlayerCharacter()
 	
 	CameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComp"));
 	CameraComponent->SetupAttachment(SpringArmComponent);
+
+	ActionSystemComponent = CreateDefaultSubobject<UAR_ActionSystemComponent>(TEXT("AttributeComp"));
+	ActionSystemComponent->SetDefaultAttributeSet(UAR_PlayerAttributeSet::StaticClass());
 	
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	
 	bUseControllerRotationYaw = false;
 	
-	ActionSystemComponent = CreateDefaultSubobject<UAR_ActionSystemComponent>(TEXT("AttributeComp"));
 }
 
 // Called when the game starts or when spawned

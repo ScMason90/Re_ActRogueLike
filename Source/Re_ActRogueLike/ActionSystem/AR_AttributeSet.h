@@ -36,7 +36,7 @@ struct FAR_Attribute
  * Base class for attribute sets.
  * Provides a common parent for all specific attribute collections.
  */
-UCLASS()
+UCLASS(EditInlineNew)
 class RE_ACTROGUELIKE_API UAR_AttributeSet : public UObject
 {
 	GENERATED_BODY()
@@ -68,15 +68,17 @@ public:
 	
 	UAR_HealthAttributeSet();
     
-	UPROPERTY(EditAnywhere, Category = Attributes)
+	UPROPERTY(EditAnywhere, Category = Health)
 	FAR_Attribute Health;     // Current health
     
-	UPROPERTY(EditAnywhere, Category = Attributes)
+	UPROPERTY(EditAnywhere, Category = Health)
 	FAR_Attribute HealthMax;  // Maximum health
 	
 	virtual void PostAttributeChanged() override;
 	
 };
+
+// A 'UAR_DummyAttributeSet' only for test?
 
 /**
  *
@@ -93,10 +95,10 @@ public:
 	/**
 	 * Walk speed directly linked with Character Movement Component
 	 */
-	UPROPERTY(EditAnywhere, Category = Attributes)
+	UPROPERTY(EditAnywhere, Category = MoveSpeed)
 	FAR_Attribute MoveSpeed;
 	
-	UPROPERTY(EditAnywhere, Category = Attributes)
+	UPROPERTY(EditAnywhere, Category = MoveSpeed)
 	FAR_Attribute MoveSpeedMultiplier;
 	
 	virtual void InitializeAttributes() override;
@@ -119,7 +121,7 @@ public:
 	
 	UAR_PlayerAttributeSet();
 	
-	UPROPERTY(EditAnywhere, Category = Attributes)
+	UPROPERTY(EditAnywhere, Category = Resources)
 	FAR_Attribute Rage;
 	
 };

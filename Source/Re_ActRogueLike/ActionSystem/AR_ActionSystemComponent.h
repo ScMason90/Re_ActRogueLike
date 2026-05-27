@@ -31,7 +31,7 @@ DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnAttributeDynamicChanged,
 /*
  *
  */
-UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
+UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent), HideCategories = (Navigation, Cooking, Tags))
 class RE_ACTROGUELIKE_API UAR_ActionSystemComponent : public UActorComponent
 {
 	GENERATED_BODY()
@@ -57,14 +57,10 @@ protected:
 	// --
 	// Category = "" - display only for detail panels and blueprint context menu.
 	
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, Instanced, NoClear, Category = ActionSystem)
 	TObjectPtr<UAR_AttributeSet> Attributes;	// The actual held attribute instance during runtime(cpp only,GC)
 	
 	TMap<FGameplayTag, FAR_Attribute*> CachedAttributes;
-
-	// Config used to specify which 'UAR_AttributeSet' derived class to create
-	UPROPERTY(EditAnywhere, Category = Attributes, NoClear)
-	TSubclassOf<UAR_AttributeSet> AttributeSetClass;
 	
 	// C++ Native Listeners
 	TMap<FGameplayTag, FOnAttributeChanged> AttributeListeners;
@@ -75,7 +71,7 @@ protected:
 	UPROPERTY()
 	TArray<TObjectPtr<UAR_Action>> Actions;
 	
-	UPROPERTY(EditAnywhere, Category = "Actions")
+	UPROPERTY(EditAnywhere, Category = ActionSystem)
 	TArray<TSubclassOf<UAR_Action>> DefaultActions;
 
 public:
@@ -108,6 +104,8 @@ public:
 	void GrantAction(TSubclassOf<UAR_Action> NewActionClass);
 	void StartAction(FGameplayTag InActionName);
 	void StopAction(FGameplayTag InActionName);
+	
+	void SetDefaultAttributeSet(TSubclassOf<UAR_AttributeSet> AttributeSetClass);
 	
 	/*------------- Legacy ----------------*/
 	
