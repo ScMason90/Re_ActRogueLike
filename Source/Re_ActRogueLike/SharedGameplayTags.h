@@ -16,4 +16,8 @@ namespace SharedGameplayTags
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Action_FireTeleportProj);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Action_FireBlackHole);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Action_Sprint);
+	
+	// StatusEffects
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(StatusEffect_Sprinting);
+	
 }

@@ -195,7 +195,7 @@ void UAR_ActionSystemComponent::StopAction(FGameplayTag InActionName)
 	{
 		if (Action->GetActionName() == InActionName)
 		{
-			Action->StopAction();
+			if (Action->IsRunning()) Action->StopAction(); 
 			return;
 		}
 	}

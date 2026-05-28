@@ -13,4 +13,8 @@ namespace SharedGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(Action_FireTeleportProj, "Action.FireTeleportProj");
 	UE_DEFINE_GAMEPLAY_TAG(Action_FireBlackHole, "Action.FireBlackHole");
 	UE_DEFINE_GAMEPLAY_TAG(Action_Sprint, "Action.Sprint");
+	
+	// StatusEffects
+	UE_DEFINE_GAMEPLAY_TAG(StatusEffect_Sprinting, "StatusEffects.Sprinting");
+	
 }
