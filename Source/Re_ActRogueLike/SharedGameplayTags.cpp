@@ -15,6 +15,6 @@ namespace SharedGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(Action_Sprint, "Action.Sprint");
 	
 	// StatusEffects
-	UE_DEFINE_GAMEPLAY_TAG(StatusEffect_Sprinting, "StatusEffects.Sprinting");
+	UE_DEFINE_GAMEPLAY_TAG(StatusEffect_Sprinting, "StatusEffect.Sprinting");
 	
 }
