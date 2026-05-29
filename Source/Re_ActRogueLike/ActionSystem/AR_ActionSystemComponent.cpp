@@ -10,6 +10,7 @@
 #include "Logging/StructuredLog.h"
 #include "Re_ActRogueLike/Core/AR_GameModeBase.h"
 #include "../SharedGameplayTags.h"
+#include "Re_ActRogueLike/Re_ActRogueLike.h"
 #include "Re_ActRogueLike/Core/AR_GameplayStatics.h"
 
 
@@ -33,7 +34,7 @@ void UAR_ActionSystemComponent::InitializeComponent()
 	if (Attributes == nullptr)
 	{
 		Attributes = NewObject<UAR_AttributeSet>(this, UAR_AttributeSet::StaticClass());
-		UE_LOG(LogTemp, Warning, TEXT("No default 'AttributeSet' defined. Set using 'SetDefaultAttributeSet()'"
+		UE_LOG(LogGame, Warning, TEXT("No default 'AttributeSet' defined. Set using 'SetDefaultAttributeSet()'"
 								"during Actor Construction or assign in Blueprint 'ActionComponent' for %s."), *GetNameSafe(GetOwner()));
 	}
 	
@@ -47,7 +48,7 @@ void UAR_ActionSystemComponent::InitializeComponent()
 		CachedAttributes.Add(AttributeTag, FoundAttribute);
 	}
 	
-	// UE_LOGFMT(LogTemp, Error, 
+	// UE_LOGFMT(LogGame, Error, 
 	// 	"UAR_ActionSystemComponent::InitializeComponent(), Is DefaultActions empty?{Answer}", DefaultActions.IsEmpty()?"Yes":"No");
 	for (TSubclassOf<UAR_Action> ActionClass : DefaultActions)
 	{
@@ -114,13 +115,13 @@ void UAR_ActionSystemComponent::ApplyAttributeChanged(FGameplayTag AttributeTag,
 			if (!bIsBound)
 			{
 				Events->RemoveAt(i);
-				UE_LOG(LogTemp, Log, TEXT("UAR_ActionSystemComponent::ApplyAttributeChanged,"
+				UE_LOG(LogGame, Log, TEXT("UAR_ActionSystemComponent::ApplyAttributeChanged,"
 							  "Clean up expired dynamic(BP) attribute delegate for %s"), *GetNameSafe(GetOwner()));
 			}
 		}
 	}
 	
-	UE_LOGFMT(LogTemp, Log, "UAR_ActionSystemComponent::ApplyAttributeChanged, Attribute : {0}, New : {1}, Old : {2}",
+	UE_LOGFMT(LogGame, Log, "UAR_ActionSystemComponent::ApplyAttributeChanged, Attribute : {0}, New : {1}, Old : {2}",
 		AttributeTag.ToString(), FoundAttribute->GetValue(), OldValue);
 }
 
@@ -155,7 +156,7 @@ void UAR_ActionSystemComponent::RemoveDynamicAttributeListener(FOnAttributeDynam
 	{
 		if (Listener.Value.RemoveSingle(Event) > 0)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("UAR_ActionSystemComponent::RemoveDynamicAttributeListener,"
+			UE_LOG(LogGame, Warning, TEXT("UAR_ActionSystemComponent::RemoveDynamicAttributeListener,"
 								 "successfully removed blueprint binding."));
 			break;
 		}
@@ -182,7 +183,7 @@ void UAR_ActionSystemComponent::StartAction(FGameplayTag InActionName)
 		}
 	}
 	
-	UE_LOG(LogTemp, Warning, 
+	UE_LOG(LogGame, Warning, 
 		TEXT("UAR_ActionSystemComponent::StartAction,No Action found with name %s"), *InActionName.ToString());
 }
 
@@ -200,7 +201,7 @@ void UAR_ActionSystemComponent::StopAction(FGameplayTag InActionName)
 		}
 	}
 	
-	UE_LOG(LogTemp, Warning, 
+	UE_LOG(LogGame, Warning, 
 		TEXT("UAR_ActionSystemComponent::StopAction,No Action found with name %s"), *InActionName.ToString());
 }
 

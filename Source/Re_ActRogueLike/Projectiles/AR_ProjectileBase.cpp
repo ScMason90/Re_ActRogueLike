@@ -1,4 +1,7 @@
-﻿#include "AR_ProjectileBase.h"
+﻿// Fill out your copyright notice in the Description page of Project Settings.
+
+
+#include "AR_ProjectileBase.h"
 
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
@@ -34,6 +37,8 @@ AAR_ProjectileBase::AAR_ProjectileBase()
 	
 	ImpactShakeInnerRadius = 0.0f;
 	ImpactShakeOuterRadius = 1500.0f;
+	
+	InitialLifeSpan = 30.0f;
 }
 
 void AAR_ProjectileBase::PostInitializeComponents()

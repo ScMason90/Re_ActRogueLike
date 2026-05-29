@@ -6,6 +6,7 @@
 #include "AR_ActionSystemComponent.h"
 #include "Engine/World.h"
 #include "Logging/StructuredLog.h"
+#include "Re_ActRogueLike/Re_ActRogueLike.h"
 
 
 UAR_ActionSystemComponent* UAR_Action::GetOwningASComponent() const
@@ -18,7 +19,7 @@ void UAR_Action::StartAction_Implementation()
 	bIsRunning = true;
 	float GameTime = GetWorld()->TimeSeconds;
 	
-	UE_LOGFMT(LogTemp, Log, "UAR_Action::StartAction_Implementation(), Started Action {ActionName} - {WorldTime}", 
+	UE_LOGFMT(LogGame, Log, "UAR_Action::StartAction_Implementation(), Started Action {ActionName} - {WorldTime}", 
 		("ActionName", ActionName.ToString()), ("WorldTime", GameTime));
 	
 	UAR_ActionSystemComponent* OwningComp = GetOwningASComponent();
@@ -36,7 +37,7 @@ void UAR_Action::StopAction_Implementation()
 	bIsRunning = false;
 	float GameTime = GetWorld()->TimeSeconds;
 	
-	UE_LOGFMT(LogTemp, Log, "UAR_Action::StopAction_Implementation(), Stopped Action {ActionName} - {WorldTime}", 
+	UE_LOGFMT(LogGame, Log, "UAR_Action::StopAction_Implementation(), Stopped Action {ActionName} - {WorldTime}", 
 		("ActionName", ActionName.ToString()), ("WorldTime", GameTime));
 	
 	CooldownThreshold = GameTime + CooldownTime;
@@ -51,7 +52,7 @@ bool UAR_Action::CanStart() const
 	if (IsRunning()) return false;
 	if (GetCooldownTimeRemaining() > 0.0f)
 	{
-		UE_LOG(LogTemp, Log, TEXT("UAR_Action::CanStart(),Cooldown remaining: %f"), GetCooldownTimeRemaining());
+		UE_LOG(LogGame, Log, TEXT("UAR_Action::CanStart(),Cooldown remaining: %f"), GetCooldownTimeRemaining());
 		return false;
 	}
 	
@@ -64,7 +65,7 @@ bool UAR_Action::CanStart() const
 		if (AvailableAttributeAmount < Cost.Value)
 		{
 			// Not enough resources
-			UE_LOGFMT(LogTemp, Log, "UAR_Action::CanStart(), Not enough {AttributeName} to activate {Action}, "
+			UE_LOGFMT(LogGame, Log, "UAR_Action::CanStart(), Not enough {AttributeName} to activate {Action}, "
 						   "Have {AvailableAttributeAmount} and need {RequiredAttributeValue}",
 						   ("AttributeName", Cost.Key.ToString()), ("Action", ActionName.ToString()),
 						   ("AvailableAttributeAmount", AvailableAttributeAmount), ("RequiredAttributeValue", Cost.Value));

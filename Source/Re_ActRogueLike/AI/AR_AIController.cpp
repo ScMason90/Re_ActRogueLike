@@ -59,5 +59,5 @@ void AAR_AIController::SetTargetActor(AActor* NewTarget)
 
 	StopMovement();   // Optional, according to needs
 
-	// UE_LOG(LogTemp, Warning, TEXT("AAR_AIController::SetTargetActor -> %s"), *NewTarget->GetActorNameOrLabel());
+	// UE_LOG(LogGame, Warning, TEXT("AAR_AIController::SetTargetActor -> %s"), *NewTarget->GetActorNameOrLabel());
 }

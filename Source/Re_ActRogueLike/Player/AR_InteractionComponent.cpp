@@ -27,8 +27,7 @@ void UAR_InteractionComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	
-	// UE_LOG(LogTemp, Warning, TEXT("UAR_InteractionComponent::TickComponent::Owner = %s"),
-	// 	*GetOwner()->GetName());
+	// UE_LOG(LogGame, Warning, TEXT("UAR_InteractionComponent::TickComponent::Owner = %s"), *GetOwner()->GetName());
 	
 	APlayerController* PC = CastChecked<APlayerController>(GetOwner());
 	

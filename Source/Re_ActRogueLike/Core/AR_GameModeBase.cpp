@@ -7,6 +7,7 @@
 #include "EngineUtils.h"
 #include "TimerManager.h"
 #include "EnvironmentQuery/EnvQueryManager.h"
+#include "Re_ActRogueLike/Re_ActRogueLike.h"
 #include "Re_ActRogueLike/ActionSystem/AR_ActionSystemComponent.h"
 #include "Re_ActRogueLike/AI/AR_AICharacter.h"
 #include "Re_ActRogueLike/Player/AR_PlayerCharacter.h"
@@ -52,7 +53,7 @@ void AAR_GameModeBase::SpawnBotTimerElapsed()
 #if !UE_BUILD_SHIPPING
 	if (!CVarSpawnBots.GetValueOnGameThread())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("AAR_GameModeBase::SpawnBotTimerElapsed(), Bot spawning disabled via cvar 'CVarSpawnBots'."));
+		UE_LOG(LogGame, Warning, TEXT("AAR_GameModeBase::SpawnBotTimerElapsed(), Bot spawning disabled via cvar 'CVarSpawnBots'."));
 		return;
 	}
 #endif
@@ -76,7 +77,7 @@ void AAR_GameModeBase::SpawnBotTimerElapsed()
 
 	if (NumOfAliveBots >= MaxBotCount)
 	{
-		UE_LOG(LogTemp, Log, 
+		UE_LOG(LogGame, Log, 
 			TEXT("AAR_GameModeBase::OnQueryFinished, Bot count reached limit: %d / %.0f"), NumOfAliveBots, MaxBotCount);
 		return;
 	}
@@ -112,11 +113,11 @@ void AAR_GameModeBase::OnBotSpawnQueryFinished(UEnvQueryInstanceBlueprintWrapper
 			SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
 			
 			GetWorld()->SpawnActor<AActor>(MinionRangedClass, SpawnLocation, FRotator::ZeroRotator, SpawnParams);
-			UE_LOG(LogTemp, Log, 
+			UE_LOG(LogGame, Log, 
 				TEXT("AAR_GameModeBase::OnBotSpawnQueryFinished, Spawned new bot at %s"), *SpawnLocation.ToString());
 		}
 	}
-	else UE_LOG(LogTemp, Warning, TEXT("AAR_GameModeBase::OnBotSpawnQueryFinished, EQS returned no valid locations!"));
+	else UE_LOG(LogGame, Warning, TEXT("AAR_GameModeBase::OnBotSpawnQueryFinished, EQS returned no valid locations!"));
 }
 
 void AAR_GameModeBase::OnPickupSpawnQueryFinished(UEnvQueryInstanceBlueprintWrapper* QueryInstance,
