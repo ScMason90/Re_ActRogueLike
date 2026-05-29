@@ -39,6 +39,9 @@ void AAR_AICharacter::PostInitializeComponents()
 	
 	FOnAttributeChanged& Event = ActionSystemComponent->GetAttributeListener(SharedGameplayTags::Attribute_Health);
 	Event.AddUObject(this, &ThisClass::OnHealthChanged);
+	
+	GetMesh()->SetOverlayMaterialMaxDrawDistance(1);
+	
 }
 
 void AAR_AICharacter::BeginPlay()
@@ -64,11 +67,13 @@ float AAR_AICharacter::TakeDamage(float DamageAmount, struct FDamageEvent const&
 void AAR_AICharacter::OnHealthChanged(FGameplayTag AttributeTag, float NewHealth, float OldHealth)
 {
 	if (bAIPawnDying) return;
+	
+	// Only execute death logic/appearance immediately when dead (on performance optimization purpose) 
 	if (const bool bIsDead = UAR_GameplayStatics::IsDead(ActionSystemComponent))
 	{
 		bAIPawnDying = bIsDead;	// Marked as already dead
 		HandleDeath();
-		return;
+		return;		// Remove this line, and migrate this snippet under 'HandleDamaged()' if you want both.
 	}
 	
 	// 'HandleDamaged()'?
@@ -84,11 +89,18 @@ void AAR_AICharacter::OnHealthChanged(FGameplayTag AttributeTag, float NewHealth
 			}
 		}
 		
-		// Flash when damaged - PS:this design was too rough
-		GetMesh()->SetScalarParameterValueOnMaterials(TimeToHitParamName, GetWorld()->TimeSeconds);
-		// GEngine->AddOnScreenDebugMessage(01, 3, FColor::Emerald, 
-		// 	FString::Printf(TEXT("AAR_AICharacter::OnHealthChanged(), Current health: %.2f"), 
-		// 		ActionSystemComponent->GetAttribute(SharedGameplayTags::Attribute_Health)->GetValue()));
+		// Flash when damaged - Note: this design was rough...'demo/tutorial' only
+		GetMesh()->SetOverlayMaterialMaxDrawDistance(0);
+		
+		// GetMesh()->SetScalarParameterValueOnMaterials(TimeToHitParamName, GetWorld()->TimeSeconds);
+		GetMesh()->SetCustomPrimitiveDataFloat(0, GetWorld()->TimeSeconds);
+		
+		GetWorldTimerManager().SetTimer(TimerHandle_Overlay, [this]()
+		{
+			GetMesh()->SetOverlayMaterialMaxDrawDistance(1);
+		}, 1.0f/* Overlay Flash Duration */, false);
+		
+		// GEngine->AddOnScreenDebugMessage(01, 3, FColor::Emerald, FString::Printf(TEXT("AAR_AICharacter::OnHealthChanged(), Current health: %.2f"), ActionSystemComponent->GetAttributeValue(SharedGameplayTags::Attribute_Health)));
 	}
 }
 

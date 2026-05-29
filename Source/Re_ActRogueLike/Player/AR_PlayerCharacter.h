@@ -24,7 +24,19 @@ class RE_ACTROGUELIKE_API AAR_PlayerCharacter : public ACharacter
 	GENERATED_BODY()
 	
 protected:
-	/* -------------Effects---------------- */
+	
+	/* ------------------- Components ---------------------*/
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	TObjectPtr<USpringArmComponent> SpringArmComponent;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	TObjectPtr<UCameraComponent> CameraComponent;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	TObjectPtr<UAR_ActionSystemComponent> ActionSystemComponent;
+	
+	/* ------------------- Effects --------------------- */
 	/* Anim&VFXs */
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Effects | FireProjectile | Anim&VFXs")
@@ -32,8 +44,6 @@ protected:
 	
 	UPROPERTY(EditAnywhere, Category = "Effects | FireProjectile | Anim&VFXs")
 	float DeathMontageDuration = 1.0f;
-	
-	FTimerHandle TimerHandle_Ragdoll;
 	
 	/* ---------------------- Input Action ----------------------- */
 	/* Movements */
@@ -61,19 +71,20 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
 	TObjectPtr<UInputAction> IA_FireBlackHole;
 	
-	/* ------------- Material Relative ---------------- */
+	/* ------------------- Material Relative ------------------- */
 	
 	UPROPERTY(VisibleAnywhere, Category = "Reaction | OnHealthChange")
-	FName TimeToHitParamName;
+	FName TimeToHitParamName;	// May deprecated...
 	
-	/* --------------- Player State ----------------- */
+	/* --------------------- Legacy & Deprecated? ----------------------- */
 	
 	/** I think this will be replaced in future with GameplayTags in our 'GAS' 
 	 * when we need execute some extern logic based on listener on this. */ 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Player State")
-	bool bPlayerDying = false;
+	bool bPlayerDying = false; 
 
 public:
+	
 	// Sets default values for this character's properties
 	AAR_PlayerCharacter();
 	
@@ -93,15 +104,6 @@ public:
 
 protected:
 	
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	TObjectPtr<USpringArmComponent> SpringArmComponent;
-	
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	TObjectPtr<UCameraComponent> CameraComponent;
-	
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	TObjectPtr<UAR_ActionSystemComponent> ActionSystemComponent;
-	
 	/** Death logic (RAW) */
 	void HandleDeath();
 	
@@ -109,6 +111,10 @@ protected:
 	void Look(const FInputActionInstance& InValue);
 	
 	void OnHealthChanged(FGameplayTag AttributeTag, float NewHealth, float OldHealth);
+	
+	FTimerHandle TimerHandle_Ragdoll;
+	
+	FTimerHandle TimerHandle_Overlay;
 
 public:
 	
@@ -119,4 +125,5 @@ public:
 	
 	UFUNCTION(Exec)
 	void HealSelf(float Amount = 100.0f);
+	
 };

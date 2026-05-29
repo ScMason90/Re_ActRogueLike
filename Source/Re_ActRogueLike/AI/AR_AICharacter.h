@@ -38,6 +38,8 @@ protected:
 	void StartDissolve();
 	void UpdateDissolve();
 	FTimerHandle TimerHandle_Dissolve;
+	
+	FTimerHandle TimerHandle_Overlay;
 
 public:
 	
@@ -63,7 +65,7 @@ protected:
 	/* VisibleAnywhere = read-only, still useful to view in-editor and enforce a convention. */
 	
 	UPROPERTY(VisibleAnywhere, Category = "Reaction | OnHealthChange")
-	FName TimeToHitParamName;
+	FName TimeToHitParamName;	// May deprecated...
 	
 	UPROPERTY(VisibleAnywhere, Category = "Material | Dissolve")
 	float DissolveAmount;
