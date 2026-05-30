@@ -13,4 +13,21 @@ UCLASS()
 class RE_ACTROGUELIKE_API UAR_CoinPickupSubsystem : public UTickableWorldSubsystem
 {
 	GENERATED_BODY()
+
+public:
+	
+	void AddCoinPickups(TArray<FVector> NewLocations, TArray<int32> NewAmounts);
+	
+	virtual void Tick(float DeltaTime) override;
+	
+	virtual TStatId GetStatId() const override
+	{
+		RETURN_QUICK_DECLARE_CYCLE_STAT(UAR_CoinPickupSubsystem, STATGROUP_Tickables);
+	};
+
+protected:
+	
+	TArray<FVector> CoinLocations;
+	TArray<int32> CoinAmounts;
+	
 };

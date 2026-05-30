@@ -3,24 +3,37 @@
 
 #include "AR_CoinTestActor.h"
 
+#include "NavigationSystem.h"
+#include "Re_ActRogueLike/Pickups/AR_CoinPickupSubsystem.h"
+
 
 // Sets default values
 AAR_CoinTestActor::AAR_CoinTestActor()
 {
-	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
-}
-
-// Called when the game starts or when spawned
-void AAR_CoinTestActor::BeginPlay()
-{
-	Super::BeginPlay();
+	DefaultSceneComponent = CreateDefaultSubobject<USceneComponent>(TEXT("DefaultSceneComp"));
+	RootComponent = DefaultSceneComponent;
 	
 }
 
-// Called every frame
-void AAR_CoinTestActor::Tick(float DeltaTime)
+void AAR_CoinTestActor::SpawnCoins(int32 SpawnCount)
 {
-	Super::Tick(DeltaTime);
+	TArray<FVector> CoinLocations;
+	TArray<int32> CoinAmounts;
+	
+	UNavigationSystemV1* NavSystem = UNavigationSystemV1::GetNavigationSystem(this);
+	FVector ActorLocation = GetActorLocation();
+	
+	for (int i = 0; i < SpawnCount; ++i)
+	{
+		FNavLocation NavLocation;
+		NavSystem->GetRandomPointInNavigableRadius(ActorLocation, 1024, NavLocation);
+		
+		CoinLocations.Add(NavLocation.Location);
+		CoinAmounts.Add(10);
+	}
+	
+	UAR_CoinPickupSubsystem* CoinSystem = GetWorld()->GetSubsystem<UAR_CoinPickupSubsystem>();
+	
+	CoinSystem->AddCoinPickups(CoinLocations, CoinAmounts);
 }
 
