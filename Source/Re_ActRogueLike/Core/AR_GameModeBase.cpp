@@ -62,9 +62,8 @@ void AAR_GameModeBase::SpawnBotTimerElapsed()
 	if (DifficultyCurve) MaxBotCount = DifficultyCurve->GetFloatValue(GetWorld()->GetTimeSeconds());
 
 	int32 NumOfAliveBots = 0;
-	for (TActorIterator<AAR_AICharacter> It(GetWorld()); It; ++It)
+	for (const AAR_AICharacter* Bot : TActorRange<AAR_AICharacter>(GetWorld()))
 	{
-		AAR_AICharacter* Bot = *It;
 		if (!Bot) continue;
 
 		UAR_ActionSystemComponent* ASComp = Bot->FindComponentByClass<UAR_ActionSystemComponent>();

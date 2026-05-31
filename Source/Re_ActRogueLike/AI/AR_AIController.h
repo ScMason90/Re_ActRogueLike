@@ -12,6 +12,7 @@ class RE_ACTROGUELIKE_API AAR_AIController : public AAIController
 	GENERATED_BODY()
 
 public:
+	
 	// Sets default values for this actor's properties
 	AAR_AIController();
 
@@ -26,6 +27,7 @@ public:
 	void SetTargetActor(AActor* NewTarget);
 	
 protected:
+	
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	

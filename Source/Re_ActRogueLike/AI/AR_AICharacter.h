@@ -56,6 +56,7 @@ public:
 protected:
 	/* ------------- UI/UMG Widget Relative ---------------- */
 	
+	UPROPERTY()
 	TObjectPtr<UAR_WorldUserWidget> ActiveHealthBar;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
