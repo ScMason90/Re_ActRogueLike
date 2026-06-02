@@ -46,6 +46,7 @@ public:
 	virtual void BeginPlay() override;
 	
 protected:
+	
 	// EditAnywhere - edit in BP editor and per-instance in level.
 	// VisibleAnywhere - 'read-only' in editor and level. (Use for Components).Still useful to view in-editor and enforce a convention.
 	// EditDefaultsOnly - hide variable per-instance, edit in BP editor only
@@ -75,6 +76,7 @@ protected:
 	TArray<TSubclassOf<UAR_Action>> DefaultActions;
 
 public:
+	
 	/*--------------- Attributes & Actions Relative ------------------*/
 	
 	FAR_Attribute* GetAttribute(FGameplayTag InAttributeTag) const;

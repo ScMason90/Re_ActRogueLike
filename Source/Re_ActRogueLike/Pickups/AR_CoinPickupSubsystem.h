@@ -6,6 +6,8 @@
 #include "Subsystems/WorldSubsystem.h"
 #include "AR_CoinPickupSubsystem.generated.h"
 
+struct FPrimitiveInstanceId;
+class UInstancedStaticMeshComponent;
 /**
  * 
  */
@@ -16,9 +18,7 @@ class RE_ACTROGUELIKE_API UAR_CoinPickupSubsystem : public UTickableWorldSubsyst
 
 public:
 	
-	void AddCoinPickups(TArray<FVector> NewLocations, TArray<int32> NewAmounts);
-	
-	void RemoveCoinPickup(int32 IndexToRemove);
+	virtual void OnWorldBeginPlay(UWorld& InWorld) override;
 	
 	virtual void Tick(float DeltaTime) override;
 	
@@ -29,7 +29,17 @@ public:
 
 protected:
 	
+	UPROPERTY()
+	TObjectPtr<UInstancedStaticMeshComponent> WorldISM;
+	
 	TArray<FVector> CoinLocations;
 	TArray<int32> CoinAmounts;
+	TArray<FPrimitiveInstanceId> MeshIDs;
+	
+public:
+	
+	void AddCoinPickups(TArray<FVector> NewLocations, TArray<int32> NewAmounts);
+	
+	void RemoveCoinPickup(int32 IndexToRemove);
 	
 };

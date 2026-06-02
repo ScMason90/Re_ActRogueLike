@@ -5,21 +5,50 @@
 
 #include "DrawDebugHelpers.h"
 #include "EngineUtils.h"
+#include "Components/InstancedStaticMeshComponent.h"
+#include "Engine/StaticMesh.h"
 #include "Re_ActRogueLike/Re_ActRogueLike.h"
 #include "Re_ActRogueLike/Player/AR_PlayerCharacter.h"
 
+void UAR_CoinPickupSubsystem::OnWorldBeginPlay(UWorld& InWorld)
+{
+	Super::OnWorldBeginPlay(InWorld);
+	
+	UWorld* World = GetWorld();
+	
+	// Temporary Hack - Would be fixed with developer settings soon.
+	FSoftObjectPath MeshAssetPath(TEXT("/Game/ExampleContent/Meshes/SM_Pickup_Coin.SM_Pickup_Coin"));
+	UStaticMesh* LoadedMesh = Cast<UStaticMesh>(MeshAssetPath.TryLoad());
+	
+	WorldISM = NewObject<UInstancedStaticMeshComponent>(World, NAME_None, RF_Transient);
+	WorldISM->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	WorldISM->SetStaticMesh(LoadedMesh);
+	WorldISM->RegisterComponentWithWorld(World);
+}
+
 void UAR_CoinPickupSubsystem::AddCoinPickups(TArray<FVector> NewLocations, TArray<int32> NewAmounts)
 {
-	
-	
 	CoinLocations.Append(NewLocations);
 	CoinAmounts.Append(NewAmounts);
+	
+	TArray<FTransform> MeshTransforms;
+	for (int i = 0; i <= NewLocations.Num() - 1; ++i)
+	{
+		MeshTransforms.Add(FTransform(NewLocations[i] + FVector(0.0f, 0.0f, 50.0f)));
+	}
+	
+	TArray<FPrimitiveInstanceId> NewMeshIDs = WorldISM->AddInstancesById(
+		MeshTransforms, true, false);
+	MeshIDs.Append(NewMeshIDs);
 }
 
 void UAR_CoinPickupSubsystem::RemoveCoinPickup(int32 IndexToRemove)
 {
 	CoinLocations.RemoveAt(IndexToRemove);
 	CoinAmounts.RemoveAt(IndexToRemove);
+	
+	WorldISM->RemoveInstanceById(MeshIDs[IndexToRemove]);
+	MeshIDs.RemoveAt(IndexToRemove);
 }
 
 void UAR_CoinPickupSubsystem::Tick(float DeltaTime)
@@ -45,17 +74,15 @@ void UAR_CoinPickupSubsystem::Tick(float DeltaTime)
 	}
 	
 	int32 TotalCoinsToGrant = 0;
-	for (int i = ProcessList.Num() - 1; i >= 0; --i)
+	for (int32 CoinIndex : ProcessList)
 	{
-		int32 CoinIndex = ProcessList[i];
 		TotalCoinsToGrant += CoinAmounts[CoinIndex];
-		
 		RemoveCoinPickup(CoinIndex);
 	}
 	
 	// TODO: grant coins to player(s)
 	UE_CLOG(TotalCoinsToGrant > 0, LogGame, Log, 
-		TEXT("UAR_CoinPickupSubsystem::Tick, Picked up Coin Amount=%d"), TotalCoinsToGrant);
+		TEXT("UAR_CoinPickupSubsystem::Tick, Picked up Coin Amount = %d"), TotalCoinsToGrant);
 	
 	for (int i = 0; i < CoinLocations.Num(); ++i)
 	{

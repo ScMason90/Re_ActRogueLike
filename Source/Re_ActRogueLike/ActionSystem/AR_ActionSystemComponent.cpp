@@ -34,7 +34,7 @@ void UAR_ActionSystemComponent::InitializeComponent()
 	if (Attributes == nullptr)
 	{
 		Attributes = NewObject<UAR_AttributeSet>(this, UAR_AttributeSet::StaticClass());
-		UE_LOG(LogGame, Warning, TEXT("No default 'AttributeSet' defined. Set using 'SetDefaultAttributeSet()'"
+		UE_LOG(LogGame, Warning, TEXT("UAR_ActionSystemComponent::InitializeComponent(),No default 'AttributeSet' defined. Set using 'SetDefaultAttributeSet()'"
 								"during Actor Construction or assign in Blueprint 'ActionComponent' for %s."), *GetNameSafe(GetOwner()));
 	}
 	
