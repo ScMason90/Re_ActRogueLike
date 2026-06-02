@@ -6,6 +6,7 @@
 #include "Subsystems/WorldSubsystem.h"
 #include "AR_CoinPickupSubsystem.generated.h"
 
+class UAudioComponent;
 struct FPrimitiveInstanceId;
 class UInstancedStaticMeshComponent;
 /**
@@ -31,8 +32,21 @@ protected:
 	
 	void OnPickupMeshLoadComplete(const FSoftObjectPath& SoftObjectPath, UObject* LoadedObject);
 	
+	void OnPickupSoundLoadComplete(const FSoftObjectPath& SoftObjectPath, UObject* LoadedObject);
+	
+	void PlayPickupSound();
+	
 	UPROPERTY()
 	TObjectPtr<UInstancedStaticMeshComponent> WorldISM;
+	
+	UPROPERTY()
+	TObjectPtr<UAudioComponent> WorldAudioComponent;
+	
+	/* Cached param from Developer Settings for Audio Component Pickups 
+	 * Currently no event pin in specified 'WorldAudioComponent' could be trigger by this ParamName.
+	 * May use for Post-effect processing later on.
+	 */
+	FName CoinPickupTriggerParamName;
 	
 	TArray<FVector> CoinLocations;
 	TArray<int32> CoinAmounts;

@@ -8,6 +8,7 @@
 #include "UObject/SoftObjectPtr.h"
 #include "AR_DeveloperSettings.generated.h"
 
+class USoundBase;
 class FApp;
 class UStaticMesh;
 /**
@@ -22,6 +23,12 @@ public:
 	
 	UPROPERTY(Config, EditDefaultsOnly, Category = Pickups)
 	TSoftObjectPtr<UStaticMesh> CoinPickupMesh;
+	
+	UPROPERTY(Config, EditDefaultsOnly, Category = Pickups)
+	TSoftObjectPtr<USoundBase> CoinPickupSound;
+	
+	UPROPERTY(Config, EditDefaultsOnly, Category = Pickups)
+	FName CoinPickupTriggerParameter;
 	
 	virtual FName GetCategoryName() const override
 	{

@@ -5,11 +5,13 @@
 
 #include "DrawDebugHelpers.h"
 #include "EngineUtils.h"
+#include "Components/AudioComponent.h"
 #include "Components/InstancedStaticMeshComponent.h"
 #include "Engine/StaticMesh.h"
 #include "Re_ActRogueLike/Re_ActRogueLike.h"
 #include "Re_ActRogueLike/Core/AR_DeveloperSettings.h"
 #include "Re_ActRogueLike/Player/AR_PlayerCharacter.h"
+#include "Sound/SoundBase.h"
 
 void UAR_CoinPickupSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 {
@@ -19,16 +21,37 @@ void UAR_CoinPickupSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 	
 	WorldISM = NewObject<UInstancedStaticMeshComponent>(World, NAME_None, RF_Transient);
 	WorldISM->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	
 	WorldISM->RegisterComponentWithWorld(World);
 	
-	GetDefault<UAR_DeveloperSettings>()->CoinPickupMesh.LoadAsync(
+	WorldAudioComponent = NewObject<UAudioComponent>(World, NAME_None, RF_Transient);
+	WorldAudioComponent->SetAutoActivate(false);
+	WorldAudioComponent->RegisterComponentWithWorld(World);
+	
+	const UAR_DeveloperSettings* DevSettings = GetDefault<UAR_DeveloperSettings>();
+	
+	DevSettings->CoinPickupMesh.LoadAsync(
 		FLoadSoftObjectPathAsyncDelegate::CreateUObject(this, &UAR_CoinPickupSubsystem::OnPickupMeshLoadComplete));
+	DevSettings->CoinPickupSound.LoadAsync(
+		FLoadSoftObjectPathAsyncDelegate::CreateUObject(this, &UAR_CoinPickupSubsystem::OnPickupSoundLoadComplete));
+	
 }
 
 void UAR_CoinPickupSubsystem::OnPickupMeshLoadComplete(const FSoftObjectPath& SoftObjectPath, UObject* LoadedObject)
 {
 	WorldISM->SetStaticMesh(Cast<UStaticMesh>(LoadedObject));
+}
+
+void UAR_CoinPickupSubsystem::OnPickupSoundLoadComplete(const FSoftObjectPath& SoftObjectPath, UObject* LoadedObject)
+{
+	WorldAudioComponent->SetSound(Cast<USoundBase>(LoadedObject));
+}
+
+void UAR_CoinPickupSubsystem::PlayPickupSound()
+{
+	if (WorldAudioComponent->IsPlaying()) return;
+	
+	WorldAudioComponent->Play();
+	WorldAudioComponent->SetTriggerParameter(CoinPickupTriggerParamName);
 }
 
 void UAR_CoinPickupSubsystem::AddCoinPickups(TArray<FVector> NewLocations, TArray<int32> NewAmounts)
@@ -83,6 +106,11 @@ void UAR_CoinPickupSubsystem::Tick(float DeltaTime)
 	{
 		TotalCoinsToGrant += CoinAmounts[CoinIndex];
 		RemoveCoinPickup(CoinIndex);
+	}
+	
+	if (TotalCoinsToGrant > 0)
+	{
+		PlayPickupSound();
 	}
 	
 	// TODO: grant coins to player(s)
