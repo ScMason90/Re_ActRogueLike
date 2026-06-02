@@ -8,6 +8,7 @@
 #include "Components/InstancedStaticMeshComponent.h"
 #include "Engine/StaticMesh.h"
 #include "Re_ActRogueLike/Re_ActRogueLike.h"
+#include "Re_ActRogueLike/Core/AR_DeveloperSettings.h"
 #include "Re_ActRogueLike/Player/AR_PlayerCharacter.h"
 
 void UAR_CoinPickupSubsystem::OnWorldBeginPlay(UWorld& InWorld)
@@ -16,14 +17,18 @@ void UAR_CoinPickupSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 	
 	UWorld* World = GetWorld();
 	
-	// Temporary Hack - Would be fixed with developer settings soon.
-	FSoftObjectPath MeshAssetPath(TEXT("/Game/ExampleContent/Meshes/SM_Pickup_Coin.SM_Pickup_Coin"));
-	UStaticMesh* LoadedMesh = Cast<UStaticMesh>(MeshAssetPath.TryLoad());
-	
 	WorldISM = NewObject<UInstancedStaticMeshComponent>(World, NAME_None, RF_Transient);
 	WorldISM->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	WorldISM->SetStaticMesh(LoadedMesh);
+	
 	WorldISM->RegisterComponentWithWorld(World);
+	
+	GetDefault<UAR_DeveloperSettings>()->CoinPickupMesh.LoadAsync(
+		FLoadSoftObjectPathAsyncDelegate::CreateUObject(this, &UAR_CoinPickupSubsystem::OnPickupMeshLoadComplete));
+}
+
+void UAR_CoinPickupSubsystem::OnPickupMeshLoadComplete(const FSoftObjectPath& SoftObjectPath, UObject* LoadedObject)
+{
+	WorldISM->SetStaticMesh(Cast<UStaticMesh>(LoadedObject));
 }
 
 void UAR_CoinPickupSubsystem::AddCoinPickups(TArray<FVector> NewLocations, TArray<int32> NewAmounts)
