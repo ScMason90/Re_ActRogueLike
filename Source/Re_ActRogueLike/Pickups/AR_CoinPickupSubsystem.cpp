@@ -28,6 +28,7 @@ void UAR_CoinPickupSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 	WorldAudioComponent->RegisterComponentWithWorld(World);
 	
 	const UAR_DeveloperSettings* DevSettings = GetDefault<UAR_DeveloperSettings>();
+	CoinPickupTriggerParamName = DevSettings->CoinPickupTriggerParameter;
 	
 	DevSettings->CoinPickupMesh.LoadAsync(
 		FLoadSoftObjectPathAsyncDelegate::CreateUObject(this, &UAR_CoinPickupSubsystem::OnPickupMeshLoadComplete));
