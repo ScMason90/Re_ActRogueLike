@@ -48,9 +48,8 @@ void UAR_CoinPickupSubsystem::OnPickupSoundLoadComplete(const FSoftObjectPath& S
 
 void UAR_CoinPickupSubsystem::PlayPickupSound()
 {
-	if (WorldAudioComponent->IsPlaying()) return;
+	if (!WorldAudioComponent->IsPlaying())WorldAudioComponent->Play();
 	
-	WorldAudioComponent->Play();
 	WorldAudioComponent->SetTriggerParameter(CoinPickupTriggerParamName);
 }
 
@@ -102,8 +101,10 @@ void UAR_CoinPickupSubsystem::Tick(float DeltaTime)
 	}
 	
 	int32 TotalCoinsToGrant = 0;
-	for (int32 CoinIndex : ProcessList)
+	for (int i = ProcessList.Num() - 1; i >= 0; --i)
 	{
+		int32 CoinIndex = ProcessList[i];
+		
 		TotalCoinsToGrant += CoinAmounts[CoinIndex];
 		RemoveCoinPickup(CoinIndex);
 	}
