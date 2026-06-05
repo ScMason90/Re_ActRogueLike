@@ -65,8 +65,7 @@ protected:
 	/* -------------Material Relative---------------- */
 	/* VisibleAnywhere = read-only, still useful to view in-editor and enforce a convention. */
 	
-	UPROPERTY(VisibleAnywhere, Category = "Reaction | OnHealthChange")
-	FName TimeToHitParamName;	// May deprecated...
+	// Encode indices of 'CustomPrimitiveData' for Overlay Material Instances?
 	
 	UPROPERTY(VisibleAnywhere, Category = "Material | Dissolve")
 	float DissolveAmount;
@@ -80,18 +79,18 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "Material | MaterialInstanceDynamic")
 	TArray<UMaterialInstanceDynamic*> DynamicMIDs;
 	
-	/* -------------AI Pawn State---------------- */
+	/* ------------ AI Pawn State ----------- */
 	
 	UPROPERTY(VisibleAnywhere, Category = "AI Pawn State")
 	bool bAIPawnDying = false;
-	
-	UPROPERTY(EditAnywhere, Category = "AI Pawn State")
-	float DeathAnimDuration = 3.0f;
 	
 	/* ------------- Effects -------------- */
 	/* Anim&VFXs */
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Effects | Anim&VFXs")
 	TObjectPtr<UAnimMontage> DeathMontage;
+	
+	UPROPERTY(EditAnywhere, Category = "Effects | Anim&VFXs")
+	float DeathAnimDuration = 3.0f;
 	
 };

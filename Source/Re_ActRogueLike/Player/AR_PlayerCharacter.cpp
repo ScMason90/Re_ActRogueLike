@@ -56,8 +56,6 @@ void AAR_PlayerCharacter::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 	
-	TimeToHitParamName = "TimeToHit";
-	
 	FOnAttributeChanged& Event = ActionSystemComponent->GetAttributeListener(SharedGameplayTags::Attribute_Health);
 	Event.AddUObject(this, &ThisClass::OnHealthChanged);
 	
@@ -176,12 +174,11 @@ void AAR_PlayerCharacter::OnHealthChanged(FGameplayTag AttributeTag, float NewHe
 	// 'HandleDamaged()'?
 	if (const float Delta = NewHealth - OldHealth; Delta < 0.0f)
 	{
-		// Flash when damaged - Note: this design was rough...'demo/tutorial' only
+		// HitFlashOverlay - Note: this design was rough...'demo/tutorial' only
 		GetMesh()->SetOverlayMaterialMaxDrawDistance(0);
-		
-		// GetMesh()->SetScalarParameterValueOnMaterials(TimeToHitParamName, GetWorld()->TimeSeconds);
 		GetMesh()->SetCustomPrimitiveDataFloat(0, GetWorld()->TimeSeconds);
 		
+		// HitFlashOverlay Ended 
 		GetWorldTimerManager().SetTimer(TimerHandle_Overlay, [this]()
 		{
 			GetMesh()->SetOverlayMaterialMaxDrawDistance(1);

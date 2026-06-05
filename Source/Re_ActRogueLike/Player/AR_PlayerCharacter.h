@@ -73,13 +73,12 @@ protected:
 	
 	/* ------------------- Material Relative ------------------- */
 	
-	UPROPERTY(VisibleAnywhere, Category = "Reaction | OnHealthChange")
-	FName TimeToHitParamName;	// May deprecated...
+	// Encode indices of 'CustomPrimitiveData' for Overlay Material Instances?
 	
-	/* --------------------- Legacy & Deprecated? ----------------------- */
+	/* --------------------- Player State ---------------------- */
 	
-	/** I think this will be replaced in future with GameplayTags in our 'GAS' 
-	 * when we need execute some extern logic based on listener on this. */ 
+	/** Using GameplayTags to manage any 'PawnState' if needed. 
+	 *  Usually we implement GameplayAbilitySystem modular of UE5 to achieve that.But not for our own 'GAS' now*/ 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Player State")
 	bool bPlayerDying = false; 
 
