@@ -26,6 +26,7 @@ void UAR_CoinPickupSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 	
 	WorldISM = NewObject<UInstancedStaticMeshComponent>(World, NAME_None, RF_Transient);
 	WorldISM->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	WorldISM->SetAffectDistanceFieldLighting(false);
 	WorldISM->RegisterComponentWithWorld(World);
 	
 	TRACE_COUNTER_SET(CoinInstanceCount, 0);
@@ -86,11 +87,20 @@ void UAR_CoinPickupSubsystem::RemoveCoinPickup(int32 IndexToRemove)
 {
 	TRACE_CPUPROFILER_EVENT_SCOPE(UAR_CoinPickupSubsystem::RemoveCoinPickup());
 	
+#if 1
+	CoinLocations.RemoveAtSwap(IndexToRemove, EAllowShrinking::No);
+	CoinAmounts.RemoveAtSwap(IndexToRemove, EAllowShrinking::No);
+	
+	WorldISM->RemoveInstanceById(MeshIDs[IndexToRemove]);
+	MeshIDs.RemoveAtSwap(IndexToRemove, EAllowShrinking::No);
+	
+#else
 	CoinLocations.RemoveAt(IndexToRemove);
 	CoinAmounts.RemoveAt(IndexToRemove);
 	
 	WorldISM->RemoveInstanceById(MeshIDs[IndexToRemove]);
 	MeshIDs.RemoveAt(IndexToRemove);
+#endif
 	
 	TRACE_COUNTER_SET(CoinInstanceCount, CoinLocations.Num());
 }

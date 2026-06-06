@@ -189,6 +189,9 @@ void AAR_PlayerCharacter::OnHealthChanged(FGameplayTag AttributeTag, float NewHe
 
 void AAR_PlayerCharacter::HandleDeath()
 {
+	// Manual stop 'BP_Action_...'.Some of them has 'FX system's that haven't cleaned up yet 
+	ActionSystemComponent->StopAction(SharedGameplayTags::Action_Sprint);
+	
 	USkeletalMeshComponent* MeshComp = GetMesh(); 
 	// UCapsuleComponent* CapsuleComp = GetCapsuleComponent();
 			
