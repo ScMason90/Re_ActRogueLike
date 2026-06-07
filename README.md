@@ -1,4 +1,4 @@
-# ReActRogueLike
+# ReActRogueLike [![wakatime](https://wakatime.com/badge/user/6d0513f2-87dd-4bd3-a76c-f2022355582a/project/f589b5d6-88d8-4d5e-ae25-f0f449c89c6b.svg)](https://wakatime.com/badge/user/6d0513f2-87dd-4bd3-a76c-f2022355582a/project/f589b5d6-88d8-4d5e-ae25-f0f449c89c6b)
 
 A personal UE5 C++ learning project based on Tom Looman's ActionRoguelike sample.
 
