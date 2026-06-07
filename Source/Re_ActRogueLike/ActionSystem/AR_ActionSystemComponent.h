@@ -103,7 +103,11 @@ public:
 	
 	FGameplayTagContainer ActiveGameplayTags;
 	
+	UFUNCTION(BlueprintCallable)
 	void GrantAction(TSubclassOf<UAR_Action> NewActionClass);
+	
+	void RemoveAction(UAR_Action* ActionToRemove);
+	
 	void StartAction(FGameplayTag InActionName);
 	void StopAction(FGameplayTag InActionName);
 	

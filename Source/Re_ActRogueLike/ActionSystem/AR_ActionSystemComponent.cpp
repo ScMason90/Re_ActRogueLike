@@ -5,6 +5,7 @@
 
 #include "AR_Action.h"
 #include "AR_AttributeSet.h"
+#include "AR_Effect.h"
 #include "Engine/World.h"
 #include "GameFramework/Actor.h"
 #include "Logging/StructuredLog.h"
@@ -114,7 +115,7 @@ void UAR_ActionSystemComponent::ApplyAttributeChanged(FGameplayTag AttributeTag,
 			bool bIsBound = Event.ExecuteIfBound(AttributeTag, FoundAttribute->GetValue(), OldValue);
 			if (!bIsBound)
 			{
-				Events->RemoveAt(i);
+				Events->RemoveAtSwap(i, EAllowShrinking::No);
 				UE_LOG(LogGame, Log, TEXT("UAR_ActionSystemComponent::ApplyAttributeChanged,"
 							  "Clean up expired dynamic(BP) attribute delegate for %s"), *GetNameSafe(GetOwner()));
 			}
@@ -167,6 +168,19 @@ void UAR_ActionSystemComponent::GrantAction(TSubclassOf<UAR_Action> NewActionCla
 {
 	UAR_Action* NewAction = NewObject<UAR_Action>(this, NewActionClass);
 	Actions.Add(NewAction);
+	
+	if (NewAction->IsA(UAR_Effect::StaticClass()))
+	{
+		// Sanity check that buffs are allowed to run. We do not handle this case yet.
+		ensureMsgf(NewAction->CanStart(), TEXT("Effect can not start CanStart() returns FALSE. Case not handled."));
+		NewAction->StartAction();
+	}
+}
+
+void UAR_ActionSystemComponent::RemoveAction(UAR_Action* ActionToRemove)
+{
+	int32 RemoveCount = Actions.RemoveSingle(ActionToRemove);
+	ensure(RemoveCount == 1);
 }
 
 void UAR_ActionSystemComponent::StartAction(FGameplayTag InActionName)
