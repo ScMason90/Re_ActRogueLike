@@ -14,6 +14,7 @@
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystem.h"
+#include "Re_ActRogueLike/Re_ActRogueLike.h"
 #include "Sound/SoundCue.h"
 
 AAR_ProjectileBase::AAR_ProjectileBase()
@@ -30,7 +31,7 @@ AAR_ProjectileBase::AAR_ProjectileBase()
 	ProjectileMovementComponent->bRotationFollowsVelocity = true;
 	ProjectileMovementComponent->bInitialVelocityInLocalSpace = true;
 	ProjectileMovementComponent->ProjectileGravityScale = 0.0f;
-	ProjectileMovementComponent->InitialSpeed = 8000.0f;
+	ProjectileMovementComponent->InitialSpeed = 2000.0f;
 	
 	LoopedAudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("LoopedAudioComp"));
 	LoopedAudioComponent->SetupAttachment(SphereComponent);	// Must SetupAttachment otherwise we can't edit in editor
@@ -47,8 +48,8 @@ void AAR_ProjectileBase::PostInitializeComponents()
 	// Don't use utilities 'SphereComponent->SetCollisionProfileName();' here 
 	// if any derived cpp class desired to set a specified collision profile in constructor
 	
-	InstigatorPawnActorRef = Cast<AActor>(GetInstigator());
-	SphereComponent->IgnoreActorWhenMoving(InstigatorPawnActorRef, true);
+	InstigatorActorRef = Cast<AActor>(GetInstigator());
+	SphereComponent->IgnoreActorWhenMoving(InstigatorActorRef, true);
 	
 	SphereComponent->OnComponentHit.AddDynamic(this, &AAR_ProjectileBase::OnProjHit);
 	SphereComponent->OnComponentBeginOverlap.AddDynamic(this, &AAR_ProjectileBase::OnProjBeginOverlap);
@@ -66,35 +67,15 @@ void AAR_ProjectileBase::OnProjHit(UPrimitiveComponent* ComponentBeenHit, AActor
 	HandleImpact(OtherActor, Hit);
 }
 
-void AAR_ProjectileBase::PlayExplodeVFXandSFX(FVector const& ProjInsLocation, FRotator const& ProjInsRotation)
-{
-	if (IsValid(ExplosionVFX))
-	{
-		UNiagaraFunctionLibrary::SpawnSystemAtLocation(
-			this, ExplosionVFX, ProjInsLocation, ProjInsRotation);
-	}
-	
-	if (IsValid(ExplosionSFX))
-	{
-		UGameplayStatics::PlaySoundAtLocation(this, ExplosionSFX, ProjInsLocation);
-	}
-	
-	if (IsValid(ImpactShake))
-	{
-		UGameplayStatics::PlayWorldCameraShake(
-			this, ImpactShake, ProjInsLocation, ImpactShakeInnerRadius, ImpactShakeOuterRadius);
-	}
-}
-
 void AAR_ProjectileBase::HandleImpact(AActor* OtherActor, const FHitResult& Hit)
 {
-	if (!OtherActor || OtherActor == InstigatorPawnActorRef || bExploded)
+	if (!OtherActor || OtherActor == InstigatorActorRef || bExploded)
 		return;
 
 	if (LoopedAudioComponent)LoopedAudioComponent->FadeOut(0.2f, 0.f);
 	if (LoopedNiagaraComponent)LoopedNiagaraComponent->Deactivate();
 
-	Explode(Hit);
+	PlayExplosionFXs(Hit);
 	OnImpact(OtherActor, Hit);
 
 	Destroy();
@@ -105,15 +86,15 @@ void AAR_ProjectileBase::OnImpact(AActor* OtherActor, const FHitResult& Hit)
 	// The base class does no harm, while the subclass overrides
 }
 
-void AAR_ProjectileBase::Explode_Implementation(const FHitResult& Hit)
+void AAR_ProjectileBase::PlayExplosionFXs_Implementation(const FHitResult& Hit)
 {
-	if (bExploded || IsPendingKillPending())
-	{
-		return;
-	}
+	if (bExploded || IsPendingKillPending()) return;
 	bExploded = true;
 	
-	LoopedAudioComponent->Deactivate();
-	// LoopedNiagaraComponent->Deactivate();
-	PlayExplodeVFXandSFX(GetActorLocation(), GetActorRotation());
+	FVector ProjExplodeLoc = GetActorLocation();
+	// FRotator ProjExplodeRot = GetActorRotation();
+	
+	UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ExplosionVFX, ProjExplodeLoc);
+	UGameplayStatics::PlaySoundAtLocation(this, ExplosionSFX, ProjExplodeLoc);
+	UGameplayStatics::PlayWorldCameraShake(this, ImpactShake, ProjExplodeLoc, ImpactShakeInnerRadius, ImpactShakeOuterRadius);
 }

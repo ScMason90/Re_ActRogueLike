@@ -14,7 +14,7 @@ AAR_BlackHoleProjectile::AAR_BlackHoleProjectile()
 	RadialForceComponent = CreateDefaultSubobject<URadialForceComponent>(TEXT("RadialForceComp"));
 	RadialForceComponent->SetupAttachment(RootComponent);
 	
-	// Using larger value for Impulse&ForceStrength if didnt implement FireImpulse() in Tick()
+	// Using larger value for Impulse&ForceStrength if didn't implement URadialForceComponent::FireImpulse() in Tick()
 	RadialForceComponent->ImpulseStrength = -800.0f;	
 	RadialForceComponent->ForceStrength = -800.0f;	// Negative to pull in instead of push out
 	RadialForceComponent->Radius = 800.0f;
@@ -28,8 +28,8 @@ AAR_BlackHoleProjectile::AAR_BlackHoleProjectile()
 	
 	// Suck up nearby objects, small enough to let them miss the sphere and flail around a bit first
 	SphereComponent->SetSphereRadius(20.0f);
-	// Profile to only overlap things like physics actors an	d never block on anything to pass through the world
-	// OnProjHit from base class will therefor never trigger as intended for this projectile
+	// Profile to only overlap things like physics actors and never block on anything to pass through the world
+	// OnProjHit() from base class will therefor never trigger as intended for this projectile
 	SphereComponent->SetCollisionProfileName("BlackHoleCore");
 	// Slow
 	ProjectileMovementComponent->InitialSpeed = 800.0f;
@@ -42,8 +42,8 @@ AAR_BlackHoleProjectile::AAR_BlackHoleProjectile()
 
 void AAR_BlackHoleProjectile::PostInitializeComponents()
 {
-	// Note: Make sure GenerateOverlapEvents is enabled on the cubes in the world
-	// We have currently done this in Base class - Super::PostInitializeComponents();
+	/** Note: Make sure GenerateOverlapEvents is enabled on the cubes in the world
+	 * We have currently done this in Base class - Super::PostInitializeComponents(); */
 	Super::PostInitializeComponents();
 }
 
@@ -53,7 +53,7 @@ void AAR_BlackHoleProjectile::OnProjBeginOverlap(UPrimitiveComponent* Overlapped
 	// Skip base implementation, we handle our own as we just need play looped VFX&SFX then 'suck' objects in black hole
 	// Super::OnProjBeginOverlap(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult);
 	
-	if (IsValid(OtherActor) && OtherActor != InstigatorPawnActorRef)
+	if (IsValid(OtherActor) && OtherActor != InstigatorActorRef)
 	{
 		if (IsValid(OtherComp) && OtherComp->IsSimulatingPhysics())
 		{
@@ -72,7 +72,7 @@ void AAR_BlackHoleProjectile::OnProjHit(UPrimitiveComponent* ComponentBeenHit, A
 	
 }
 
-void AAR_BlackHoleProjectile::Explode_Implementation(const FHitResult& Hit)
+void AAR_BlackHoleProjectile::PlayExplosionFXs_Implementation(const FHitResult& Hit)
 {
 	// No need to play Explosion VFX&SFX
 	bExploded = true;

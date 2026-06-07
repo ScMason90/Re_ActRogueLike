@@ -10,6 +10,7 @@
 #include "AR_ProjectileBase.generated.h"
 
 
+class UCameraShakeBase;
 class UNiagaraSystem;
 class UNiagaraComponent;
 class UAudioComponent;
@@ -28,39 +29,41 @@ class RE_ACTROGUELIKE_API AAR_ProjectileBase : public AActor
 	GENERATED_BODY()
 
 public:
+	
 	AAR_ProjectileBase();
 	
 	virtual void PostInitializeComponents() override;
 
 protected:
-	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category = "References")
-	TObjectPtr<AActor> InstigatorPawnActorRef;
 	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Components")
+	UPROPERTY(EditInstanceOnly, Category = "References")
+	TObjectPtr<AActor> InstigatorActorRef;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Components")
 	TObjectPtr<USphereComponent> SphereComponent;
     
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Components")
+	UPROPERTY(EditDefaultsOnly, Category = "Components")
 	TObjectPtr<UProjectileMovementComponent> ProjectileMovementComponent;
     
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Components")
+	UPROPERTY(EditDefaultsOnly, Category = "Components")
 	TObjectPtr<UNiagaraComponent> LoopedNiagaraComponent;
     
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Components")
+	UPROPERTY(EditDefaultsOnly, Category = "Components")
 	TObjectPtr<UAudioComponent> LoopedAudioComponent;
 	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Effects | VFX")
+	UPROPERTY(EditDefaultsOnly, Category = "Effects | VFX")
 	TObjectPtr<UNiagaraSystem> ExplosionVFX;
 	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Effects | SFX")
+	UPROPERTY(EditDefaultsOnly, Category = "Effects | SFX")
 	TObjectPtr<USoundBase> ExplosionSFX;
 	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Effects | CameraShake")
+	UPROPERTY(EditDefaultsOnly, Category = "Effects | CameraShake")
 	TSubclassOf<UCameraShakeBase> ImpactShake;
 	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Effects | CameraShake")
+	UPROPERTY(EditDefaultsOnly, Category = "Effects | CameraShake")
 	float ImpactShakeInnerRadius;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Effects | CameraShake")
+	UPROPERTY(EditDefaultsOnly, Category = "Effects | CameraShake")
 	float ImpactShakeOuterRadius;
 	
 	// Prevent duplicate Explode
@@ -84,7 +87,7 @@ protected:
 		int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	
 	/**
-	 * Handles collision events for the MagicProjectile class instance.
+	 * Handles collision events for the projectile class instance.
 	 * Triggers explosion impulse(logs debug information about the hit).
 	 *
 	 * @param ComponentBeenHit The projectile's mesh component that received the hit.
@@ -99,15 +102,14 @@ protected:
 	
 	/**The base class is only responsible for "dead appearance" and does not force Destroy.
 	* It is up to the subclass to decide whether to Destroy immediately or delay. /Teleport, etc.
-	* Currently just play ImpactVFX and ImpactSoundCue if they are valid.*/
+	* Currently just play ExplosionVFX and ExplosionSFX if they are valid.*/
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	void Explode(const FHitResult& Hit);
-	
-	void PlayExplodeVFXandSFX(FVector const &ProjInsLocation, FRotator const& ProjInsRotation);
+	void PlayExplosionFXs(const FHitResult& Hit);
 	
 	// Unified entry point: Both Hit and Overlap will call it
 	void HandleImpact(AActor* OtherActor, const FHitResult& Hit);
 
 	// Subclass extension point: The damage logic is written here
 	virtual void OnImpact(AActor* OtherActor, const FHitResult& Hit);
+	
 };

@@ -21,7 +21,7 @@ AAR_MagicProjectile::AAR_MagicProjectile()
 
 void AAR_MagicProjectile::LifeSpanExpired()
 {
-	Explode(FHitResult());
+	PlayExplosionFXs(FHitResult());
 	Super::LifeSpanExpired();
 }
 
@@ -31,6 +31,6 @@ void AAR_MagicProjectile::OnImpact(AActor* OtherActor, const FHitResult& Hit)
 	
 	FVector HitFromDirection = GetActorRotation().Vector();
 	UGameplayStatics::ApplyPointDamage(OtherActor, DamageAmount, HitFromDirection, Hit, 
-		InstigatorPawnActorRef->GetInstigatorController(), this, DmgTypeClass);
+		InstigatorActorRef->GetInstigatorController(), this, DmgTypeClass);
 	
 }

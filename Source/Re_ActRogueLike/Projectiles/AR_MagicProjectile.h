@@ -28,4 +28,5 @@ protected:
 	TSubclassOf<UDamageType> DmgTypeClass;
 	
 	virtual void OnImpact(AActor* OtherActor, const FHitResult& Hit) override;
+	
 };
