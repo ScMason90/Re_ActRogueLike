@@ -44,6 +44,8 @@ public:
 	UAR_ActionSystemComponent* GetOwningASComponent() const;
 	
 	FGameplayTag GetActionName() const {return ActionName;}
+	
+	virtual bool ImplementsGetWorld() const override {return true;}
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Actions")
 	void StartAction();

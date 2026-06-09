@@ -80,7 +80,10 @@ void AAR_TeleportProjectile::HandleTeleportation()
 
 	// Handles de-penetration on nearby collision geometry
 	InstigatorActorRef->TeleportTo(GetActorLocation(), InstigatorActorRef->GetActorRotation());
-	// note: the teleport call might fail if it cannot find any valid location -> need some algo to improve
+	
+	/* Note: the teleport call might fail if it cannot find any valid location,
+	 * And when the player is shooting directly against the wall, due to the execution animation of the Cast action, the arm passes through the mold, causing the final transport bullet we shoot from the palm to wrongly "shoot through the wall". Before firing, perform a radiographic check from the generation position to determine the conditions or modify the Cast animation to avoid passing through the mold.
+	 -> Need some algo to improve.Details need to be fine-tuned? */
 	
 	UE_LOG(LogGame, Warning, TEXT("AAR_TeleportProjectile::HandleTeleportation();TeleProj location : %s"), *GetActorLocation().ToString());
 	InstigatorActorRef->TeleportTo(GetActorLocation(), InstigatorActorRef->GetActorRotation());
