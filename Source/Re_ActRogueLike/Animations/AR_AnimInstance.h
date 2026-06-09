@@ -26,6 +26,9 @@ protected:
 	UPROPERTY(Transient, BlueprintReadOnly, Category = StatusEffects)
 	bool bIsSprinting;
 	
+	UPROPERTY(Transient, BlueprintReadOnly, Category = StatusEffects)
+	bool bIsStunned;
+	
 	UPROPERTY(Transient, BlueprintReadOnly)
 	TObjectPtr<UAR_ActionSystemComponent> ASComp;	// ActionSystemComponent
 	

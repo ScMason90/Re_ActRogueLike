@@ -19,6 +19,11 @@ void UAR_AnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 {
 	Super::NativeUpdateAnimation(DeltaSeconds);
 
-	if (ASComp) bIsSprinting = ASComp->ActiveGameplayTags.HasTag(SharedGameplayTags::StatusEffect_Sprinting);
+	if (ASComp)
+	{
+		// TODO: Update to use delegates from action system
+		bIsSprinting = ASComp->ActiveGameplayTags.HasTag(SharedGameplayTags::StatusEffect_Sprinting);
+		bIsStunned = ASComp->ActiveGameplayTags.HasTag(SharedGameplayTags::StatusEffect_Stunned);
+	}
 
 }
