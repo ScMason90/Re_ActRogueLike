@@ -27,13 +27,11 @@ void UAR_AnimInstance::OnTagUpdated(FGameplayTag UpdatedTag, int32 NewCount)
 {
 	bool bWasAdded = NewCount > 0;
 	
-	/* TODO : The lack of restrictions on players' movement and jumping operations leads to the Stunned animation 
-	 * being wrongly blocked or interrupted, and the actual effect of Stunned needs to be enforced */ 
-	if (UpdatedTag == SharedGameplayTags::StatusEffect_Sprinting)
+	if (UpdatedTag.MatchesTag(SharedGameplayTags::StatusEffect_Sprinting))
 	{
 		bIsSprinting = bWasAdded;
 	}
-	else if (UpdatedTag == SharedGameplayTags::StatusEffect_Stunned)
+	else if (UpdatedTag.MatchesTag(SharedGameplayTags::StatusEffect_Stunned))
 	{
 		bIsStunned = bWasAdded;
 	}
