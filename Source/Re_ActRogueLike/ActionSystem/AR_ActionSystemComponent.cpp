@@ -122,8 +122,8 @@ void UAR_ActionSystemComponent::ApplyAttributeChanged(FGameplayTag AttributeTag,
 		}
 	}
 	
-	UE_LOGFMT(LogGame, Log, "UAR_ActionSystemComponent::ApplyAttributeChanged, Attribute : {0}, New : {1}, Old : {2}",
-		AttributeTag.ToString(), FoundAttribute->GetValue(), OldValue);
+	UE_LOGFMT(LogGame, Log, "UAR_ActionSystemComponent::ApplyAttributeChanged; Owner : {0}; Attribute : {1}, Old : {3}, New : {2}",
+		GetNameSafe(GetOwner()), AttributeTag.ToString(), FoundAttribute->GetValue(), OldValue);
 }
 
 FAR_Attribute* UAR_ActionSystemComponent::GetAttribute(FGameplayTag InAttributeTag) const
@@ -172,7 +172,8 @@ void UAR_ActionSystemComponent::GrantAction(TSubclassOf<UAR_Action> NewActionCla
 	if (NewAction->IsA(UAR_Effect::StaticClass()))
 	{
 		// Sanity check that buffs are allowed to run. We do not handle this case yet.
-		ensureMsgf(NewAction->CanStart(), TEXT("Effect can not start CanStart() returns FALSE. Case not handled."));
+		ensureMsgf(NewAction->CanStart(), 
+			TEXT("UAR_ActionSystemComponent::GrantAction;Effect can not start CanStart() returns FALSE. Case not handled."));
 		NewAction->StartAction();
 	}
 }
@@ -181,6 +182,49 @@ void UAR_ActionSystemComponent::RemoveAction(UAR_Action* ActionToRemove)
 {
 	int32 RemoveCount = Actions.RemoveSingle(ActionToRemove);
 	ensure(RemoveCount == 1);
+}
+
+void UAR_ActionSystemComponent::AppendActiveTags(FGameplayTagContainer NewTags)
+{
+	ActiveGameplayTags.AppendTags(NewTags);
+	
+	CheckAgainstBlockedTags(NewTags);
+	
+	for (FGameplayTag Tag : NewTags)
+	{
+		OnGameplayTagCountUpdated.Broadcast(Tag, 1);
+	}
+}
+
+void UAR_ActionSystemComponent::RemoveActiveTags(FGameplayTagContainer TagsToRemove)
+{
+	int32 PrevCount = ActiveGameplayTags.Num();
+	
+	ActiveGameplayTags.RemoveTags(TagsToRemove);
+	
+	ensure(PrevCount - ActiveGameplayTags.Num() == TagsToRemove.Num());
+	
+	for (FGameplayTag Tag : TagsToRemove)
+	{
+		OnGameplayTagCountUpdated.Broadcast(Tag, 0);
+	}
+}
+
+void UAR_ActionSystemComponent::CheckAgainstBlockedTags(const FGameplayTagContainer& NewTags)
+{
+	for (UAR_Action* Action : Actions)
+	{
+		if (Action->IsRunning() && NewTags.HasAny(Action->GetBlockedTags()))
+		{
+			Action->StopAction();
+			
+			UE_LOGFMT(LogGame, Log, "UAR_ActionSystemComponent::CheckAgainstBlockedTags, "
+						   "Stopped {ActionName} due to any matching tag {BlockedTags} for {Owner}",
+						   ("ActionName", Action->GetActionName().ToString()),
+						   ("BlockedTags", NewTags.ToString()),
+						   ("Owner", GetNameSafe(GetOwner())));
+		}
+	}
 }
 
 void UAR_ActionSystemComponent::StartAction(FGameplayTag InActionName)
@@ -228,7 +272,7 @@ UAR_ActionSystemComponent* UAR_ActionSystemComponent::GetASComp(AActor* FromActo
 bool UAR_ActionSystemComponent::Kill(AActor* InstigatorActor)
 {
 	ApplyAttributeChanged(SharedGameplayTags::Attribute_Health, 
-		GetAttribute(SharedGameplayTags::Attribute_HealthMax)->GetValue(), Base);
+		-GetAttribute(SharedGameplayTags::Attribute_HealthMax)->GetValue(), Base);
 	
 	return UAR_GameplayStatics::IsDead(this);
 }

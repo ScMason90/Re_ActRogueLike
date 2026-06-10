@@ -37,6 +37,8 @@ protected:
 
 public:
 	
+	const FGameplayTagContainer& GetBlockedTags() const {return BlockedTags;}
+	
 	/** Since we load 'UAR_AttributeSet' and 'UAR_Action' or their derived classes only in 'UAR_ActionSystemComponent'
 	 * , No need of any error check and validation.Keep that in mind we always restore database and
 	 * execute relative application in 'ASComp' */

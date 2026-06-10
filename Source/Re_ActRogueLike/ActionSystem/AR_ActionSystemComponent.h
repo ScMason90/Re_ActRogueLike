@@ -28,6 +28,8 @@ DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnAttributeChanged,
 DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnAttributeDynamicChanged, 
 	FGameplayTag, AttributeTag, float, NewAttributeValue, float, OldAttributeValue);
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnGameplayTagCountChanged, FGameplayTag, UpdatedTag, int32, NewCount);
+
 /*
  *
  */
@@ -74,6 +76,10 @@ protected:
 	
 	UPROPERTY(EditAnywhere, Category = ActionSystem)
 	TArray<TSubclassOf<UAR_Action>> DefaultActions;
+	
+	FGameplayTagContainer ActiveGameplayTags;
+	
+	void CheckAgainstBlockedTags(const FGameplayTagContainer& NewTags);
 
 public:
 	
@@ -101,8 +107,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Utilities")
 	static UAR_ActionSystemComponent* GetASComp(AActor* FromActor);
 	
-	FGameplayTagContainer ActiveGameplayTags;
-	
+	/**
+	 * @param NewActionClass Directly apply effect ('NewAction->StartAction()') if it's derived from 'UAR_Effect'
+	 */
 	UFUNCTION(BlueprintCallable)
 	void GrantAction(TSubclassOf<UAR_Action> NewActionClass);
 	
@@ -112,6 +119,15 @@ public:
 	void StopAction(FGameplayTag InActionName);
 	
 	void SetDefaultAttributeSet(TSubclassOf<UAR_AttributeSet> AttributeSetClass);
+	
+	void AppendActiveTags(FGameplayTagContainer NewTags);
+	
+	void RemoveActiveTags(FGameplayTagContainer TagsToRemove);
+	
+	UPROPERTY(BlueprintAssignable)
+	FOnGameplayTagCountChanged OnGameplayTagCountUpdated;
+	
+	const FGameplayTagContainer& GetActiveTags() const {return ActiveGameplayTags;}
 	
 	/*------------- Legacy ----------------*/
 	

@@ -15,15 +15,27 @@ void UAR_AnimInstance::NativeInitializeAnimation()
 	
 }
 
-void UAR_AnimInstance::NativeUpdateAnimation(float DeltaSeconds)
+void UAR_AnimInstance::NativeBeginPlay()
 {
-	Super::NativeUpdateAnimation(DeltaSeconds);
+	Super::NativeBeginPlay();
+	
+	ASComp->OnGameplayTagCountUpdated.AddDynamic(this, &ThisClass::OnTagUpdated);
+	
+}
 
-	if (ASComp)
+void UAR_AnimInstance::OnTagUpdated(FGameplayTag UpdatedTag, int32 NewCount)
+{
+	bool bWasAdded = NewCount > 0;
+	
+	/* TODO : The lack of restrictions on players' movement and jumping operations leads to the Stunned animation 
+	 * being wrongly blocked or interrupted, and the actual effect of Stunned needs to be enforced */ 
+	if (UpdatedTag == SharedGameplayTags::StatusEffect_Sprinting)
 	{
-		// TODO: Update to use delegates from action system
-		bIsSprinting = ASComp->ActiveGameplayTags.HasTag(SharedGameplayTags::StatusEffect_Sprinting);
-		bIsStunned = ASComp->ActiveGameplayTags.HasTag(SharedGameplayTags::StatusEffect_Stunned);
+		bIsSprinting = bWasAdded;
 	}
-
+	else if (UpdatedTag == SharedGameplayTags::StatusEffect_Stunned)
+	{
+		bIsStunned = bWasAdded;
+	}
+	
 }

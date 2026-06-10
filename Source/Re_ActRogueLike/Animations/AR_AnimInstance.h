@@ -6,6 +6,7 @@
 #include "Animation/AnimInstance.h"
 #include "AR_AnimInstance.generated.h"
 
+struct FGameplayTag;
 class UAR_ActionSystemComponent;
 /**
  * 
@@ -19,7 +20,7 @@ public:
 	
 	virtual void NativeInitializeAnimation() override;
 	
-	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
+	virtual void NativeBeginPlay() override;
 	
 protected:
 	
@@ -31,5 +32,8 @@ protected:
 	
 	UPROPERTY(Transient, BlueprintReadOnly)
 	TObjectPtr<UAR_ActionSystemComponent> ASComp;	// ActionSystemComponent
+	
+	UFUNCTION()
+	void OnTagUpdated(FGameplayTag UpdatedTag, int32 NewCount);
 	
 };

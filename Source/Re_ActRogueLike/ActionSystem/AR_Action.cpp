@@ -16,20 +16,20 @@ UAR_ActionSystemComponent* UAR_Action::GetOwningASComponent() const
 
 void UAR_Action::StartAction_Implementation()
 {
-	bIsRunning = true;
-	float GameTime = GetWorld()->TimeSeconds;
-	
-	UE_LOGFMT(LogGame, Log, "UAR_Action::StartAction_Implementation(), Started Action {ActionName} - {WorldTime}", 
-		("ActionName", ActionName.ToString()), ("WorldTime", GameTime));
-	
 	UAR_ActionSystemComponent* OwningComp = GetOwningASComponent();
-	OwningComp->ActiveGameplayTags.AppendTags(GrantTags);
+	OwningComp->AppendActiveTags(GrantTags);
 	
 	// Consume required resources
 	for (TPair<FGameplayTag, float> Cost : ActivationCost)
 	{
 		OwningComp->ApplyAttributeChanged(Cost.Key, -Cost.Value, Modifier);
 	}
+	
+	bIsRunning = true;
+	float GameTime = GetWorld()->TimeSeconds;
+	
+	UE_LOGFMT(LogGame, Log, "UAR_Action::StartAction_Implementation(), Started Action {ActionName} - {WorldTime}", 
+		("ActionName", ActionName.ToString()), ("WorldTime", GameTime));
 }
 
 void UAR_Action::StopAction_Implementation()
@@ -43,7 +43,7 @@ void UAR_Action::StopAction_Implementation()
 	CooldownThreshold = GameTime + CooldownTime;
 	
 	UAR_ActionSystemComponent* OwningComp = GetOwningASComponent();
-	OwningComp->ActiveGameplayTags.RemoveTags(GrantTags);
+	OwningComp->RemoveActiveTags(GrantTags);
 	
 }
 
@@ -57,7 +57,7 @@ bool UAR_Action::CanStart() const
 	}
 	
 	UAR_ActionSystemComponent* OwningComp = GetOwningASComponent();
-	if (OwningComp->ActiveGameplayTags.HasAny(BlockedTags)/*hierarchy involved*/) return false;
+	if (OwningComp->GetActiveTags().HasAny(BlockedTags/*hierarchy involved*/)) return false;
 	
 	for (TPair<FGameplayTag, float> Cost : ActivationCost)
 	{
