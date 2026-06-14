@@ -36,14 +36,19 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<UAR_ActionSystemComponent> ActionSystemComponent;
 	
-	/* ------------------- Effects --------------------- */
-	/* Anim&VFXs */
+	/* ------------------- Effect --------------------- */
+	//				Preferences & FXs
+	/* Anim */
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Effects | FireProjectile | Anim&VFXs")
+	UPROPERTY(EditDefaultsOnly, Category = "Effect | Anim")
 	TObjectPtr<UAnimMontage> DeathMontage;
 	
-	UPROPERTY(EditAnywhere, Category = "Effects | FireProjectile | Anim&VFXs")
+	UPROPERTY(EditAnywhere, Category = "Effect | Anim")
 	float DeathMontageDuration = 1.0f;
+	
+	/* VFX */	
+	
+	
 	
 	/* ---------------------- Input Action ----------------------- */
 	/* Movements */

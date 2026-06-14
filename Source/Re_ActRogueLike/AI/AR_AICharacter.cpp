@@ -11,6 +11,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Engine/World.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/PawnMovementComponent.h"
 #include "Materials/MaterialInstanceDynamic.h"
 #include "Re_ActRogueLike/SharedGameplayTags.h"
@@ -35,11 +36,41 @@ void AAR_AICharacter::PostInitializeComponents()
 	
 	InitializeMIDs();
 	
+	GetMesh()->SetOverlayMaterialMaxDrawDistance(1);
+	
 	FOnAttributeChanged& Event = ActionSystemComponent->GetAttributeListener(SharedGameplayTags::Attribute_Health);
 	Event.AddUObject(this, &ThisClass::OnHealthChanged);
 	
-	GetMesh()->SetOverlayMaterialMaxDrawDistance(1);
+	ActionSystemComponent->OnGameplayTagCountUpdated.AddDynamic(this, &ThisClass::AAR_AICharacter::OnGameplayTagCountUpdated);
 	
+}
+
+void AAR_AICharacter::OnGameplayTagCountUpdated(FGameplayTag UpdatedTag, int32 NewCount)
+{
+	if (UpdatedTag.MatchesTag(SharedGameplayTags::StatusEffect_Stunned) && !bAIPawnDying)
+	{
+		const bool bWasAdded = NewCount > 0;
+		GetCharacterMovement()->SetMovementMode(bWasAdded ? MOVE_None : MOVE_Walking);	// Block/Allow Movement
+		
+		// Pause All logic for Enemy
+		AAR_AIController* AIC = Cast<AAR_AIController>(GetController());
+		UBehaviorTreeComponent* BTComp = Cast<UBehaviorTreeComponent>(AIC->GetBrainComponent());
+		check(BTComp);
+		
+		/* Alternatively you could restart the logic to skip any 'waits' it might be in and get out of the stunned
+		 * picking a new thing to do right away...((BTComp->StartLogic() BTComp->StopLogic())) */ 
+		if (bWasAdded)
+		{
+			BTComp->StopLogic("StunApplied");
+			
+			// Animation
+			PlayAnimMontage(StunnedMontage);
+		}
+		else
+		{
+			BTComp->ResumeLogic("StunRemoved");
+		}
+	}
 }
 
 void AAR_AICharacter::BeginPlay()

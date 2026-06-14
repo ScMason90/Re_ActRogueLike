@@ -7,6 +7,7 @@
 #include "Engine/World.h"
 #include "Logging/StructuredLog.h"
 #include "Re_ActRogueLike/Re_ActRogueLike.h"
+#include "Re_ActRogueLike/SharedGameplayTags.h"
 
 
 UAR_ActionSystemComponent* UAR_Action::GetOwningASComponent() const
@@ -28,8 +29,10 @@ void UAR_Action::StartAction_Implementation()
 	bIsRunning = true;
 	float GameTime = GetWorld()->TimeSeconds;
 	
-	UE_LOGFMT(LogGame, Log, "UAR_Action::StartAction_Implementation(), Started Action {ActionName} - {WorldTime}", 
-		("ActionName", ActionName.ToString()), ("WorldTime", GameTime));
+	UE_LOGFMT(LogGame, Log, 
+		"UAR_Action::StartAction_Implementation(), {OwnerActor}, Started {ActionName} - {WorldTime}", 
+		("ActionName", ActionName.IsValid() ? ActionName.ToString()/*Action*/ : GrantTags.ToString()/*Effect*/), 
+		("WorldTime", GameTime), ("OwnerActor", GetNameSafe(OwningComp->GetOwner())));
 }
 
 void UAR_Action::StopAction_Implementation()
@@ -37,13 +40,15 @@ void UAR_Action::StopAction_Implementation()
 	bIsRunning = false;
 	float GameTime = GetWorld()->TimeSeconds;
 	
-	UE_LOGFMT(LogGame, Log, "UAR_Action::StopAction_Implementation(), Stopped Action {ActionName} - {WorldTime}", 
-		("ActionName", ActionName.ToString()), ("WorldTime", GameTime));
-	
 	CooldownThreshold = GameTime + CooldownTime;
 	
 	UAR_ActionSystemComponent* OwningComp = GetOwningASComponent();
 	OwningComp->RemoveActiveTags(GrantTags);
+	
+	UE_LOGFMT(LogGame, Log, 
+		"UAR_Action::StopAction_Implementation(), {OwnerActor}, Stopped {ActionName} - {WorldTime}", 
+		("ActionName", ActionName.IsValid() ? ActionName.ToString()/*Action*/ : GrantTags.ToString()/*Effect*/), 
+		("WorldTime", GameTime), ("OwnerActor", GetNameSafe(OwningComp->GetOwner())));
 	
 }
 

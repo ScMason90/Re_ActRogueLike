@@ -56,10 +56,10 @@ void AAR_PlayerCharacter::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 	
+	GetMesh()->SetOverlayMaterialMaxDrawDistance(1);
+	
 	FOnAttributeChanged& Event = ActionSystemComponent->GetAttributeListener(SharedGameplayTags::Attribute_Health);
 	Event.AddUObject(this, &ThisClass::OnHealthChanged);
-	
-	GetMesh()->SetOverlayMaterialMaxDrawDistance(1);
 	
 }
 

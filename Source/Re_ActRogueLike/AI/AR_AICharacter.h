@@ -17,6 +17,7 @@ class RE_ACTROGUELIKE_API AAR_AICharacter : public ACharacter
 	GENERATED_BODY()
 
 public:
+	
 	// Sets default values for this character's properties
 	AAR_AICharacter();
 	
@@ -40,20 +41,19 @@ protected:
 	FTimerHandle TimerHandle_Dissolve;
 	
 	FTimerHandle TimerHandle_Overlay;
+	
+	UFUNCTION()
+	void OnGameplayTagCountUpdated(FGameplayTag UpdatedTag, int32 NewCount);
 
 public:
+	
+	// Try adding 'AI Perception' ue5 module? It's a component
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<UAR_ActionSystemComponent> ActionSystemComponent;
 
-	/** @bug Can't trigger this delegate within build...Could be the problem of 
-	 * subscription relationship within ue5 event system.Maybe you should try 'AI Perception' module in ue5?
-	 * And watch some tutorial videos about it?
-	 */
-	// UFUNCTION()
-	// void OnDeathBroadcasted(AActor* DeadActor);
-
 protected:
+	
 	/* ------------- UI/UMG Widget Relative ---------------- */
 	
 	UPROPERTY()
@@ -62,9 +62,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TSubclassOf<UUserWidget> HealthBarWidgetClass;
 	
-	/* -------------Material Relative---------------- */
-	/* VisibleAnywhere = read-only, still useful to view in-editor and enforce a convention. */
-	
+	/* ------------- Material Relative ---------------- */
 	// Encode indices of 'CustomPrimitiveData' for Overlay Material Instances?
 	
 	UPROPERTY(VisibleAnywhere, Category = "Material | Dissolve")
@@ -84,13 +82,21 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "AI Pawn State")
 	bool bAIPawnDying = false;
 	
-	/* ------------- Effects -------------- */
-	/* Anim&VFXs */
+	/* ------------- Effect -------------- */
+	//		Preferences & FXs
+	/* Anim */
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Effects | Anim&VFXs")
+	UPROPERTY(EditDefaultsOnly, Category = "Effect | Anim")
 	TObjectPtr<UAnimMontage> DeathMontage;
 	
-	UPROPERTY(EditAnywhere, Category = "Effects | Anim&VFXs")
+	UPROPERTY(EditAnywhere, Category = "Effect | Anim")
 	float DeathAnimDuration = 3.0f;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Effect | Anim")
+	TObjectPtr<UAnimMontage> StunnedMontage;
+	
+	/* VFX */
+	
+	
 	
 };
