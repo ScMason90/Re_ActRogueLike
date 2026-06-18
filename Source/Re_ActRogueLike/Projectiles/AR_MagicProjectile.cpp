@@ -8,6 +8,8 @@
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystemComponent.h"
+#include "Re_ActRogueLike/ActionSystem/AR_ActionSystemComponent.h"
+#include "Re_ActRogueLike/ActionSystem/AR_Effect.h"
 
 AAR_MagicProjectile::AAR_MagicProjectile()
 {
@@ -29,8 +31,18 @@ void AAR_MagicProjectile::OnImpact(AActor* OtherActor, const FHitResult& Hit)
 {
 	Super::OnImpact(OtherActor, Hit);
 	
+	// TODO: Why damage applied through UE5 damage system like this won't trigger 'HealthOverwhelmed' problem?
 	FVector HitFromDirection = GetActorRotation().Vector();
 	UGameplayStatics::ApplyPointDamage(OtherActor, DamageAmount, HitFromDirection, Hit, 
 		InstigatorActorRef->GetInstigatorController(), this, DmgTypeClass);
+	
+	if (EffectOnHit)
+	{
+		UAR_ActionSystemComponent* ASComp = OtherActor->FindComponentByClass<UAR_ActionSystemComponent>();
+		if (ASComp)	// Ensure 'TargetActor' been hit has a one
+		{
+			ASComp->GrantAction(EffectOnHit);
+		}	
+	}
 	
 }

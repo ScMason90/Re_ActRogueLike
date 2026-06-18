@@ -7,6 +7,8 @@
 #include "Re_ActRogueLike/ActionSystem/AR_ActionSystemComponent.h"
 #include "Re_ActRogueLike/ActionSystem/AR_AttributeSet.h"
 
+// You can replace all 'ASComp->GetAttribute()' to 'ASComp->GetAttributeValue()' for convenience.
+
 bool UAR_GameplayStatics::IsFullHealth(UAR_ActionSystemComponent* ASComp)
 {
 	FAR_Attribute* Health = ASComp->GetAttribute(SharedGameplayTags::Attribute_Health);
@@ -15,9 +17,9 @@ bool UAR_GameplayStatics::IsFullHealth(UAR_ActionSystemComponent* ASComp)
 	return FMath::IsNearlyEqual(Health->GetValue(), HealthMax->GetValue());
 }
 
-bool UAR_GameplayStatics::IsDead(UAR_ActionSystemComponent* ASComp)
+bool UAR_GameplayStatics::IsDying(UAR_ActionSystemComponent* ASComp)
 {
-	FAR_Attribute* Health = ASComp->GetAttribute(SharedGameplayTags::Attribute_Health);
+	float HealthValue = ASComp->GetAttributeValue(SharedGameplayTags::Attribute_Health);
 	
-	return FMath::IsNearlyZero(Health->GetValue());
+	return FMath::IsNearlyZero(HealthValue) || HealthValue < 0.0f;
 }

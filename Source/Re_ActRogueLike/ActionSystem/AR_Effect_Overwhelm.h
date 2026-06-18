@@ -7,7 +7,7 @@
 #include "AR_Effect_Overwhelm.generated.h"
 
 
-/**
+/**	Temporarily make this 'EffectTrigger' responsible for both 'Stun' applied to Minion.Only for test
  * TODO: Create a new Specified 'StatusEffectManager/Trigger' GameplayTag category? 
  */
 UCLASS()
@@ -21,14 +21,17 @@ public:
 	
 protected:
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Overwhelm")
-	int32 MaxOverwhelmPoints;
+	/* Temp for now and Test only */
+	/* ---------- Stun -----------*/
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Overwhelm | Stun")
+	int32 OnStunThreshold;	// MaxOverwhelmPoints, 'Hit Counter'
 	
 	UPROPERTY(Transient)
-	int32 CurrentOverwhelmPoints;
+	int32 CurHit;	// CurrentOverwhelmPoints, 'Current Hit Counter'
 	
-	// Utility manage 'Stun' through this 'Overwhelm' logic effect class for both Player and Enemy?
-	UPROPERTY(EditDefaultsOnly, Category = "Overwhelm")
+	// Utility class manage 'Stun' through this 'Overwhelm' logic effect class for both Player and Enemy?
+	UPROPERTY(EditDefaultsOnly, Category = "Overwhelm | Stun")
 	TSubclassOf<UAR_Action> StunnedEffectClass;
 	
 	/** StunTrigger logic rough only for testing.Integrating with 'DamageSystem' in ue5 since that we implemented it. 

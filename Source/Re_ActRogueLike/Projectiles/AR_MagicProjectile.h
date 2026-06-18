@@ -7,6 +7,7 @@
 #include "AR_ProjectileBase.h"
 #include "AR_MagicProjectile.generated.h"
 
+class UAR_Effect;
 class UDamageType;
 UCLASS(Abstract)
 class RE_ACTROGUELIKE_API AAR_MagicProjectile : public AAR_ProjectileBase
@@ -26,6 +27,13 @@ protected:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Damage")
 	TSubclassOf<UDamageType> DmgTypeClass;
+	
+	/* ----- Action System Relative ----- */
+	
+	// Effect applied to 'HitActor' when 'OnImpact'(Hit/Damaged)
+	UPROPERTY(EditDefaultsOnly, Category = "ActionSystemRelative")
+	TSubclassOf<UAR_Effect> EffectOnHit;	
+	
 	
 	virtual void OnImpact(AActor* OtherActor, const FHitResult& Hit) override;
 	

@@ -23,10 +23,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 	static bool IsFullHealth(UAR_ActionSystemComponent* ASComp);
 	
-	/**
+	/**	Return FMath::IsNearlyZero(HealthValue) || HealthValue < 0.0f... 
 	 * @param ASComp ActionSystemComponent derived from UAR_ActionSystemComponent class.
 	 */
 	UFUNCTION(BlueprintCallable)
-	static bool IsDead(UAR_ActionSystemComponent* ASComp);
+	static bool IsDying(UAR_ActionSystemComponent* ASComp);
+	
+	// If game design allow health less than Zero to be valid, then you might need another functionality as checkpoint
 	
 };

@@ -20,5 +20,6 @@ namespace SharedGameplayTags
 	// StatusEffects
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(StatusEffect_Sprinting);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(StatusEffect_Stunned);
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(StatusEffect_Burning);
 	
 }

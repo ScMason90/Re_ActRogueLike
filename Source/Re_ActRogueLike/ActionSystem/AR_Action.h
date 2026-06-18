@@ -9,8 +9,12 @@
 
 class UAR_ActionSystemComponent;
 
-/**
- * 
+/** @bug : Ambiguous and unclear one - 2026.6.15 16:34. 
+ * During the recent PIE tests (lasting at least one minute), there were 3 to 10 seconds of lag in some cases 
+ * where the cause was still unclear. However, the editor itself did not crash, and the game continued to 
+ * run as usual after the lag. I guess the reason might come from the ActionSystem, 
+ * such as GC when adding or deleting actions, FX Pooling in BP Sprint... 
+ * It might be necessary to use profiling to find out in detail which time.
  */
 UCLASS(Blueprintable, Abstract)
 class RE_ACTROGUELIKE_API UAR_Action : public UObject

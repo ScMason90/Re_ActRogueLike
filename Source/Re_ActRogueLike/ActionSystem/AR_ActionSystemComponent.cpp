@@ -123,7 +123,7 @@ void UAR_ActionSystemComponent::ApplyAttributeChanged(FGameplayTag AttributeTag,
 	}
 	
 	UE_LOGFMT(LogGame, Log, "UAR_ActionSystemComponent::ApplyAttributeChanged; Owner : {0}; Attribute : {1}, Old : {3}, New : {2}",
-		GetNameSafe(GetOwner()), AttributeTag.ToString(), FoundAttribute->GetValue(), OldValue);
+		GetNameSafe(GetOwner()), AttributeTag.ToString(), OldValue, FoundAttribute->GetValue());
 }
 
 FAR_Attribute* UAR_ActionSystemComponent::GetAttribute(FGameplayTag InAttributeTag) const
@@ -229,9 +229,6 @@ void UAR_ActionSystemComponent::CheckAgainstBlockedTags(const FGameplayTagContai
 
 void UAR_ActionSystemComponent::StartAction(FGameplayTag InActionName)
 {
-	// UE_LOGFMT(LogCore, Warning, 
-	// 	"UAR_ActionSystemComponent::StartAction,Is Actions empty?{Answer}", Actions.IsEmpty()?"Yes":"No");
-	
 	for (UAR_Action* Action : Actions)
 	{
 		if (Action->GetActionName() == InActionName)
@@ -247,9 +244,6 @@ void UAR_ActionSystemComponent::StartAction(FGameplayTag InActionName)
 
 void UAR_ActionSystemComponent::StopAction(FGameplayTag InActionName)
 {
-	// UE_LOGFMT(LogCore, Warning, 
-	// 	"UAR_ActionSystemComponent::StopAction,Is Actions empty?{Answer}", Actions.IsEmpty()?"Yes":"No");
-	
 	for (UAR_Action* Action : Actions)
 	{
 		if (Action->GetActionName() == InActionName)
@@ -274,5 +268,5 @@ bool UAR_ActionSystemComponent::Kill(AActor* InstigatorActor)
 	ApplyAttributeChanged(SharedGameplayTags::Attribute_Health, 
 		-GetAttribute(SharedGameplayTags::Attribute_HealthMax)->GetValue(), Base);
 	
-	return UAR_GameplayStatics::IsDead(this);
+	return UAR_GameplayStatics::IsDying(this);
 }

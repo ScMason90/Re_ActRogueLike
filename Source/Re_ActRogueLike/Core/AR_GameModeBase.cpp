@@ -67,7 +67,7 @@ void AAR_GameModeBase::SpawnBotTimerElapsed()
 		if (!Bot) continue;
 
 		UAR_ActionSystemComponent* ASComp = Bot->FindComponentByClass<UAR_ActionSystemComponent>();
-		if (ASComp && !UAR_GameplayStatics::IsDead(ASComp))
+		if (ASComp && !UAR_GameplayStatics::IsDying(ASComp))
 		{
 			NumOfAliveBots++;
 			if (NumOfAliveBots >= MaxBotCount) break;   
@@ -195,7 +195,7 @@ void AAR_GameModeBase::KillAllOfClass(TSubclassOf<AActor> ClassToKill)
 			SkippedCount++;
 			continue;
 		}
-		if (!UAR_GameplayStatics::IsDead(ASComp))
+		if (!UAR_GameplayStatics::IsDying(ASComp))
 		{
 			KilledCount++;
 			ASComp->Kill(ActorToKill/*'Class Suicide'*/);

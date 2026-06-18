@@ -108,13 +108,15 @@ public:
 
 protected:
 	
-	/** Death logic (RAW) */
+	/** Death logic (RAW). There is a bug when enter this execution that it might receive damage still... 
+	 * Problem could be the collision set or untimely dead/lifespan ends. 
+	 */
 	void HandleDeath();
 	
 	void Move(const FInputActionValue& InValue);
 	void Look(const FInputActionInstance& InValue);
 	
-	void OnHealthChanged(FGameplayTag AttributeTag, float NewHealth, float OldHealth);
+	void OnHealthChanged(FGameplayTag HealthAttributeTag, float NewHealth, float OldHealth);
 	
 	FTimerHandle TimerHandle_Ragdoll;
 	

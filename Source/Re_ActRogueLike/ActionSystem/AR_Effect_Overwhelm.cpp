@@ -9,15 +9,17 @@
 
 UAR_Effect_Overwhelm::UAR_Effect_Overwhelm()
 {
-	MaxOverwhelmPoints = 3;
+	// Stun
+	OnStunThreshold = 3;
 	StunnedEffectClass = UAR_Effect_EnemyStunned::StaticClass();
+	
 }
 
 void UAR_Effect_Overwhelm::StartAction_Implementation()
 {
 	Super::StartAction_Implementation();
 	
-	CurrentOverwhelmPoints = 0;
+	CurHit = 0;
 	
 	// Subscribe to injury incidents
 	GetOwningASComponent()->GetOwner()->OnTakeAnyDamage.AddDynamic(this, &ThisClass::OnTakeAnyDamage);
@@ -26,16 +28,16 @@ void UAR_Effect_Overwhelm::StartAction_Implementation()
 void UAR_Effect_Overwhelm::OnTakeAnyDamage(AActor* DamagedActor, float Damage,
 	const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser)
 {
-	CurrentOverwhelmPoints++;
+	UAR_ActionSystemComponent* ASComp = GetOwningASComponent();
+	CurHit++;
 	
-	// Of course you can put in some effort to design a less crude Stun mechanism instead of this one LOL
-	if (CurrentOverwhelmPoints >= MaxOverwhelmPoints)
+	// Of course, you can put in some effort to design a less crude Stun mechanism instead of this one LOL
+	
+	// Trigger Stun
+	if (CurHit >= OnStunThreshold && StunnedEffectClass)
 	{
-		// Trigger Stun
-		GetOwningASComponent()->GrantAction(StunnedEffectClass);
-		
-		// Reset
-		CurrentOverwhelmPoints = 0;
+		ASComp->GrantAction(StunnedEffectClass);
+		CurHit = 0;	// Reset
 	}
 }
 

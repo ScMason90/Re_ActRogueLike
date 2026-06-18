@@ -30,34 +30,40 @@ public:
 	
 protected:
 	
+	/* --- Post spawn tweaking param for functionality - 'AdjustedProjSpawnTransform()' --- */
+	
 	UPROPERTY(EditAnywhere, Category = "ProjectileAttack")
 	FName MuzzleSocketName;
 	
 	UPROPERTY(EditAnywhere, Category = "ProjectileAttack")
 	float LineTraceEndOffset;
 	
-	/* -------------- Projectile Sources ------------------- */
+	
+	/* ----------- Projectile Sources ----------- */
 	
 	UPROPERTY(EditDefaultsOnly, Category = "ProjectileSource")
 	TSubclassOf<AAR_ProjectileBase> ProjectileClass;
 	
-	/* -------------Effects---------------- */
-	/* Anim&VFXs */
+	
+	/* ------------------- Effect --------------------- */
+	//				Preferences & FXs
+	/* Anim */
 	// TODO: May considering using separate 'anim montage & casting effect & spawn socket' for each proj action
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Effects | Anim&VFXs")
+	UPROPERTY(EditDefaultsOnly, Category = "Effect | Anim")
 	TObjectPtr<UAnimMontage> FireMontage;	// Casting Anim
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Effects | Anim&VFXs")
+	UPROPERTY(EditDefaultsOnly, Category = "Effect | Anim")
 	float FireDelay = 0.0f;	// Casting Duration - Depend on how long 'FireMontage' takes
 	
-	// NiagaraSystem played during attack animation
-	UPROPERTY(EditDefaultsOnly, Category = "Effects | Anim&VFXs")
-	TObjectPtr<UNiagaraSystem> CastingVFX;
+	/* VFX */	
 	
-	/* Sounds(SFX)&Audios */
+	UPROPERTY(EditDefaultsOnly, Category = "Effect | VFX")
+	TObjectPtr<UNiagaraSystem> CastingVFX;	// NS played during cast animation
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Effects | Sounds(SFX)&Audios")
+	/* SFX */
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Effects | SFX")
 	TObjectPtr<USoundBase> CastingSFX;
 	
 public:

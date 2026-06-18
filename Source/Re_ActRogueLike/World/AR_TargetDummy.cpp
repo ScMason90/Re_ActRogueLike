@@ -31,7 +31,7 @@ void AAR_TargetDummy::OnHealthChanged(FGameplayTag AttributeTag, float NewHealth
 {
 	if (bDummyDying)return;
 	
-	if (const bool bIsDead = UAR_GameplayStatics::IsDead(ActionSystemComponent))
+	if (const bool bIsDead = UAR_GameplayStatics::IsDying(ActionSystemComponent))
 	{
 		bDummyDying = bIsDead;
 		// 'HandleDeath()' for test something?

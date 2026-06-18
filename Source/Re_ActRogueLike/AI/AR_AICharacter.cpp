@@ -13,6 +13,7 @@
 #include "Engine/World.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/PawnMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Materials/MaterialInstanceDynamic.h"
 #include "Re_ActRogueLike/SharedGameplayTags.h"
 #include "Re_ActRogueLike/ActionSystem/AR_ActionSystemComponent.h"
@@ -47,9 +48,13 @@ void AAR_AICharacter::PostInitializeComponents()
 
 void AAR_AICharacter::OnGameplayTagCountUpdated(FGameplayTag UpdatedTag, int32 NewCount)
 {
-	if (UpdatedTag.MatchesTag(SharedGameplayTags::StatusEffect_Stunned) && !bAIPawnDying)
+	if (bAIPawnDying) return;	// We don't wanna apply any 'ActionEffect' when processing dead logic
+	
+	const bool bWasAdded = NewCount > 0;
+	
+	// Stun
+	if (UpdatedTag.MatchesTag(SharedGameplayTags::StatusEffect_Stunned))
 	{
-		const bool bWasAdded = NewCount > 0;
 		GetCharacterMovement()->SetMovementMode(bWasAdded ? MOVE_None : MOVE_Walking);	// Block/Allow Movement
 		
 		// Pause All logic for Enemy
@@ -67,10 +72,36 @@ void AAR_AICharacter::OnGameplayTagCountUpdated(FGameplayTag UpdatedTag, int32 N
 			PlayAnimMontage(StunnedMontage);
 		}
 		else
-		{
+		{	
+			// TODO: Since my AIChar doesn't "actively seek out available targets" at present, it might freeze directly after StunEnded.
 			BTComp->ResumeLogic("StunRemoved");
+			// BTComp->StartLogic();
 		}
 	}
+	
+#if 0
+	// Burning - DoT implemented by C++ Timer.
+	// Well, Better write a periodic effect applicator in the 'AR_Action' and override it in the subclass to implement DoT/HoT
+	if (UpdatedTag.MatchesTag(SharedGameplayTags::StatusEffect_Burning))
+	{
+		if (bWasAdded)
+		{
+			FTimerDelegate TimerDel_Burning;
+			TimerDel_Burning.BindLambda([this]()
+			{
+				ActionSystemComponent->ApplyAttributeChanged(SharedGameplayTags::Attribute_Health, -7.0f, Modifier);
+			});
+		
+			GetWorldTimerManager().SetTimer(TimerHandle_Burning, TimerDel_Burning, 0.5f, true, 0.3f);
+		}
+		else
+		{
+			GetWorldTimerManager().ClearTimer(TimerHandle_Burning);
+			ActionSystemComponent->StopAction(SharedGameplayTags::StatusEffect_Burning);
+		}
+	}
+#endif
+	
 }
 
 void AAR_AICharacter::BeginPlay()
@@ -93,14 +124,14 @@ float AAR_AICharacter::TakeDamage(float DamageAmount, struct FDamageEvent const&
 	return ActualDamage;
 }
 
-void AAR_AICharacter::OnHealthChanged(FGameplayTag AttributeTag, float NewHealth, float OldHealth)
+void AAR_AICharacter::OnHealthChanged(FGameplayTag HealthAttributeTag, float NewHealth, float OldHealth)
 {
 	if (bAIPawnDying) return;
 	
 	// Only execute death logic/appearance immediately when dead (on performance optimization purpose) 
-	if (const bool bIsDead = UAR_GameplayStatics::IsDead(ActionSystemComponent))
+	if (const bool bIsDying = UAR_GameplayStatics::IsDying(ActionSystemComponent))
 	{
-		bAIPawnDying = bIsDead;	// Marked as already dead
+		bAIPawnDying = bIsDying;	// Marked as already dead
 		HandleDeath();
 		return;		// Remove this line, and migrate this snippet under 'HandleDamaged()' if you want both.
 	}
@@ -134,6 +165,12 @@ void AAR_AICharacter::OnHealthChanged(FGameplayTag AttributeTag, float NewHealth
 
 void AAR_AICharacter::HandleDeath()
 {
+	// Manually stop any possible processing 'Actions' or 'ActionEffects(Buff/Debuff)'
+	for (const FGameplayTag& ActiveActionTag : ActionSystemComponent->GetActiveTags())
+	{
+		ActionSystemComponent->StopAction(ActiveActionTag);
+	}
+	
 	// Disable AI Behavior Tree
 	if (AAR_AIController* AIController = Cast<AAR_AIController>(GetController()))
 	{

@@ -47,7 +47,7 @@ void AAR_AIController::SetTargetActor(AActor* NewTarget)
 	// Survival check
 	if (UAR_ActionSystemComponent* ASComp = NewTarget->FindComponentByClass<UAR_ActionSystemComponent>())
 	{
-		if (ASComp && UAR_GameplayStatics::IsDead(ASComp)) return;
+		if (ASComp && UAR_GameplayStatics::IsDying(ASComp)) return;
 	}
 
 	AActor* ValidTarget = NewTarget;

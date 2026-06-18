@@ -20,6 +20,7 @@
 #include "Re_ActRogueLike/ActionSystem/AR_AttributeSet.h"
 #include "Re_ActRogueLike/Core/AR_GameplayStatics.h"
 
+// @Redundant: Since that we have 'God' command provided by UE5 - true, damage on our 'PlayerCharacter' would be null
 static TAutoConsoleVariable<bool> CVarGodMode(TEXT("game.cheat.god"), false,
                                               TEXT("Enable god mode for inf-health... (false = off, true = on)"), ECVF_Cheat);
 
@@ -151,7 +152,7 @@ float AAR_PlayerCharacter::TakeDamage(float DamageAmount, struct FDamageEvent co
 	ActionSystemComponent->ApplyAttributeChanged(SharedGameplayTags::Attribute_Health, -ActualDamage, Base);
 	
 	// Damage to Rage Ratio
-	// (We could expose '0..f' as a global/general ratio or as an Attribute that can be improved through gameplay)
+	// (We could expose '0.f' as a global/general ratio or as an Attribute that can be improved through gameplay)
 	const float RageToAdd = DamageAmount * 0.5f;
 	ActionSystemComponent->ApplyAttributeChanged(SharedGameplayTags::Attribute_Rage, RageToAdd, Modifier);
 	
@@ -159,14 +160,14 @@ float AAR_PlayerCharacter::TakeDamage(float DamageAmount, struct FDamageEvent co
 	
 }
 
-void AAR_PlayerCharacter::OnHealthChanged(FGameplayTag AttributeTag, float NewHealth, float OldHealth)
+void AAR_PlayerCharacter::OnHealthChanged(FGameplayTag HealthAttributeTag, float NewHealth, float OldHealth)
 {
 	if (bPlayerDying) return;
 	
 	// Only execute death logic/appearance immediately when dead (on performance optimization purpose) 
-	if (const bool bIsDead = UAR_GameplayStatics::IsDead(ActionSystemComponent))
+	if (const bool bIsDying = UAR_GameplayStatics::IsDying(ActionSystemComponent))
 	{
-		bPlayerDying = bIsDead;	// Mark as Dead
+		bPlayerDying = bIsDying;	// Mark as Dead
 		HandleDeath();
 		return;		// Remove this line, and migrate this snippet under 'HandleDamaged()' if you want both.
 	}
@@ -191,6 +192,12 @@ void AAR_PlayerCharacter::HandleDeath()
 {
 	// Manual stop 'BP_Action_...'.Some of them has 'FX system's that haven't cleaned up yet 
 	ActionSystemComponent->StopAction(SharedGameplayTags::Action_Sprint);
+	
+	// Manually stop any possible processing 'Actions' or 'ActionEffects(Buff/Debuff)'
+	for (const FGameplayTag& ActiveActionTag : ActionSystemComponent->GetActiveTags())
+	{
+		ActionSystemComponent->StopAction(ActiveActionTag);
+	}
 	
 	USkeletalMeshComponent* MeshComp = GetMesh(); 
 	// UCapsuleComponent* CapsuleComp = GetCapsuleComponent();
