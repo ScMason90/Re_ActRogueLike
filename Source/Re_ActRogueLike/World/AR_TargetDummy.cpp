@@ -5,6 +5,7 @@
 
 #include "Components/StaticMeshComponent.h"
 #include "Engine/World.h"
+#include "Re_ActRogueLike/Re_ActRogueLike.h"
 #include "Re_ActRogueLike/SharedGameplayTags.h"
 #include "Re_ActRogueLike/ActionSystem/AR_ActionSystemComponent.h"
 #include "Re_ActRogueLike/ActionSystem/AR_AttributeSet.h"
@@ -23,8 +24,20 @@ AAR_TargetDummy::AAR_TargetDummy()
 	
 	// Trigger when health is changed (damage/healing)
 	FOnAttributeChanged& Event = ActionSystemComponent->GetAttributeListener(SharedGameplayTags::Attribute_Health);
-	Event.AddUObject(this, &ThisClass::OnHealthChanged);
+	DelHandle_OnHealthChanged = Event.AddUObject(this, &ThisClass::OnHealthChanged);
 	
+}
+
+float AAR_TargetDummy::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent,
+								  AController* EventInstigator, AActor* DamageCauser)
+{
+	float ActualDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	
+	// UE_LOG(LogGame, Log, TEXT("AAR_TargetDummy::TakeDamage, ActualDamage = %.2f"), ActualDamage);
+	
+	ActionSystemComponent->ApplyAttributeChanged(SharedGameplayTags::Attribute_Health, -ActualDamage, Base);
+	
+	return ActualDamage;
 }
 
 void AAR_TargetDummy::OnHealthChanged(FGameplayTag AttributeTag, float NewHealth, float OldHealth)
@@ -34,7 +47,7 @@ void AAR_TargetDummy::OnHealthChanged(FGameplayTag AttributeTag, float NewHealth
 	if (const bool bIsDead = UAR_GameplayStatics::IsDying(ActionSystemComponent))
 	{
 		bDummyDying = bIsDead;
-		// 'HandleDeath()' for test something?
+		HandleDeath();
 		return;
 	}
 
@@ -45,12 +58,18 @@ void AAR_TargetDummy::OnHealthChanged(FGameplayTag AttributeTag, float NewHealth
 	}
 }
 
-float AAR_TargetDummy::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent,
-	AController* EventInstigator, AActor* DamageCauser)
+void AAR_TargetDummy::HandleDeath() const
 {
-	float ActualDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	// Manually stop any possible processing 'Actions' or 'ActionEffects(Buff/Debuff)'
+	for (const FGameplayTag& ActiveActionTag : ActionSystemComponent->GetActiveTags())
+	{
+		ActionSystemComponent->StopAction(ActiveActionTag);
+	}
 	
-	ActionSystemComponent->ApplyAttributeChanged(SharedGameplayTags::Attribute_Health, -ActualDamage, Base);
+	// Remove multicast attribute delegate.
+	ActionSystemComponent->GetAttributeListener(SharedGameplayTags::Attribute_Health).Remove(DelHandle_OnHealthChanged);
 	
-	return ActualDamage;
+	// Disable Collision...Honestly all post-death appearances depend on your game type/design
+	MeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	
 }

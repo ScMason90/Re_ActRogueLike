@@ -7,7 +7,8 @@
 #include "AR_Effect_Overwhelm.generated.h"
 
 
-/**	Temporarily make this 'EffectTrigger' responsible for both 'Stun' applied to Minion.Only for test
+/**	Utility 'EffectTrigger' class responsible for 'MinionStun'.
+ * Tracks recent damage received and applies Stun debuff when a threshold is reached.
  * TODO: Create a new Specified 'StatusEffectManager/Trigger' GameplayTag category? 
  */
 UCLASS()
@@ -21,25 +22,25 @@ public:
 	
 protected:
 	
-	/* Temp for now and Test only */
-	/* ---------- Stun -----------*/
+	// Amount of damage required (in one hit or summed) to apply the Debuff effect
+	UPROPERTY(EditDefaultsOnly, Category = Effect)
+	float DamageThreshold = 35.0f;	
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Overwhelm | Stun")
-	int32 OnStunThreshold;	// MaxOverwhelmPoints, 'Hit Counter'
+	// Damage within this timeframe is summed to potentially reach the 'DamageThreshold'
+	UPROPERTY(EditDefaultsOnly, Category = Effect)
+	float TimeDeltaThreshold = 1.0f;
 	
-	UPROPERTY(Transient)
-	int32 CurHit;	// CurrentOverwhelmPoints, 'Current Hit Counter'
+	// The debuff to apply when damage threshold is reached (e.g. Stun)
+	UPROPERTY(EditDefaultsOnly, Category = Effect)
+	TSubclassOf<UAR_Action> EffectOnThreshold;
 	
-	// Utility class manage 'Stun' through this 'Overwhelm' logic effect class for both Player and Enemy?
-	UPROPERTY(EditDefaultsOnly, Category = "Overwhelm | Stun")
-	TSubclassOf<UAR_Action> StunnedEffectClass;
+	float LastDamageTime = 0.0f;
+	float SummedRecentDamage = 0.0f;
 	
-	/** StunTrigger logic rough only for testing.Integrating with 'DamageSystem' in ue5 since that we implemented it. 
-	 * May switch to 'ActionSystem' by subscribing 'FOnAttributeChanged' multicast delegate from OwningASComp.
-	 */
+	FDelegateHandle DelegateHandle_Health;
+	
 	UFUNCTION()
-	void OnTakeAnyDamage(AActor* DamagedActor, float Damage, const class UDamageType* DamageType,
-		class AController* InstigatedBy, AActor* DamageCauser);
+	void OnHealthChanged(FGameplayTag HealthAttributeTag, float NewHealth, float OldHealth);
 	
 public:
 	

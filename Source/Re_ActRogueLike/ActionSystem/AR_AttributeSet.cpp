@@ -5,6 +5,7 @@
 #include "AR_ActionSystemComponent.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Re_ActRogueLike/Re_ActRogueLike.h"
 
 // class RE_ACTROGUELIKE_API UAR_AttributeSet : public UObject
 // -----------------------------------------------------------
@@ -25,7 +26,11 @@ UAR_HealthAttributeSet::UAR_HealthAttributeSet()
 
 void UAR_HealthAttributeSet::PostAttributeChanged()
 {
+	// UE_LOG(LogGame, Warning, TEXT("UAR_HealthAttributeSet::PostAttributeChanged(), SomeWhere Health:%.2f before post changed"), Health.Base);
+	
 	Health.Base = FMath::Clamp(Health.Base, 0.0f, HealthMax.GetValue());
+	
+	// UE_LOG(LogGame, Warning, TEXT("UAR_HealthAttributeSet::PostAttributeChanged(), SomeWhere Health:%.2f after post changed"), Health.Base);
 }
 
 // class UAR_PawnAttributeSet : public UAR_HealthAttributeSet

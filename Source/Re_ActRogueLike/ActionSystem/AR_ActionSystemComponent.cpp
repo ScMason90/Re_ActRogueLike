@@ -166,14 +166,39 @@ void UAR_ActionSystemComponent::RemoveDynamicAttributeListener(FOnAttributeDynam
 
 void UAR_ActionSystemComponent::GrantAction(TSubclassOf<UAR_Action> NewActionClass)
 {
+	FString NewEffectName = "Undefined";
+	
+	const bool bIsEffectClass = NewActionClass->IsChildOf(UAR_Effect::StaticClass());
+	if (bIsEffectClass)
+	{
+		// Find existing debuff by class, you could have different 'StackingBehavior' e.g. allowing one debuff class PER instigator
+		// Note: Buffs and Actions may desire their own individual arrays when expanding on the Action System.
+		for (UAR_Action* Action : Actions)
+		{
+			if (UAR_Effect* Effect = Cast<UAR_Effect>(Action))
+			{
+				NewEffectName = Effect->GetActionName().ToString();
+				if (Effect->GetClass() == NewActionClass)
+				{
+					Effect->IncrementStackSize();
+					return;
+				}	
+			}
+		}
+	}
+	
 	UAR_Action* NewAction = NewObject<UAR_Action>(this, NewActionClass);
 	Actions.Add(NewAction);
 	
-	if (NewAction->IsA(UAR_Effect::StaticClass()))
+	if (bIsEffectClass)
 	{
 		// Sanity check that buffs are allowed to run. We do not handle this case yet.
-		ensureMsgf(NewAction->CanStart(), 
-			TEXT("UAR_ActionSystemComponent::GrantAction;Effect can not start CanStart() returns FALSE. Case not handled."));
+		if (ensureMsgf(NewAction->CanStart(), TEXT("UAR_ActionSystemComponent::GrantAction, "
+											 "an Effect can not start CanStart() returns FALSE. Case not handled.")))
+		{
+			UE_LOG(LogGame, Warning, TEXT("This Effect has name(ActionName in UAR_Action.h): %s."), *NewEffectName);	
+		}	
+		
 		NewAction->StartAction();
 	}
 }

@@ -118,7 +118,7 @@ protected:
 	
 	void OnHealthChanged(FGameplayTag HealthAttributeTag, float NewHealth, float OldHealth);
 	
-	FTimerHandle TimerHandle_Ragdoll;
+	FDelegateHandle DelHandle_OnHealthChanged;
 	
 	FTimerHandle TimerHandle_Overlay;
 

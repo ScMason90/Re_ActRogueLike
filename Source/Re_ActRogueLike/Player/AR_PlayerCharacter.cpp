@@ -20,7 +20,7 @@
 #include "Re_ActRogueLike/ActionSystem/AR_AttributeSet.h"
 #include "Re_ActRogueLike/Core/AR_GameplayStatics.h"
 
-// @Redundant: Since that we have 'God' command provided by UE5 - true, damage on our 'PlayerCharacter' would be null
+// @Redundant: Already have 'God' command provided by UE5 - true, DamageSystem on our 'PlayerCharacter' wouldn't apply any damage
 static TAutoConsoleVariable<bool> CVarGodMode(TEXT("game.cheat.god"), false,
                                               TEXT("Enable god mode for inf-health... (false = off, true = on)"), ECVF_Cheat);
 
@@ -60,7 +60,7 @@ void AAR_PlayerCharacter::PostInitializeComponents()
 	GetMesh()->SetOverlayMaterialMaxDrawDistance(1);
 	
 	FOnAttributeChanged& Event = ActionSystemComponent->GetAttributeListener(SharedGameplayTags::Attribute_Health);
-	Event.AddUObject(this, &ThisClass::OnHealthChanged);
+	DelHandle_OnHealthChanged = Event.AddUObject(this, &ThisClass::OnHealthChanged);
 	
 }
 
@@ -190,14 +190,14 @@ void AAR_PlayerCharacter::OnHealthChanged(FGameplayTag HealthAttributeTag, float
 
 void AAR_PlayerCharacter::HandleDeath()
 {
-	// Manual stop 'BP_Action_...'.Some of them has 'FX system's that haven't cleaned up yet 
-	ActionSystemComponent->StopAction(SharedGameplayTags::Action_Sprint);
-	
 	// Manually stop any possible processing 'Actions' or 'ActionEffects(Buff/Debuff)'
 	for (const FGameplayTag& ActiveActionTag : ActionSystemComponent->GetActiveTags())
 	{
 		ActionSystemComponent->StopAction(ActiveActionTag);
 	}
+	
+	// Remove multicast attribute delegate.
+	ActionSystemComponent->GetAttributeListener(SharedGameplayTags::Attribute_Health).Remove(DelHandle_OnHealthChanged);
 	
 	USkeletalMeshComponent* MeshComp = GetMesh(); 
 	// UCapsuleComponent* CapsuleComp = GetCapsuleComponent();
@@ -222,7 +222,8 @@ void AAR_PlayerCharacter::HandleDeath()
 			
 	// Optional
 		
-	// Play ragdoll
+	// Play Ragdoll
+	FTimerHandle TimerHandle_Ragdoll;
 	GetWorldTimerManager().SetTimer(TimerHandle_Ragdoll, 
 		[this, MeshComp]()
 		{

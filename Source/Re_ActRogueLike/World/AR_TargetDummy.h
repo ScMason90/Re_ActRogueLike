@@ -9,6 +9,9 @@
 struct FGameplayTag;
 class UAR_ActionSystemComponent;
 
+/**
+ * Used to test any new features that might be added to 'AAR_Pawn' class.
+ */
 UCLASS()
 class RE_ACTROGUELIKE_API AAR_TargetDummy : public AActor
 {
@@ -30,7 +33,11 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Dummy State")
 	bool bDummyDying = false;
 	
+	FDelegateHandle DelHandle_OnHealthChanged;
+	
 	void OnHealthChanged(FGameplayTag AttributeTag, float NewHealth, float OldHealth);
+	
+	void HandleDeath() const;
 
 public:
 	

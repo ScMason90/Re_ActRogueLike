@@ -14,7 +14,7 @@
 #include "Re_ActRogueLike/Player/AR_PlayerController.h"
 #include "Re_ActRogueLike/Player/AR_PlayerState.h"
 
-static TAutoConsoleVariable<bool> CVarSpawnBots(TEXT("game.mode.spawnbots"), true, TEXT("Enable AI bot spawning. false = disabled.This only works before PIE in editor"), ECVF_Default);
+static TAutoConsoleVariable<bool> CVarSpawnBots(TEXT("game.mode.spawnbots"), false, TEXT("Enable AI bot spawning. false = disabled.This only works before PIE in editor"), ECVF_Default);
 
 AAR_GameModeBase::AAR_GameModeBase()
 {
@@ -29,6 +29,9 @@ AAR_GameModeBase::AAR_GameModeBase()
 	
 }
 
+/** Now I can't execute this uproject's 'Debug' mode through Rider.
+ * It continues to detect a warning in 'AR_AICharacter()' constructor while I try to spawn bots.
+ * May need to delete these spawn bots logic and implemented somewhere else. */
 void AAR_GameModeBase::StartPlay()
 {
 	Super::StartPlay();
@@ -115,6 +118,7 @@ void AAR_GameModeBase::OnBotSpawnQueryFinished(UEnvQueryInstanceBlueprintWrapper
 			UE_LOG(LogGame, Log, 
 				TEXT("AAR_GameModeBase::OnBotSpawnQueryFinished, Spawned new bot at %s"), *SpawnLocation.ToString());
 		}
+		else UE_LOG(LogGame, Log, TEXT("AAR_GameModeBase::OnBotSpawnQueryFinished, Spawned failed with nullptr 'MinionRangedClass'"));
 	}
 	else UE_LOG(LogGame, Warning, TEXT("AAR_GameModeBase::OnBotSpawnQueryFinished, EQS returned no valid locations!"));
 }

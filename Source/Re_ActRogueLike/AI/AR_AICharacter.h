@@ -32,6 +32,8 @@ protected:
 	
 	void OnHealthChanged(FGameplayTag HealthAttributeTag, float NewHealth, float OldHealth);
 	
+	FDelegateHandle DelHandle_OnHealthChanged;
+	
 	/** Death logic (RAW). There is a bug when enter this execution that it might receive damage still... 
 	 * Problem could be the collision set or untimely dead/lifespan ends. 
 	 */

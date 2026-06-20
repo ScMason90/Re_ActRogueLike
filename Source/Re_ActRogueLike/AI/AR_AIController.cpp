@@ -22,12 +22,11 @@ void AAR_AIController::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	if (!ensureAlwaysMsgf(BehaviorTree, 
-		TEXT("AAR_AIController::BeginPlay(), BehaviorTree is nullptr, please assign it")))return;
+	if (!ensureAlwaysMsgf(BehaviorTree, TEXT("AAR_AIController::BeginPlay(), BehaviorTree is nullptr, please assign it")))return;
 	
 	RunBehaviorTree(BehaviorTree);
 	
-	FName TargetActor = FName("TargetActor"), MoveToLocation = FName("MoveToLocation");
+	FName TargetActor = NAME_TargetActor, MoveToLocation = FName("MoveToLocation");
 	
 	APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(this, 0);
 	check(PlayerPawn);

@@ -40,7 +40,7 @@ void AAR_AICharacter::PostInitializeComponents()
 	GetMesh()->SetOverlayMaterialMaxDrawDistance(1);
 	
 	FOnAttributeChanged& Event = ActionSystemComponent->GetAttributeListener(SharedGameplayTags::Attribute_Health);
-	Event.AddUObject(this, &ThisClass::OnHealthChanged);
+	DelHandle_OnHealthChanged = Event.AddUObject(this, &ThisClass::OnHealthChanged);
 	
 	ActionSystemComponent->OnGameplayTagCountUpdated.AddDynamic(this, &ThisClass::AAR_AICharacter::OnGameplayTagCountUpdated);
 	
@@ -78,29 +78,6 @@ void AAR_AICharacter::OnGameplayTagCountUpdated(FGameplayTag UpdatedTag, int32 N
 			// BTComp->StartLogic();
 		}
 	}
-	
-#if 0
-	// Burning - DoT implemented by C++ Timer.
-	// Well, Better write a periodic effect applicator in the 'AR_Action' and override it in the subclass to implement DoT/HoT
-	if (UpdatedTag.MatchesTag(SharedGameplayTags::StatusEffect_Burning))
-	{
-		if (bWasAdded)
-		{
-			FTimerDelegate TimerDel_Burning;
-			TimerDel_Burning.BindLambda([this]()
-			{
-				ActionSystemComponent->ApplyAttributeChanged(SharedGameplayTags::Attribute_Health, -7.0f, Modifier);
-			});
-		
-			GetWorldTimerManager().SetTimer(TimerHandle_Burning, TimerDel_Burning, 0.5f, true, 0.3f);
-		}
-		else
-		{
-			GetWorldTimerManager().ClearTimer(TimerHandle_Burning);
-			ActionSystemComponent->StopAction(SharedGameplayTags::StatusEffect_Burning);
-		}
-	}
-#endif
 	
 }
 
@@ -170,6 +147,9 @@ void AAR_AICharacter::HandleDeath()
 	{
 		ActionSystemComponent->StopAction(ActiveActionTag);
 	}
+	
+	// Remove multicast attribute delegate.
+	ActionSystemComponent->GetAttributeListener(SharedGameplayTags::Attribute_Health).Remove(DelHandle_OnHealthChanged);
 	
 	// Disable AI Behavior Tree
 	if (AAR_AIController* AIController = Cast<AAR_AIController>(GetController()))

@@ -21,5 +21,5 @@ bool UAR_GameplayStatics::IsDying(UAR_ActionSystemComponent* ASComp)
 {
 	float HealthValue = ASComp->GetAttributeValue(SharedGameplayTags::Attribute_Health);
 	
-	return FMath::IsNearlyZero(HealthValue) || HealthValue < 0.0f;
+	return FMath::IsNearlyZero(HealthValue) /*|| HealthValue < 0.0f*/;
 }
