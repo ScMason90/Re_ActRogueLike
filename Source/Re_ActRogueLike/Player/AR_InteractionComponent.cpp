@@ -7,7 +7,7 @@
 #include "Engine/World.h"
 #include "GameFramework/Pawn.h"
 #include "GameFramework/PlayerController.h"
-#include "Re_ActRogueLike/Re_ActRoguelikeType.h"
+#include "Re_ActRogueLike/Re_ActRoguelikeTypes.h"
 #include "Re_ActRogueLike/Core/AR_InteractionInterface.h"
 
 static TAutoConsoleVariable<bool> CVarInteractionDebugDrawing(TEXT("game.interaction.DebugDraw"), false,

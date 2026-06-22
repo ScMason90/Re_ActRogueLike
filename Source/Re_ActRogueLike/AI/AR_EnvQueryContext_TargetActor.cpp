@@ -7,7 +7,7 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "EnvironmentQuery/EnvQueryTypes.h"
 #include "EnvironmentQuery/Items/EnvQueryItemType_Actor.h"
-#include "Re_ActRogueLike/Re_ActRoguelikeType.h"
+#include "Re_ActRogueLike/Re_ActRoguelikeTypes.h"
 
 void UAR_EnvQueryContext_TargetActor::ProvideContext(FEnvQueryInstance& QueryInstance,
                                                      FEnvQueryContextData& ContextData) const

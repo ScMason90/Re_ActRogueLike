@@ -11,7 +11,7 @@
 #include "Engine/World.h"
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
-#include "Re_ActRogueLike/Re_ActRoguelikeType.h"
+#include "Re_ActRogueLike/Re_ActRoguelikeTypes.h"
 #include "Re_ActRogueLike/Projectiles/AR_ProjectileBase.h"
 
 static TAutoConsoleVariable<float> CVarProjectileAdjustmentDebugDrawing(TEXT("game.projectile.DebugDraw"), 0.0f,

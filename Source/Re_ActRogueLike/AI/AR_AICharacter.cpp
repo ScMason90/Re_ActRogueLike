@@ -46,6 +46,15 @@ void AAR_AICharacter::PostInitializeComponents()
 	
 }
 
+// Cache BTComp and AIC conveniently and safely.
+// void ARogueAICharacter::PossessedBy(AController* NewController)
+// {
+// 	Super::PossessedBy(NewController);
+//
+// 	CachedAIController = Cast<AAIController>(NewController);
+// 	CachedBTComp = Cast<UBehaviorTreeComponent>(CachedAIController->GetBrainComponent());
+// }
+
 void AAR_AICharacter::OnGameplayTagCountUpdated(FGameplayTag UpdatedTag, int32 NewCount)
 {
 	if (bAIPawnDying) return;	// We don't wanna apply any 'ActionEffect' when processing dead logic
@@ -59,6 +68,7 @@ void AAR_AICharacter::OnGameplayTagCountUpdated(FGameplayTag UpdatedTag, int32 N
 		
 		// Pause All logic for Enemy
 		AAR_AIController* AIC = Cast<AAR_AIController>(GetController());
+		check(AIC);	// Could be nullptr if AICharacter didn't 'OnPossessedBy()' yet when new spawned
 		UBehaviorTreeComponent* BTComp = Cast<UBehaviorTreeComponent>(AIC->GetBrainComponent());
 		check(BTComp);
 		

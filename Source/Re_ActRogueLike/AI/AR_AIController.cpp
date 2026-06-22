@@ -6,7 +6,7 @@
 #include "AR_AICharacter.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "Re_ActRogueLike/Re_ActRoguelikeType.h"
+#include "Re_ActRogueLike/Re_ActRoguelikeTypes.h"
 #include "Re_ActRogueLike/ActionSystem/AR_ActionSystemComponent.h"
 #include "Re_ActRogueLike/Core/AR_GameplayStatics.h"
 

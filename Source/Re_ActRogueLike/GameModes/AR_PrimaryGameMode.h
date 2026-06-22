@@ -6,15 +6,17 @@
 #include "Re_ActRogueLike/Core/AR_GameModeBase.h"
 #include "AR_PrimaryGameMode.generated.h"
 
-struct FEnvQueryResult;
 
 namespace EEnvQueryStatus
 {
 	enum Type : int;
 }
+struct FEnemySpawnData;
+struct FEnvQueryResult;
+class UCurveFloat;
+class UDataTable;
 class UEnvQuery;
 class UEnvQueryInstanceBlueprintWrapper;
-class UCurveFloat;
 
 /** I corrected the file name of my AI behavior tree and the blackboard assets(Minon->Minion), and then 'spawn bots' executed 
  * through 'AR_GameModeBase' will trigger the ensure error of AR AIController.cpp line 25... After checking and attempting 
@@ -41,7 +43,12 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Spawn System | Enemy")
 	TObjectPtr<UEnvQuery> SpawnEnemyLocationQuery;
 	
-	void SpawnEnemyQueryCompleted(TSharedPtr<FEnvQueryResult> QueryResult);
+	UPROPERTY(EditDefaultsOnly, Category = "Spawn System | Enemy")
+	TObjectPtr<UDataTable> EnemySpawnTable;
+	
+	void SpawnEnemyQueryCompleted(TSharedPtr<FEnvQueryResult> QueryResult, FEnemySpawnData* SelectedEnemy);
+	
+	void OnEnemyClassLoaded(const FSoftObjectPath& LoadedObjectPath, UObject* LoadedObject, FVector SpawnLocation, FEnemySpawnData* SelectedEnemy);
 
 	/* ------- Legacy ------- */
 	

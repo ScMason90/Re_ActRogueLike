@@ -11,7 +11,7 @@ class UAR_WorldUserWidget;
 class UAR_ActionSystemComponent;
 class UMaterialInstanceDynamic;
 
-UCLASS()
+UCLASS(Abstract)
 class RE_ACTROGUELIKE_API AAR_AICharacter : public ACharacter
 {
 	GENERATED_BODY()

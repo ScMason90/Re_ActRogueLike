@@ -6,8 +6,10 @@
 #include "EngineUtils.h"
 #include "TimerManager.h"
 #include "Curves/CurveFloat.h"
+#include "Engine/DataTable.h"
 #include "EnvironmentQuery/EnvQueryManager.h"
 #include "Re_ActRogueLike/Re_ActRogueLike.h"
+#include "Re_ActRogueLike/Re_ActRoguelikeTypes.h"
 #include "Re_ActRogueLike/ActionSystem/AR_ActionSystemComponent.h"
 #include "Re_ActRogueLike/AI/AR_AICharacter.h"
 #include "Re_ActRogueLike/Core/AR_GameplayStatics.h"
@@ -38,16 +40,48 @@ void AAR_PrimaryGameMode::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 	
+	if (EnemySpawnTable == nullptr)
+	{
+		UE_LOG(LogGame, Warning, TEXT("AAR_PrimaryGameMode::Tick, EnemySpawnTable is nullptr!"));
+		return;
+	}
+	
+	TArray<FEnemySpawnData*> AllRows;	// All rows of 'EnemySpawnTable'
+	EnemySpawnTable->GetAllRows("SelectedEnemy", AllRows);
+	
+	// UE_LOG(LogGame, Warning, TEXT("AAR_PrimaryGameMode::Tick, AllRows.Num() = %d"), AllRows.Num());
+	
+	FEnemySpawnData* SelectedEnemy = AllRows[FMath::RandRange(0, AllRows.Num() - 1)/*int32, SelectedIndex*/];
+	
 	FQueryFinishedSignature SpawnEnemyCompletedDelegate = 
-		FQueryFinishedSignature::CreateUObject(this, &ThisClass::SpawnEnemyQueryCompleted);
+		FQueryFinishedSignature::CreateUObject(this, &ThisClass::SpawnEnemyQueryCompleted, SelectedEnemy);
 	
 	FEnvQueryRequest SpawnEnemyRequest(SpawnEnemyLocationQuery, this);
 	SpawnEnemyRequest.Execute(EEnvQueryRunMode::SingleResult, SpawnEnemyCompletedDelegate);
 }
 
-void AAR_PrimaryGameMode::SpawnEnemyQueryCompleted(TSharedPtr<FEnvQueryResult> QueryResult)
+void AAR_PrimaryGameMode::SpawnEnemyQueryCompleted(TSharedPtr<FEnvQueryResult> QueryResult, FEnemySpawnData* SelectedEnemy)
 {
-	// QueryResult->GetItemAsLocation(0);	
+	FVector SpawnLocation = QueryResult->GetItemAsLocation(0);
+	SpawnLocation.Z += 100.0f;	// Land to the ground instead of stuck in it due to spawning failed. Randomize this?
+	
+	// UE_LOG(LogGame, Warning, TEXT("AAR_PrimaryGameMode::SpawnEnemyQueryCompleted, SpawnLocation = %s"), *SpawnLocation.ToString());
+	
+	SelectedEnemy->EnemyClass.LoadAsync(FLoadSoftObjectPathAsyncDelegate::CreateUObject(this, 
+		&ThisClass::OnEnemyClassLoaded, SpawnLocation, SelectedEnemy));
+}
+
+void AAR_PrimaryGameMode::OnEnemyClassLoaded(const FSoftObjectPath& LoadedObjectPath, UObject* LoadedObject,
+	FVector SpawnLocation, FEnemySpawnData* SelectedEnemy)
+{
+	FActorSpawnParameters EnemySpawnParams = FActorSpawnParameters();
+	
+	AAR_AICharacter* NewEnemy = GetWorld()->SpawnActor<AAR_AICharacter>(
+		SelectedEnemy->EnemyClass.Get(), SpawnLocation, FRotator::ZeroRotator, EnemySpawnParams);
+	
+	// UE_LOG(LogGame, Warning, TEXT("AAR_PrimaryGameMode::SpawnEnemyQueryCompleted, NewEnemy = %s"), *GetNameSafe(NewEnemy));
+	
+	// Set Attributes, add Buffs/Debuffs, etc. 
 }
 
 /** Now I can't execute this uproject's 'Debug' mode through Rider.
@@ -127,6 +161,7 @@ void AAR_PrimaryGameMode::OnBotSpawnQueryFinished(UEnvQueryInstanceBlueprintWrap
 		return;
 	}
 	
+#if 0
 	TArray<FVector> QueryLocations;
 	if (QueryInstance->GetQueryResultsAsLocations(QueryLocations) && QueryLocations.Num() > 0)
 	{
@@ -148,6 +183,8 @@ void AAR_PrimaryGameMode::OnBotSpawnQueryFinished(UEnvQueryInstanceBlueprintWrap
 		else UE_LOG(LogGame, Log, TEXT("AAR_PrimaryGameMode::OnBotSpawnQueryFinished, Spawned failed with nullptr 'MinionRangedClass'"));
 	}
 	else UE_LOG(LogGame, Warning, TEXT("AAR_PrimaryGameMode::OnBotSpawnQueryFinished, EQS returned no valid locations!"));
+#endif
+	
 }
 
 void AAR_PrimaryGameMode::OnPickupSpawnQueryFinished(UEnvQueryInstanceBlueprintWrapper* QueryInstance,
