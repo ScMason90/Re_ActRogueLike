@@ -196,7 +196,8 @@ void UAR_ActionSystemComponent::GrantAction(TSubclassOf<UAR_Action> NewActionCla
 		if (ensureMsgf(NewAction->CanStart(), TEXT("UAR_ActionSystemComponent::GrantAction, "
 											 "an Effect can not start CanStart() returns FALSE. Case not handled.")))
 		{
-			UE_LOG(LogGame, Warning, TEXT("This Effect has name(ActionName in UAR_Action.h): %s."), *NewEffectName);	
+			UE_LOG(LogGame, Log, TEXT("UAR_ActionSystemComponent::GrantAction,"
+							 "This Effect has name(ActionName in UAR_Action.h): %s."), *NewEffectName);	
 		}	
 		
 		NewAction->StartAction();
@@ -207,6 +208,12 @@ void UAR_ActionSystemComponent::RemoveAction(UAR_Action* ActionToRemove)
 {
 	int32 RemoveCount = Actions.RemoveSingle(ActionToRemove);
 	ensure(RemoveCount == 1);
+	
+	FString ActN = ActionToRemove->GetActionName().IsValid() ? ActionToRemove->GetActionName().ToString() : "Undefined Action Name";
+	UE_LOG(LogGame, Verbose, TEXT("UAR_ActionSystemComponent::RemoveAction(UAR_Action* ActionToRemove), Remove Action %s from %s"), 
+		*ActN, *GetNameSafe(GetOwner()));
+	
+	ActionToRemove->MarkAsGarbage();
 }
 
 void UAR_ActionSystemComponent::AppendActiveTags(FGameplayTagContainer NewTags)

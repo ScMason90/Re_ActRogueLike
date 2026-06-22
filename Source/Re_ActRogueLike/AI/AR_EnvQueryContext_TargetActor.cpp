@@ -16,18 +16,17 @@ void UAR_EnvQueryContext_TargetActor::ProvideContext(FEnvQueryInstance& QueryIns
 	if (!OwnerObj) return;
 	
 	// Expected Character - QuerierPawn
-	AActor* OwnerActor = Cast<AActor>(OwnerObj); 
+	const AActor* OwnerActor = Cast<AActor>(OwnerObj); 
 	ensureMsgf(OwnerActor, TEXT("UAR_EnvQueryContext_TargetActor::ProvideContext, OwnerActor is nullptr!"));
 	if (!OwnerActor)return;
 	
 	AAIController* AIController = Cast<AAIController>(OwnerActor->GetInstigatorController());
 	check(AIController);
-	
-	UBlackboardComponent* BB = AIController->GetBlackboardComponent();
+
+	const UBlackboardComponent* BB = AIController->GetBlackboardComponent();
 	check(BB);
 	
-	UObject* TargetObj = BB->GetValueAsObject(NAME_TargetActor);
-	AActor* TargetActor = Cast<AActor>(TargetObj);
+	const AActor* TargetActor = Cast<AActor>(BB->GetValueAsObject(NAME_TargetActor));
 	if (!TargetActor) return;
 	
 	UEnvQueryItemType_Actor::SetContextHelper(ContextData, TargetActor);
