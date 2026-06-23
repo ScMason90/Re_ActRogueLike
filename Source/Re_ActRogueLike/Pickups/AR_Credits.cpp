@@ -17,7 +17,6 @@ AAR_Credits::AAR_Credits()
 	
 	// Set collision profile(object type), make this in Project Settings, "Overlap" only to Pawn
 	OverlapComponent->SetCollisionProfileName("Pickups");
-	OverlapComponent->SetupAttachment(MeshComponent);
 	
 	CreditsAmount = 50;
 }

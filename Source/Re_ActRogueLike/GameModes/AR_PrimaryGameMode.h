@@ -7,6 +7,8 @@
 #include "AR_PrimaryGameMode.generated.h"
 
 
+struct FAR_DirectorData;
+
 namespace EEnvQueryStatus
 {
 	enum Type : int;
@@ -40,33 +42,19 @@ public:
 
 protected:
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Spawn System | Enemy")
-	TObjectPtr<UEnvQuery> SpawnEnemyLocationQuery;
-	
-	UPROPERTY(EditDefaultsOnly, Category = "Spawn System | Enemy")
-	TObjectPtr<UDataTable> EnemySpawnTable;
+	UPROPERTY(EditDefaultsOnly, Category = "Spawn System")
+	TArray<FAR_DirectorData> Directors;
 	
 	void SpawnEnemyQueryCompleted(TSharedPtr<FEnvQueryResult> QueryResult, FEnemySpawnData* SelectedEnemy);
 	
 	void OnEnemyClassLoaded(const FSoftObjectPath& LoadedObjectPath, UObject* LoadedObject, FVector SpawnLocation, FEnemySpawnData* SelectedEnemy);
+	
+	bool TrySpawnEnemy(FAR_DirectorData& Director);
 
 	/* ------- Legacy ------- */
-	
-	UPROPERTY(EditDefaultsOnly, Category = "Spawn System | Enemy")
-	TSubclassOf<AActor> EnemyClass;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Spawn System | Enemy")
 	TObjectPtr<UCurveFloat> DifficultyCurve;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Spawn System | Enemy")
-	float SpawnTimerInterval;
-	
-	FTimerHandle TimerHandle_SpawnEnemy;
-	
-	UFUNCTION()
-	void SpawnEnemyTimerElapsed();
-	UFUNCTION()
-	void OnBotSpawnQueryFinished(UEnvQueryInstanceBlueprintWrapper* QueryInstance, EEnvQueryStatus::Type QueryStatus);
 	
 	UFUNCTION()
 	void OnPickupSpawnQueryFinished(UEnvQueryInstanceBlueprintWrapper* QueryInstance, EEnvQueryStatus::Type QueryStatus);

@@ -11,6 +11,11 @@ class UAR_WorldUserWidget;
 class UAR_ActionSystemComponent;
 class UMaterialInstanceDynamic;
 
+/** Run in DebugMode with Rider.Then any operation to instances BP asset derived from this class will get warning of 
+ * constructing variables in AAR_AICharacter::AAR_AICharacter(). And i don't know why.
+ * Keep pressing 'ResumeProgram' would simply skipp warning. And you might luckily get the rid of it temporarily. - 2026.6.23
+ * This case is still ambiguous and unclear. It happens from time to time.
+ */
 UCLASS(Abstract)
 class RE_ACTROGUELIKE_API AAR_AICharacter : public ACharacter
 {

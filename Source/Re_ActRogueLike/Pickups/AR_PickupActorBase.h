@@ -26,7 +26,7 @@ protected:
 	TObjectPtr<USphereComponent> OverlapComponent;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	TObjectPtr<UStaticMeshComponent> MeshComponent;
+	TObjectPtr<UStaticMeshComponent> MeshComponent;		// Considering leave this to SubClasses 
 	
 	UFUNCTION()
 	virtual void OnActorOverlapped(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
