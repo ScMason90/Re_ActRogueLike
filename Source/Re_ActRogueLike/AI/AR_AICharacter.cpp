@@ -18,6 +18,7 @@
 #include "Re_ActRogueLike/SharedGameplayTags.h"
 #include "Re_ActRogueLike/ActionSystem/AR_ActionSystemComponent.h"
 #include "Re_ActRogueLike/ActionSystem/AR_AttributeSet.h"
+#include "Re_ActRogueLike/Core/AR_GameInstance.h"
 #include "Re_ActRogueLike/Core/AR_GameplayStatics.h"
 #include "Re_ActRogueLike/UI/AR_WorldUserWidget.h"
 
@@ -95,6 +96,16 @@ void AAR_AICharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	UAR_GameInstance* GI = GetGameInstance<UAR_GameInstance>();	// Cache this pointer as a global variable?
+	GI->AliveEnemies.Add(this);
+}
+
+void AAR_AICharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+	
+	UAR_GameInstance* GI = GetGameInstance<UAR_GameInstance>();
+	GI->AliveEnemies.RemoveSingleSwap(this);
 }
 
 float AAR_AICharacter::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent,

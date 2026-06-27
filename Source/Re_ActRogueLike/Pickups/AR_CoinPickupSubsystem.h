@@ -42,10 +42,8 @@ protected:
 	UPROPERTY()
 	TObjectPtr<UAudioComponent> WorldAudioComponent;
 	
-	/* Cached param from Developer Settings for Audio Component Pickups 
-	 * Currently no event pin in specified 'WorldAudioComponent' could be trigger by this ParamName.
-	 * May use for Post-effect processing later on.
-	 */
+	/* Cached param from Developer Settings for 'Input' event ... 
+	 * Corresponding in specific 'USoundBase' MetaSound asset set as 'WorldAudioComponent'.*/
 	FName CoinPickupTriggerParamName;
 	
 	TArray<FVector> CoinLocations;

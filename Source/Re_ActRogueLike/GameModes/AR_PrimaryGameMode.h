@@ -20,13 +20,9 @@ class UDataTable;
 class UEnvQuery;
 class UEnvQueryInstanceBlueprintWrapper;
 
-/** I corrected the file name of my AI behavior tree and the blackboard assets(Minon->Minion), and then 'spawn bots' executed 
- * through 'AR_GameModeBase' will trigger the ensure error of AR AIController.cpp line 25... After checking and attempting 
- * possible minor fixes, it can now be determined that placing 'MinionActor' normally on the level map is harmless. 
- * However, the 'spawn bots' performed will cause severe lag in PIE and trigger callback errors(2026.6.20):
- * LogOutputDevice: Error: === Handled ensure: ===
- * LogOutputDevice: Error: Ensure condition failed: BehaviorTree  [File:D:\Games\Unreal Engine Projects\Re_ActRogueLike\Source\Re_ActRogueLike\AI\AR_AIController.cpp] [Line: 25] 
- * LogOutputDevice: Error: AAR_AIController::BeginPlay(), BehaviorTree is nullptr, please assign it...*/
+/** TODO: Legacy CreditSpawnSystem has not been restructured or cleaned up yet. - 2026.6.25 17:07 
+ * you can refer to the new 'SpawnEnemy' framework and combine it with 'ActionSystem' to complete refactor.
+ */
 UCLASS()
 class RE_ACTROGUELIKE_API AAR_PrimaryGameMode : public AAR_GameModeBase
 {

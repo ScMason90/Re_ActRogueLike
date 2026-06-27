@@ -12,7 +12,7 @@
 
 bool UAR_GameplayStatics::IsFullHealth(UAR_ActionSystemComponent* ASComp)
 {
-	if (!ASComp) return false;
+	check(ASComp);
 	
 	FAR_Attribute* Health = ASComp->GetAttribute(SharedGameplayTags::Attribute_Health);
 	FAR_Attribute* HealthMax = ASComp->GetAttribute(SharedGameplayTags::Attribute_HealthMax);
@@ -22,6 +22,8 @@ bool UAR_GameplayStatics::IsFullHealth(UAR_ActionSystemComponent* ASComp)
 
 bool UAR_GameplayStatics::IsDying(UAR_ActionSystemComponent* ASComp)
 {
+	check(ASComp);
+	
 	float HealthValue = ASComp->GetAttributeValue(SharedGameplayTags::Attribute_Health);
 	
 	return FMath::IsNearlyZero(HealthValue) /*|| HealthValue < 0.0f*/;

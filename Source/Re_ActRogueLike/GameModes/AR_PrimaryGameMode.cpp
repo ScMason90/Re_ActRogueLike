@@ -6,14 +6,18 @@
 #include "EngineUtils.h"
 #include "TimerManager.h"
 #include "Engine/DataTable.h"
+#include "Engine/Engine.h"
 #include "EnvironmentQuery/EnvQueryManager.h"
+#include "Re_ActRogueLike/Re_ActRogueLike.h"
 #include "Re_ActRogueLike/Re_ActRoguelikeTypes.h"
 #include "Re_ActRogueLike/ActionSystem/AR_ActionSystemComponent.h"
 #include "Re_ActRogueLike/AI/AR_AICharacter.h"
+#include "Re_ActRogueLike/Core/AR_GameInstance.h"
 #include "Re_ActRogueLike/Core/AR_GameplayStatics.h"
 #include "Re_ActRogueLike/Player/AR_PlayerCharacter.h"
 #include "Re_ActRogueLike/Player/AR_PlayerController.h"
 #include "Re_ActRogueLike/Player/AR_PlayerState.h"
+#include "VisualLogger/VisualLogger.h"
 
 
 static TAutoConsoleVariable<bool> CVarSpawnEnemy(TEXT("game.mode.spawn enemy"), true, 
@@ -40,6 +44,15 @@ void AAR_PrimaryGameMode::Tick(float DeltaSeconds)
 	
 	float TotalElapsedTime = GetWorld()->TimeSeconds;
 	
+	UAR_GameInstance* GI = GetGameInstance<UAR_GameInstance>();
+	int32 MaxBotLimit = 5;	// This is hard-coded for 'SpawnEnemy(MinionRanged)'. didn't expose to Editor
+	if (GI->AliveEnemies.Num() >= MaxBotLimit)
+	{
+		UE_LOG(LogGameMode, Log, TEXT("AAR_PrimaryGameMode::Tick, Reached bot spawn limit at %d"), MaxBotLimit);
+		return;
+	}
+	
+	int32 KeyID = ONSCREENDEBUGKEY_SPAWNDIRECTOR;
 	for (FAR_DirectorData& Director : Directors)
 	{
 		
@@ -60,12 +73,17 @@ void AAR_PrimaryGameMode::Tick(float DeltaSeconds)
 		float CreditPerSecond = Director.CreditGainCurve.GetRichCurveConst()->Eval(TotalElapsedTime);
 		Director.CurrentCredits += CreditPerSecond * DeltaSeconds;
 		
+		FString DebugMsg = FString::Printf(TEXT("void AAR_PrimaryGameMode::Tick, Director with 'KeyID' %d"
+			"\nCurrentCredits:%f\tNextTickTime:%f"), KeyID, Director.CurrentCredits, Director.NextTickTime);
+		GEngine->AddOnScreenDebugMessage(KeyID, PrimaryActorTick.TickInterval, FColor::Orange, DebugMsg);
+		KeyID++;
+		
 		if (Director.NextTickTime > TotalElapsedTime) continue;
 		
 		bool bSuccessSpawn = TrySpawnEnemy(Director);
 		Director.NextTickTime = TotalElapsedTime + (bSuccessSpawn ? Director.TickInterval : Director.TimeBetweenWaves);
 		
-		UE_LOG(LogGameMode, Log, TEXT("AAR_PrimaryGameMode::Tick, one Director.CurrentCredits: %f"), Director.CurrentCredits);
+		// UE_LOG(LogGameMode, Log, TEXT("AAR_PrimaryGameMode::Tick, one Director.CurrentCredits: %f"), Director.CurrentCredits);
 	}
 	
 }
@@ -86,6 +104,7 @@ bool AAR_PrimaryGameMode::TrySpawnEnemy(FAR_DirectorData& Director)
 			*SelectedEnemy->EnemyClass.GetAssetName());
 		return false;
 	}
+	Director.CurrentCredits -= SelectedEnemy->SpawnCosts;
 	
 	FQueryFinishedSignature SpawnEnemyCompletedDelegate = 
 		FQueryFinishedSignature::CreateUObject(this, &ThisClass::SpawnEnemyQueryCompleted, SelectedEnemy);
@@ -118,9 +137,13 @@ void AAR_PrimaryGameMode::OnEnemyClassLoaded(const FSoftObjectPath& LoadedObject
 	
 	// UE_LOG(LogGameMode, Warning, TEXT("AAR_PrimaryGameMode::SpawnEnemyQueryCompleted, NewEnemy = %s"), *GetNameSafe(NewEnemy));
 	
+	UE_VLOG_SPHERE(this, LogGameMode, Log, SpawnLocation, 32.0f, FColor::Orange, 
+		TEXT("void AAR_PrimaryGameMode::SpawnEnemyQueryCompleted,\nFEnemySpawnData* SelectedEnemy;  SrcClass:%s | SpawnCosts:%s"),
+		*GetNameSafe(SelectedEnemy->EnemyClass.Get()), *FString::SanitizeFloat(SelectedEnemy->SpawnCosts));
+	
 	// Set Attributes, add Buffs/Debuffs, etc. 
 }
-
+	
 /** Now I can't execute this uproject's 'Debug' mode through Rider.
  * It continues to detect a warning in 'AR_AICharacter()' constructor... 
  * May need to settle all warning/error that pause PIE when run in a debug mode with Rider. */
