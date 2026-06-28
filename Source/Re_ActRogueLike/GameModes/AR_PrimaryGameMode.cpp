@@ -38,6 +38,31 @@ AAR_PrimaryGameMode::AAR_PrimaryGameMode()
 	
 }
 
+void AAR_PrimaryGameMode::StartPlay()
+{
+	Super::StartPlay();
+	
+	FRandomStream GlobalRandomStream = FRandomStream(GlobalStartingSeed);
+	
+	for (FAR_DirectorData& Director : Directors)
+	{
+		int32 NewSeed = GlobalRandomStream.RandRange(0, MAX_int32 - 1);
+		Director.RandomStream_EnemySelection = FRandomStream(NewSeed);
+		
+		UE_LOG(LogGameMode, Log, TEXT("void AAR_PrimaryGameMode::StartPlay(), "
+			"Seed of one Director.RandomStream_EnemySelection = %d"), Director.RandomStream_EnemySelection.GetInitialSeed());
+	}
+	
+	// Make sure we have assigned at least one pickup class - legacy credit system (spawn coins)
+	if (PickupClasses.Num() > 0)
+	{
+		UEnvQueryInstanceBlueprintWrapper* QueryInstance = UEnvQueryManager::RunEQSQuery(
+			this, PickupSpawnQuery, this, EEnvQueryRunMode::AllMatching, nullptr);
+		if (ensure(QueryInstance)) 
+			QueryInstance->GetOnQueryFinishedEvent().AddDynamic(this, &AAR_PrimaryGameMode::OnPickupSpawnQueryFinished);
+	}
+}
+
 void AAR_PrimaryGameMode::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
@@ -96,18 +121,43 @@ bool AAR_PrimaryGameMode::TrySpawnEnemy(FAR_DirectorData& Director)
 	
 	// UE_LOG(LogGameMode, Warning, TEXT("AAR_PrimaryGameMode::TrySpawnEnemy, AllRows.Num() = %d"), AllRows.Num());
 	
-	FEnemySpawnData* SelectedEnemy = AllRows[FMath::RandRange(0, AllRows.Num() - 1)/*int32, SelectedIndex*/];
+	// int32 SelectedIndex = Director.RandomStream_EnemySelection.RandRange(0, AllRows.Num()-1);	//FMath::RandRange(...)
+	// FEnemySpawnData* SelectedRow = AllRows[SelectedIndex];
+	
+	float TotalWeights = 0.0f;
+	for (FEnemySpawnData* Row : AllRows)
+	{
+		TotalWeights += Row->SpawnWeight;
+	}
+	float SelectedWeight = Director.RandomStream_EnemySelection.FRandRange(0.0f, TotalWeights);
+	
+	// row 0 - 10 weight (10 total)
+	// row 1 - 15 weight (25 total)
+	// row 2 - 5 weight (30 total)
+	// e.g. SelectedWeight (28) selects row 2, which ranges from 26-30 weight.
+	
+	FEnemySpawnData* SelectedRow = nullptr;
+	TotalWeights = 0.0f;
+	for (FEnemySpawnData* Row : AllRows)
+	{
+		TotalWeights += Row->SpawnWeight;
+		if (SelectedWeight <= TotalWeights)
+		{
+			SelectedRow = Row;
+			break;
+		}
+	}
 
-	if (Director.CurrentCredits < SelectedEnemy->SpawnCosts)
+	if (Director.CurrentCredits < SelectedRow->SpawnCosts)
 	{
 		UE_LOG(LogGameMode, Log, TEXT("AAR_PrimaryGameMode::TrySpawnEnemy, Not enough credits to spawn enemy %s"), 
-			*SelectedEnemy->EnemyClass.GetAssetName());
+			*SelectedRow->EnemyClass.GetAssetName());
 		return false;
 	}
-	Director.CurrentCredits -= SelectedEnemy->SpawnCosts;
+	Director.CurrentCredits -= SelectedRow->SpawnCosts;
 	
 	FQueryFinishedSignature SpawnEnemyCompletedDelegate = 
-		FQueryFinishedSignature::CreateUObject(this, &ThisClass::SpawnEnemyQueryCompleted, SelectedEnemy);
+		FQueryFinishedSignature::CreateUObject(this, &ThisClass::SpawnEnemyQueryCompleted, SelectedRow);
 	
 	FEnvQueryRequest SpawnEnemyRequest(Director.SpawnEnemyLocationQuery, this);
 	int32 QueryID = SpawnEnemyRequest.Execute(EEnvQueryRunMode::SingleResult, SpawnEnemyCompletedDelegate);
@@ -142,23 +192,6 @@ void AAR_PrimaryGameMode::OnEnemyClassLoaded(const FSoftObjectPath& LoadedObject
 		*GetNameSafe(SelectedEnemy->EnemyClass.Get()), *FString::SanitizeFloat(SelectedEnemy->SpawnCosts));
 	
 	// Set Attributes, add Buffs/Debuffs, etc. 
-}
-	
-/** Now I can't execute this uproject's 'Debug' mode through Rider.
- * It continues to detect a warning in 'AR_AICharacter()' constructor... 
- * May need to settle all warning/error that pause PIE when run in a debug mode with Rider. */
-void AAR_PrimaryGameMode::StartPlay()
-{
-	Super::StartPlay();
-	
-	// Make sure we have assigned at least one pickup class
-	if (PickupClasses.Num() > 0)
-	{
-		UEnvQueryInstanceBlueprintWrapper* QueryInstance = UEnvQueryManager::RunEQSQuery(
-			this, PickupSpawnQuery, this, EEnvQueryRunMode::AllMatching, nullptr);
-		if (ensure(QueryInstance)) 
-			QueryInstance->GetOnQueryFinishedEvent().AddDynamic(this, &AAR_PrimaryGameMode::OnPickupSpawnQueryFinished);
-	}
 }
 
 void AAR_PrimaryGameMode::OnPickupSpawnQueryFinished(UEnvQueryInstanceBlueprintWrapper* QueryInstance,

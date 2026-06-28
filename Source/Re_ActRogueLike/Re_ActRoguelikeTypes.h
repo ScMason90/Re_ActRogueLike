@@ -10,6 +10,8 @@
 #define COLLISION_PROJECTILE ECC_GameTraceChannel1
 
 
+class UEnvQuery;
+class UDataTable;
 class AAR_AICharacter;
 
 USTRUCT()
@@ -25,6 +27,9 @@ public:
 	/* Points required by GameMode to spawn this unit.*/
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float SpawnCosts = 0.0f;
+	
+	UPROPERTY(EditAnywhere)
+	float SpawnWeight = 1.0f;
 	
 };
 
@@ -53,5 +58,7 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Spawn System")
 	float TimeBetweenWaves = 6.0f;
+	
+	FRandomStream RandomStream_EnemySelection;
 	
 };

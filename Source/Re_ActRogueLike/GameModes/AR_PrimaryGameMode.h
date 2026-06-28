@@ -41,6 +41,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Spawn System")
 	TArray<FAR_DirectorData> Directors;
 	
+	UPROPERTY(EditDefaultsOnly, Category = "Spawn System")
+	int32 GlobalStartingSeed = 0;	// For generate a global 'FRandomStream'
+	
 	void SpawnEnemyQueryCompleted(TSharedPtr<FEnvQueryResult> QueryResult, FEnemySpawnData* SelectedEnemy);
 	
 	void OnEnemyClassLoaded(const FSoftObjectPath& LoadedObjectPath, UObject* LoadedObject, FVector SpawnLocation, FEnemySpawnData* SelectedEnemy);
@@ -49,7 +52,7 @@ protected:
 
 	/* ------- Legacy ------- */
 
-	UPROPERTY(EditDefaultsOnly, Category = "Spawn System | Enemy")
+	UPROPERTY(EditDefaultsOnly, Category = "Legacy Spawn System | Enemy")
 	TObjectPtr<UCurveFloat> DifficultyCurve;
 	
 	UFUNCTION()
@@ -60,21 +63,21 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "AR Player State Relative")
 	int32 CreditsPerKill;
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Spawn System | Pickup")
+	UPROPERTY(EditDefaultsOnly, Category = "Legacy Spawn System | Pickup")
 	TObjectPtr<UEnvQuery> PickupSpawnQuery;
 	
 	/** All pick-up classes used to spawn with EQS at match start */
-	UPROPERTY(EditDefaultsOnly, Category = "Spawn System | Pickup")
+	UPROPERTY(EditDefaultsOnly, Category = "Legacy Spawn System | Pickup")
 	TArray<TSubclassOf<AActor>> PickupClasses;
 	
 	/** Distance required between pick-up spawn locations */
-	UPROPERTY(EditDefaultsOnly, Category = "Spawn System | Pickup")
+	UPROPERTY(EditDefaultsOnly, Category = "Legacy Spawn System | Pickup")
 	float RequiredPickupDistance;
 	
 	/** Amount of pickups to spawn during match start 
 	 * Please note that this amount should be larger than actual 'QueryResultLocations' amount of EQS.
 	 */
-	UPROPERTY(EditDefaultsOnly, Category = "Spawn System | Pickup")
+	UPROPERTY(EditDefaultsOnly, Category = "Legacy Spawn System | Pickup")
 	int32 DesiredPickupCount;
 	
 	/** Kills all actors of a specific class - Exposed to Exec and Blueprint */
