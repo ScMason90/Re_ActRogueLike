@@ -61,4 +61,7 @@ public:
 	
 	FRandomStream RandomStream_EnemySelection;
 	
+	UPROPERTY(Transient)
+	float TotalSpawnWeight;	// Total quantity of 'SpawnWeight'(in FEnemySpawnData) within 'EnemySpawnTable'
+	
 };

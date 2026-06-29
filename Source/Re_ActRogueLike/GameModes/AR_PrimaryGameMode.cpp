@@ -51,6 +51,16 @@ void AAR_PrimaryGameMode::StartPlay()
 		
 		UE_LOG(LogGameMode, Log, TEXT("void AAR_PrimaryGameMode::StartPlay(), "
 			"Seed of one Director.RandomStream_EnemySelection = %d"), Director.RandomStream_EnemySelection.GetInitialSeed());
+		
+		if (Director.EnemySpawnTable)
+		{
+			TArray<FEnemySpawnData*> AllRows;	// All rows of 'EnemySpawnTable'
+			Director.EnemySpawnTable->GetAllRows(
+				"AAR_PrimaryGameMode::StartPlay, 'AllRows' of one Director.EnemySpawnTable", AllRows);
+			
+			Director.TotalSpawnWeight = 0.0f;
+			for (FEnemySpawnData* Row : AllRows) Director.TotalSpawnWeight += Row->SpawnWeight;
+		}
 	}
 	
 	// Make sure we have assigned at least one pickup class - legacy credit system (spawn coins)
@@ -101,7 +111,7 @@ void AAR_PrimaryGameMode::Tick(float DeltaSeconds)
 		FString DebugMsg = FString::Printf(TEXT("void AAR_PrimaryGameMode::Tick, Director with 'KeyID' %d"
 			"\nCurrentCredits:%f\tNextTickTime:%f"), KeyID, Director.CurrentCredits, Director.NextTickTime);
 		GEngine->AddOnScreenDebugMessage(KeyID, PrimaryActorTick.TickInterval, FColor::Orange, DebugMsg);
-		KeyID++;
+		KeyID++;	// Actually you can use Director.RandomStream_EnemySelection.GetInitialSeed() as Debug Key.
 		
 		if (Director.NextTickTime > TotalElapsedTime) continue;
 		
@@ -117,19 +127,12 @@ bool AAR_PrimaryGameMode::TrySpawnEnemy(FAR_DirectorData& Director)
 {
 	TArray<FEnemySpawnData*> AllRows;	// All rows of 'EnemySpawnTable'
 	Director.EnemySpawnTable->GetAllRows(
-		"AAR_PrimaryGameMode::TrySpawnEnemy, SelectedEnemy in one Director.EnemySpawnTable", AllRows);
+		"AAR_PrimaryGameMode::TrySpawnEnemy, 'AllRows' of one Director.EnemySpawnTable", AllRows);
 	
-	// UE_LOG(LogGameMode, Warning, TEXT("AAR_PrimaryGameMode::TrySpawnEnemy, AllRows.Num() = %d"), AllRows.Num());
-	
-	// int32 SelectedIndex = Director.RandomStream_EnemySelection.RandRange(0, AllRows.Num()-1);	//FMath::RandRange(...)
+	// int32 SelectedIndex = Director.RandomStream_EnemySelection.RandRange(0, AllRows.Num()-1);	// use FMath::RandRange(...) only temporarily 
 	// FEnemySpawnData* SelectedRow = AllRows[SelectedIndex];
 	
-	float TotalWeights = 0.0f;
-	for (FEnemySpawnData* Row : AllRows)
-	{
-		TotalWeights += Row->SpawnWeight;
-	}
-	float SelectedWeight = Director.RandomStream_EnemySelection.FRandRange(0.0f, TotalWeights);
+	float SelectedWeight = Director.RandomStream_EnemySelection.FRandRange(0.0f, Director.TotalSpawnWeight);
 	
 	// row 0 - 10 weight (10 total)
 	// row 1 - 15 weight (25 total)
@@ -137,11 +140,11 @@ bool AAR_PrimaryGameMode::TrySpawnEnemy(FAR_DirectorData& Director)
 	// e.g. SelectedWeight (28) selects row 2, which ranges from 26-30 weight.
 	
 	FEnemySpawnData* SelectedRow = nullptr;
-	TotalWeights = 0.0f;
+	float PrefixWeights = 0.0f;
 	for (FEnemySpawnData* Row : AllRows)
 	{
-		TotalWeights += Row->SpawnWeight;
-		if (SelectedWeight <= TotalWeights)
+		PrefixWeights += Row->SpawnWeight;
+		if (SelectedWeight <= PrefixWeights)
 		{
 			SelectedRow = Row;
 			break;
@@ -171,7 +174,7 @@ void AAR_PrimaryGameMode::SpawnEnemyQueryCompleted(TSharedPtr<FEnvQueryResult> Q
 	FVector SpawnLocation = QueryResult->GetItemAsLocation(0);
 	SpawnLocation.Z += 100.0f;	// Land to the ground instead of stuck in it due to spawning failed. Randomize this?
 	
-	// UE_LOG(LogGameMode, Warning, TEXT("AAR_PrimaryGameMode::SpawnEnemyQueryCompleted, SpawnLocation = %s"), *SpawnLocation.ToString());
+	// UE_LOG(LogGameMode, Log, TEXT("AAR_PrimaryGameMode::SpawnEnemyQueryCompleted, SpawnLocation = %s"), *SpawnLocation.ToString());
 	
 	SelectedEnemy->EnemyClass.LoadAsync(FLoadSoftObjectPathAsyncDelegate::CreateUObject(this, 
 		&ThisClass::OnEnemyClassLoaded, SpawnLocation, SelectedEnemy));
@@ -185,7 +188,7 @@ void AAR_PrimaryGameMode::OnEnemyClassLoaded(const FSoftObjectPath& LoadedObject
 	AAR_AICharacter* NewEnemy = GetWorld()->SpawnActor<AAR_AICharacter>(
 		SelectedEnemy->EnemyClass.Get(), SpawnLocation, FRotator::ZeroRotator, EnemySpawnParams);
 	
-	// UE_LOG(LogGameMode, Warning, TEXT("AAR_PrimaryGameMode::SpawnEnemyQueryCompleted, NewEnemy = %s"), *GetNameSafe(NewEnemy));
+	// UE_LOG(LogGameMode, Log, TEXT("AAR_PrimaryGameMode::SpawnEnemyQueryCompleted, NewEnemy = %s"), *GetNameSafe(NewEnemy));
 	
 	UE_VLOG_SPHERE(this, LogGameMode, Log, SpawnLocation, 32.0f, FColor::Orange, 
 		TEXT("void AAR_PrimaryGameMode::SpawnEnemyQueryCompleted,\nFEnemySpawnData* SelectedEnemy;  SrcClass:%s | SpawnCosts:%s"),
