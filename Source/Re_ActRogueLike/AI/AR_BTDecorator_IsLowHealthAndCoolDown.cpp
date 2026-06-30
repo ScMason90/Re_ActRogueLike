@@ -4,8 +4,6 @@
 #include "AR_BTDecorator_IsLowHealthAndCoolDown.h"
 
 #include "AIController.h"
-#include "AR_AICharacter.h"
-#include "Engine/World.h"
 #include "Re_ActRogueLike/SharedGameplayTags.h"
 #include "Re_ActRogueLike/ActionSystem/AR_ActionSystemComponent.h"
 
@@ -20,10 +18,7 @@ bool UAR_BTDecorator_IsLowHealthAndCoolDown::CalculateRawConditionValue(UBehavio
 	AAIController* AICon = OwnerComp.GetAIOwner();
 	if (!AICon) return false;
 	
-	AAR_AICharacter* Pawn = Cast<AAR_AICharacter>(AICon->GetPawn());
-	if (!Pawn) return false;
-	
-	UAR_ActionSystemComponent* ASComp = Pawn->FindComponentByClass<UAR_ActionSystemComponent>();
+	UAR_ActionSystemComponent* ASComp = AICon->GetPawn()->FindComponentByClass<UAR_ActionSystemComponent>();
 	if (!ASComp) return false;
 	ensure(ASComp);
 	

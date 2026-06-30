@@ -3,9 +3,7 @@
 
 #include "AR_PickupActorBase.h"
 
-#include "TimerManager.h"
 #include "Components/SphereComponent.h"
-#include "Components/StaticMeshComponent.h"
 
 
 // Sets default values

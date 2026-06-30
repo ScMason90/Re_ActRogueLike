@@ -6,7 +6,6 @@
 #include "EngineUtils.h"
 #include "EnvironmentQuery/EnvQueryTypes.h"
 #include "EnvironmentQuery/Items/EnvQueryItemType_Actor.h"
-#include "GameFramework/Actor.h"
 #include "Re_ActRogueLike/Core/AR_GameplayStatics.h"
 #include "Re_ActRogueLike/Player/AR_PlayerCharacter.h"
 

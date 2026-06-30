@@ -6,11 +6,13 @@
 #include "GameFramework/PlayerState.h"
 #include "AR_PlayerState.generated.h"
 
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnCreditsChanged, AAR_PlayerState*, PlayerState, int32, NewCredits, int32, Delta);
 
-/**
- * This hole CreditSystem would be refactored later on.We'll use our own ActionSystem to rebuild it.
- * By then, this class would be redundant.Fortunately, it doesn't have much code now.
+
+/** Legacy Class
+ * This hole CreditSystem would be refactored in the future.
+ * By then, most code would be deprecated. Might need clean up.
  */
 UCLASS()
 class RE_ACTROGUELIKE_API AAR_PlayerState : public APlayerState

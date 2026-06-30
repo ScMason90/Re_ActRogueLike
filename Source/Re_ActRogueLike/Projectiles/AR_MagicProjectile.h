@@ -7,8 +7,14 @@
 #include "AR_ProjectileBase.h"
 #include "AR_MagicProjectile.generated.h"
 
+
 class UAR_Effect;
 class UDamageType;
+
+
+/**
+ * 
+ */
 UCLASS(Abstract)
 class RE_ACTROGUELIKE_API AAR_MagicProjectile : public AAR_ProjectileBase
 {

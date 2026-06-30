@@ -3,7 +3,6 @@
 
 #include "AR_GameplayStatics.h"
 
-#include "GameFramework/Actor.h"
 #include "Re_ActRogueLike/SharedGameplayTags.h"
 #include "Re_ActRogueLike/ActionSystem/AR_ActionSystemComponent.h"
 #include "Re_ActRogueLike/ActionSystem/AR_AttributeSet.h"

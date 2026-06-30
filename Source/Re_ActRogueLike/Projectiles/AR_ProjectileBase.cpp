@@ -3,19 +3,12 @@
 
 #include "AR_ProjectileBase.h"
 
+#include "Components/SphereComponent.h"
+#include "GameFramework/ProjectileMovementComponent.h"
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
-#include "NiagaraSystem.h"
-#include "Camera/CameraShakeBase.h"
-#include "Components/SphereComponent.h"
-#include "Components/PrimitiveComponent.h"
 #include "Components/AudioComponent.h"
-#include "GameFramework/Pawn.h"
-#include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "Particles/ParticleSystem.h"
-#include "Re_ActRogueLike/Re_ActRogueLike.h"
-#include "Sound/SoundCue.h"
 
 AAR_ProjectileBase::AAR_ProjectileBase()
 {

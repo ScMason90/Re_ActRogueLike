@@ -9,6 +9,7 @@
 class UInputAction;
 class UInputMappingContext;
 class UAR_InteractionComponent;
+
 /**
  * 
  */
@@ -16,6 +17,10 @@ UCLASS()
 class RE_ACTROGUELIKE_API AAR_PlayerController : public APlayerController
 {
 	GENERATED_BODY()
+	
+public:
+	
+	AAR_PlayerController();
 	
 protected:
 	
@@ -33,9 +38,5 @@ protected:
 	virtual void SetupInputComponent() override;
 	
 	void StartInteract();
-	
-public:
-	
-	AAR_PlayerController();
 	
 };

@@ -4,8 +4,7 @@
 #include "AR_BTTask_RangeAttack.h"
 
 #include "AIController.h"
-#include "BehaviorTree/BlackboardComponent.h"
-#include "Components/SkeletalMeshComponent.h"
+#include "BehaviorTree/BlackboardComponent.h"	
 #include "GameFramework/Character.h"
 #include "Re_ActRogueLike/Re_ActRoguelikeTypes.h"
 #include "Re_ActRogueLike/Projectiles/AR_MagicProjectile.h"

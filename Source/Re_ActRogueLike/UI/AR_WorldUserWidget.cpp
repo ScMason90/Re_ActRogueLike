@@ -3,11 +3,11 @@
 
 #include "AR_WorldUserWidget.h"
 
-#include "VectorTypes.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "Components/SizeBox.h"
 #include "Kismet/GameplayStatics.h"
 #include "Re_ActRogueLike/Re_ActRogueLike.h"
+
 
 void UAR_WorldUserWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {

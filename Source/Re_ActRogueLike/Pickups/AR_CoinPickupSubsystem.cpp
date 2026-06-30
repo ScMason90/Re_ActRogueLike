@@ -3,16 +3,13 @@
 
 #include "AR_CoinPickupSubsystem.h"
 
-#include "DrawDebugHelpers.h"
 #include "EngineUtils.h"
 #include "Components/AudioComponent.h"
 #include "Components/InstancedStaticMeshComponent.h"
-#include "Engine/StaticMesh.h"
 #include "ProfilingDebugging/CountersTrace.h"
 #include "Re_ActRogueLike/Re_ActRogueLike.h"
 #include "Re_ActRogueLike/Core/AR_DeveloperSettings.h"
 #include "Re_ActRogueLike/Player/AR_PlayerCharacter.h"
-#include "Sound/SoundBase.h"
 
 
 TRACE_DECLARE_INT_COUNTER(CoinInstanceCount, TEXT("Coins in World"));

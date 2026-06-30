@@ -4,9 +4,6 @@
 #include "AR_PrimaryGameMode.h"
 
 #include "EngineUtils.h"
-#include "TimerManager.h"
-#include "Engine/DataTable.h"
-#include "Engine/Engine.h"
 #include "EnvironmentQuery/EnvQueryManager.h"
 #include "Re_ActRogueLike/Re_ActRogueLike.h"
 #include "Re_ActRogueLike/Re_ActRoguelikeTypes.h"
@@ -14,10 +11,7 @@
 #include "Re_ActRogueLike/AI/AR_AICharacter.h"
 #include "Re_ActRogueLike/Core/AR_GameInstance.h"
 #include "Re_ActRogueLike/Core/AR_GameplayStatics.h"
-#include "Re_ActRogueLike/Player/AR_PlayerCharacter.h"
-#include "Re_ActRogueLike/Player/AR_PlayerController.h"
 #include "Re_ActRogueLike/Player/AR_PlayerState.h"
-#include "VisualLogger/VisualLogger.h"
 
 
 static TAutoConsoleVariable<bool> CVarSpawnEnemy(TEXT("game.mode.spawn enemy"), true, 
@@ -283,38 +277,38 @@ void AAR_PrimaryGameMode::KillAllOfClass(TSubclassOf<AActor> ClassToKill)
 		*ClassToKill->GetName(), KilledCount, SkippedCount);
 }
 
-void AAR_PrimaryGameMode::RespawnPlayerElapsed(AController* Controller)
-{
-	if (ensure(Controller))
-	{
-		Controller->UnPossess();
-		RestartPlayer(Controller);
-	}
-}
-
-void AAR_PrimaryGameMode::OnActorKilled(AActor* VictimActor, AActor* Killer)
-{
-	// Deprecated...
-	
-	// Respawn Player after delay
-	AAR_PlayerCharacter* Player = Cast<AAR_PlayerCharacter>(VictimActor);
-	if (Player)
-	{
-		FTimerHandle TimerHandle_RespawnDelay;
-		
-		FTimerDelegate Delegate;
-		Delegate.BindUFunction(this, "RespawnPlayerElapsed", Player->GetController());
-		
-		float RespawnDelay = 5.0f;	// This depends on how long it will take for player character executing death logic and appearance
-		GetWorldTimerManager().SetTimer(TimerHandle_RespawnDelay, Delegate, RespawnDelay, false);
-		
-		return;
-	}
-	
-	// Give Credits for Kill
-	AAR_PlayerState* PS = nullptr;
-	Player = Cast<AAR_PlayerCharacter>(Killer);
-	// Do not 'UE_LOG' out here or access 'ActorName(Safe)OrLabel' here.It's invalid
-	if (Player) PS = Cast<AAR_PlayerState>(Player->GetPlayerState());
-	if (PS) PS->AddCredits(CreditsPerKill);
-}
+// void AAR_PrimaryGameMode::RespawnPlayerElapsed(AController* Controller)
+// {
+// 	if (ensure(Controller))
+// 	{
+// 		Controller->UnPossess();
+// 		RestartPlayer(Controller);
+// 	}
+// }
+//
+// void AAR_PrimaryGameMode::OnActorKilled(AActor* VictimActor, AActor* Killer)
+// {
+// 	// Deprecated...
+// 	
+// 	// Respawn Player after delay
+// 	AAR_PlayerCharacter* Player = Cast<AAR_PlayerCharacter>(VictimActor);
+// 	if (Player)
+// 	{
+// 		FTimerHandle TimerHandle_RespawnDelay;
+// 		
+// 		FTimerDelegate Delegate;
+// 		Delegate.BindUFunction(this, "RespawnPlayerElapsed", Player->GetController());
+// 		
+// 		float RespawnDelay = 5.0f;	// This depends on how long it will take for player character executing death logic and appearance
+// 		GetWorldTimerManager().SetTimer(TimerHandle_RespawnDelay, Delegate, RespawnDelay, false);
+// 		
+// 		return;
+// 	}
+// 	
+// 	// Give Credits for Kill
+// 	AAR_PlayerState* PS = nullptr;
+// 	Player = Cast<AAR_PlayerCharacter>(Killer);
+// 	// Do not 'UE_LOG' out here or access 'ActorName(Safe)OrLabel' here.It's invalid
+// 	if (Player) PS = Cast<AAR_PlayerState>(Player->GetPlayerState());
+// 	if (PS) PS->AddCredits(CreditsPerKill);
+// }

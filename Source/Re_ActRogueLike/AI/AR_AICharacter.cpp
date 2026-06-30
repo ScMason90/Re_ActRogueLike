@@ -4,17 +4,9 @@
 #include "AR_AICharacter.h"
 
 #include "AR_AIController.h"
-#include "TimerManager.h"
 #include "BehaviorTree/BehaviorTreeComponent.h"
-#include "BehaviorTree/BlackboardComponent.h"
-#include "Blueprint/UserWidget.h"
 #include "Components/CapsuleComponent.h"
-#include "Components/SkeletalMeshComponent.h"
-#include "Engine/World.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "GameFramework/PawnMovementComponent.h"
-#include "Kismet/GameplayStatics.h"
-#include "Materials/MaterialInstanceDynamic.h"
 #include "Re_ActRogueLike/SharedGameplayTags.h"
 #include "Re_ActRogueLike/ActionSystem/AR_ActionSystemComponent.h"
 #include "Re_ActRogueLike/ActionSystem/AR_AttributeSet.h"
@@ -84,7 +76,7 @@ void AAR_AICharacter::OnGameplayTagCountUpdated(FGameplayTag UpdatedTag, int32 N
 		}
 		else
 		{	
-			// TODO: Since my AIChar doesn't "actively seek out available targets" at present, it might freeze directly after StunEnded.
+			// Might directly freeze after 'StunEnded' since AIChar doesn't "actively seek out available targets" now
 			BTComp->ResumeLogic("StunRemoved");
 			// BTComp->StartLogic();
 		}

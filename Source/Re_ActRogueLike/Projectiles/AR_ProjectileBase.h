@@ -5,8 +5,6 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-// #include "Engine/EngineTypes.h"              // FHitResult
-// #include "Components/PrimitiveComponent.h"   // UPrimitiveComponent
 #include "AR_ProjectileBase.generated.h"
 
 

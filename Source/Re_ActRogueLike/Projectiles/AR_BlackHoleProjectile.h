@@ -6,7 +6,13 @@
 #include "AR_ProjectileBase.h"
 #include "AR_BlackHoleProjectile.generated.h"
 
+
 class URadialForceComponent;
+
+
+/**
+ * 
+ */
 UCLASS(Abstract)
 class RE_ACTROGUELIKE_API AAR_BlackHoleProjectile : public AAR_ProjectileBase
 {

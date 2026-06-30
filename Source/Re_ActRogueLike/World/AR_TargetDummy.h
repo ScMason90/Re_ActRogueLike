@@ -6,8 +6,10 @@
 #include "GameFramework/Actor.h"
 #include "AR_TargetDummy.generated.h"
 
+
 struct FGameplayTag;
 class UAR_ActionSystemComponent;
+
 
 /**
  * Used to test any new features that might be added to 'AAR_Pawn' class.

@@ -4,11 +4,7 @@
 #include "AR_Action_ProjectileAttack.h"
 
 #include "AR_ActionSystemComponent.h"
-#include "DrawDebugHelpers.h"
 #include "NiagaraFunctionLibrary.h"
-#include "TimerManager.h"
-#include "Components/SkeletalMeshComponent.h"
-#include "Engine/World.h"
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
 #include "Re_ActRogueLike/Re_ActRoguelikeTypes.h"
@@ -81,8 +77,8 @@ FTransform UAR_Action_ProjectileAttack::AdjustedProjSpawnTransform(
 	{
 		AimShot = Hit.ImpactPoint;
 	}
-	/* TODO: Now there is a problem when spawn a MagicProj in a position which camera was too close to something,
-	 * The proj will go to the item that closely block around camera.And it's not a stable trace adjustment when
+	/* TODO: Spawn MagicProj in a position which camera was too close to something,
+	 * The proj will go to the item that closely block around camera. This's not a stable trace adjustment when
 	 * third person camera is close to player character.*/
 	FQuat UnderCrossHairQuat = (AimShot - HandLocation).GetSafeNormal().ToOrientationQuat();
 	FTransform SpawnTM;

@@ -50,8 +50,7 @@ void AAR_AIController::SetTargetActor(AActor* NewTarget)
 	}
 
 	AActor* ValidTarget = NewTarget;
-	if (NewTarget->IsPendingKillPending() || IsValid(NewTarget))
-		ValidTarget = NewTarget->GetInstigator();
+	if (NewTarget->IsPendingKillPending() || IsValid(NewTarget)) ValidTarget = NewTarget->GetInstigator();
 
 	BB->SetValueAsObject(NAME_TargetActor, ValidTarget);
 	SetFocus(ValidTarget, EAIFocusPriority::Gameplay);

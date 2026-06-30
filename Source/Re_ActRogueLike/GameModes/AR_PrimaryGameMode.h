@@ -20,6 +20,7 @@ class UDataTable;
 class UEnvQuery;
 class UEnvQueryInstanceBlueprintWrapper;
 
+
 /** TODO: Legacy CreditSpawnSystem has not been restructured or cleaned up yet. - 2026.6.25 17:07 
  * you can refer to the new 'SpawnEnemy' framework and combine it with 'ActionSystem' to complete refactor.
  */
@@ -88,10 +89,4 @@ public:
 	template<typename T>
 	void KillAllOfClass() {KillAllOfClass(T::StaticClass());}   // Forwarding Call
 	
-	UFUNCTION()	
-	void RespawnPlayerElapsed(AController* Controller);
-
-	/** @deprecated This isn't working for now in new our own GAS framework - ActionSystem (26.5.24)
-	 * @bug - PlayerHealthBar won't sync the new respawn player 'Health'. */
-	virtual void OnActorKilled(AActor* VictimActor, AActor* Killer);
 };

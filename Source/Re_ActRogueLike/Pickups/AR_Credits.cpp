@@ -4,8 +4,6 @@
 #include "AR_Credits.h"
 
 #include "Components/SphereComponent.h"
-#include "Components/StaticMeshComponent.h"
-#include "GameFramework/Pawn.h"
 #include "Kismet/GameplayStatics.h"
 #include "Re_ActRogueLike/Player/AR_PlayerState.h"
 

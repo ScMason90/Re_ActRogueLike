@@ -2,11 +2,8 @@
 
 
 #include "AR_InteractionComponent.h"
-#include "DrawDebugHelpers.h"
+
 #include "Engine/OverlapResult.h"
-#include "Engine/World.h"
-#include "GameFramework/Pawn.h"
-#include "GameFramework/PlayerController.h"
 #include "Re_ActRogueLike/Re_ActRoguelikeTypes.h"
 #include "Re_ActRogueLike/Core/AR_InteractionInterface.h"
 

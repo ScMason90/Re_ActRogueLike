@@ -2,10 +2,10 @@
 
 
 #include "AR_AttributeSet.h"
+
 #include "AR_ActionSystemComponent.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "Re_ActRogueLike/Re_ActRogueLike.h"
 
 // class RE_ACTROGUELIKE_API UAR_AttributeSet : public UObject
 // -----------------------------------------------------------

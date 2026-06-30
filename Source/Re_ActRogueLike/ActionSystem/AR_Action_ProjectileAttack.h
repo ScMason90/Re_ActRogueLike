@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "AR_Action.h"
-#include "Templates/SubclassOf.h"
 #include "AR_Action_ProjectileAttack.generated.h"
 
 class ACharacter;
@@ -48,7 +47,6 @@ protected:
 	/* ------------------- Effect --------------------- */
 	//				Preferences & FXs
 	/* Anim */
-	// TODO: May considering using separate 'anim montage & casting effect & spawn socket' for each proj action
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Effect | Anim")
 	TObjectPtr<UAnimMontage> FireMontage;	// Casting Anim

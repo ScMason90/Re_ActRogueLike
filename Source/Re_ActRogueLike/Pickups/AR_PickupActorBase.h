@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Re_ActRogueLike/Core/AR_InteractionInterface.h"
 #include "AR_PickupActorBase.generated.h"
 
 class USphereComponent;

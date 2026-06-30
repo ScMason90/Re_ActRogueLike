@@ -5,7 +5,6 @@
 
 #include "AR_ActionSystemComponent.h"
 #include "AR_Effect_EnemyStunned.h"
-#include "Engine/World.h"
 #include "Re_ActRogueLike/SharedGameplayTags.h"
 
 UAR_Effect_Overwhelm::UAR_Effect_Overwhelm()

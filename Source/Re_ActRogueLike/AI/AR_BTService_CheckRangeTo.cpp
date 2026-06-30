@@ -5,7 +5,6 @@
 
 #include "AIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
-#include "GameFramework/Actor.h"
 #include "Re_ActRogueLike/Re_ActRoguelikeTypes.h"
 
 UAR_BTService_CheckRangeTo::UAR_BTService_CheckRangeTo()

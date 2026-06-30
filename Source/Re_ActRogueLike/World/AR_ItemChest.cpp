@@ -3,8 +3,6 @@
 
 #include "AR_ItemChest.h"
 
-#include "Components/StaticMeshComponent.h"
-#include "Engine/Engine.h"
 
 void AAR_ItemChest::Interact_Implementation(APawn* InstigatorPawn)
 {

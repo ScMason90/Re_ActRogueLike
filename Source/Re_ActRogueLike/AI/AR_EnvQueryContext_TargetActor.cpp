@@ -9,8 +9,7 @@
 #include "EnvironmentQuery/Items/EnvQueryItemType_Actor.h"
 #include "Re_ActRogueLike/Re_ActRoguelikeTypes.h"
 
-void UAR_EnvQueryContext_TargetActor::ProvideContext(FEnvQueryInstance& QueryInstance,
-                                                     FEnvQueryContextData& ContextData) const
+void UAR_EnvQueryContext_TargetActor::ProvideContext(FEnvQueryInstance& QueryInstance, FEnvQueryContextData& ContextData) const
 {
 	UObject* OwnerObj = QueryInstance.Owner.Get(); 
 	if (!OwnerObj) return;

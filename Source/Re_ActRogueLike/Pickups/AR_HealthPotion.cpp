@@ -4,9 +4,6 @@
 #include "AR_HealthPotion.h"
 
 #include "Components/SphereComponent.h"
-#include "Components/StaticMeshComponent.h"
-#include "Engine/GameEngine.h"
-#include "GameFramework/Pawn.h"
 #include "Kismet/GameplayStatics.h"
 #include "Re_ActRogueLike/SharedGameplayTags.h"
 #include "Re_ActRogueLike/ActionSystem/AR_ActionSystemComponent.h"
@@ -29,19 +26,15 @@ void AAR_HealthPotion::OnActorOverlapped(UPrimitiveComponent* OverlappedComponen
 {
 	Super::OnActorOverlapped(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult);
 	
-	UAR_ActionSystemComponent* ASComp = OtherActor->GetComponentByClass<UAR_ActionSystemComponent>();
+	UAR_ActionSystemComponent* ASComp = OtherActor->FindComponentByClass<UAR_ActionSystemComponent>();
 	
-	APawn* Pawn = Cast<APawn>(OtherActor);
-	if (!Pawn) return;
-	AController* Controller = Pawn->GetController();
-	if (!Controller) return;
-	AAR_PlayerState* PS = Controller->GetPlayerState<AAR_PlayerState>();
+	AAR_PlayerState* PS = Cast<APawn>(OtherActor)->GetController()->GetPlayerState<AAR_PlayerState>();
 	if (!PS) return;
 	
 	// Skip Health Potion pickup if already full health or lacking of required credits
 	if (IsValid(ASComp) && !UAR_GameplayStatics::IsFullHealth(ASComp))
 	{	// Should we open to AI Pawn for pickup this?
-		if (PS->RemoveCredits(CreditCost))
+		if (PS->RemoveCredits(CreditCost))	// -> Integrating within legacy CoinSystem(CreditPickup)
 		{
 			// TODO: Considering add heal up material flash VFX...or SFX for both damaged and healed?
 			ASComp->ApplyAttributeChanged(SharedGameplayTags::Attribute_Health, HealingAmount, Base);

@@ -3,7 +3,6 @@
 
 #include "AR_AnimInstance.h"
 
-#include "GameFramework/Actor.h"
 #include "Re_ActRogueLike/SharedGameplayTags.h"
 #include "Re_ActRogueLike/ActionSystem/AR_ActionSystemComponent.h"
 

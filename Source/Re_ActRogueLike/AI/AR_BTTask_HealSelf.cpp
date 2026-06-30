@@ -14,14 +14,11 @@ UAR_BTTask_HealSelf::UAR_BTTask_HealSelf()
 
 EBTNodeResult::Type UAR_BTTask_HealSelf::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
-	AAIController* AIController = OwnerComp.GetAIOwner();
-	if (!AIController) return EBTNodeResult::Failed;
-	
-	APawn* Pawn = AIController->GetPawn();
-	if (!Pawn) return EBTNodeResult::Failed;
+	APawn* Pawn = OwnerComp.GetAIOwner()->GetPawn();
+	check(Pawn);
 	
 	UAR_ActionSystemComponent* ASComp = Pawn->FindComponentByClass<UAR_ActionSystemComponent>();
-	if (!ASComp) return EBTNodeResult::Failed;
+	if (!ensure(ASComp)) return EBTNodeResult::Failed;
 	
 	ASComp->ApplyAttributeChanged(SharedGameplayTags::Attribute_Health, HealAmount, Base);
 	

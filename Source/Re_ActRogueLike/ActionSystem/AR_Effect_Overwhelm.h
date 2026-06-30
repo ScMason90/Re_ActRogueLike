@@ -9,7 +9,7 @@
 
 /**	Utility 'EffectTrigger' class responsible for 'MinionStun'.
  * Tracks recent damage received and applies Stun debuff when a threshold is reached.
- * TODO: Create a new Specified 'StatusEffectManager/Trigger' GameplayTag category? 
+ * TODO: Create a new Specified 'StatusEffectManager/Trigger' GameplayTag category or 'AR_Effect_Manager/TriggerBase' class? 
  */
 UCLASS()
 class RE_ACTROGUELIKE_API UAR_Effect_Overwhelm : public UAR_Effect

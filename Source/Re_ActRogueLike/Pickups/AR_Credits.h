@@ -6,6 +6,9 @@
 #include "AR_PickupActorBase.h"
 #include "AR_Credits.generated.h"
 
+/** This is a legacy class in my early learning of TomLooman's UE4 C++ tutorial series.
+ *  
+ */
 UCLASS()
 class RE_ACTROGUELIKE_API AAR_Credits : public AAR_PickupActorBase
 {

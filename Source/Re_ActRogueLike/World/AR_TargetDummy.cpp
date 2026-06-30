@@ -3,9 +3,6 @@
 
 #include "AR_TargetDummy.h"
 
-#include "Components/StaticMeshComponent.h"
-#include "Engine/World.h"
-#include "Re_ActRogueLike/Re_ActRogueLike.h"
 #include "Re_ActRogueLike/SharedGameplayTags.h"
 #include "Re_ActRogueLike/ActionSystem/AR_ActionSystemComponent.h"
 #include "Re_ActRogueLike/ActionSystem/AR_AttributeSet.h"

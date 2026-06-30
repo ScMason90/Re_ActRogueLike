@@ -7,6 +7,10 @@
 #include "AR_ProjectileBase.h"
 #include "AR_TeleportProjectile.generated.h"
 
+
+/**
+ * 
+ */
 UCLASS(Abstract)
 class RE_ACTROGUELIKE_API AAR_TeleportProjectile : public AAR_ProjectileBase
 {

@@ -4,17 +4,10 @@
 #include "AR_PlayerCharacter.h"
 
 #include "EnhancedInputComponent.h"
-#include "InputAction.h"
-#include "InputActionValue.h"
-#include "NiagaraFunctionLibrary.h"
-#include "TimerManager.h"
 #include "Camera/CameraComponent.h"
-#include "Components/InputComponent.h"
-#include "Components/SkeletalMeshComponent.h"
 #include "GameplayTagContainer.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
-#include "Kismet/GameplayStatics.h"
 #include "Re_ActRogueLike/SharedGameplayTags.h"
 #include "Re_ActRogueLike/ActionSystem/AR_ActionSystemComponent.h"
 #include "Re_ActRogueLike/ActionSystem/AR_AttributeSet.h"
@@ -105,7 +98,6 @@ void AAR_PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 	EnhancedInput->BindAction(IA_Sprint, ETriggerEvent::Completed, this,
 		&ThisClass::StopAction, SharedGameplayTags::Action_Sprint.GetTag());
 	
-	// TODO: Considering add self-banned(tag, GAS cooldown etc.) to avoid convulsive shooting
 	EnhancedInput->BindAction(IA_FireMagicProj, ETriggerEvent::Triggered, this, 
 		&ThisClass::StartAction, SharedGameplayTags::Action_FireMagicProj.GetTag());
 	EnhancedInput->BindAction(IA_FireTeleportProj, ETriggerEvent::Triggered, this, 

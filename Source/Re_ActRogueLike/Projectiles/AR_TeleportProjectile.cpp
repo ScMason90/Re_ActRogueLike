@@ -3,13 +3,9 @@
 
 #include "AR_TeleportProjectile.h"
 
-#include "NiagaraComponent.h"
-#include "TimerManager.h"
-#include "Components/AudioComponent.h"
-#include "Engine/HitResult.h"
-#include "GameFramework/Pawn.h"
 #include "GameFramework/ProjectileMovementComponent.h"
-#include "Re_ActRogueLike/Re_ActRogueLike.h"
+#include "Components/AudioComponent.h"
+#include "NiagaraComponent.h"
 
 AAR_TeleportProjectile::AAR_TeleportProjectile()
 {
@@ -85,10 +81,12 @@ void AAR_TeleportProjectile::HandleTeleportation()
 	 * And when the player is shooting directly against the wall, due to the execution animation of the Cast action, the arm passes through the mold, causing the final transport bullet we shoot from the palm to wrongly "shoot through the wall". Before firing, perform a radiographic check from the generation position to determine the conditions or modify the Cast animation to avoid passing through the mold.
 	 -> Need some algo to improve.Details need to be fine-tuned? */
 	
-	UE_LOG(LogGame, Warning, TEXT("AAR_TeleportProjectile::HandleTeleportation();TeleProj location : %s"), *GetActorLocation().ToString());
+	// UE_LOG(LogGame, Warning, TEXT("AAR_TeleportProjectile::HandleTeleportation();TeleProj location : %s"), *GetActorLocation().ToString());
+	
 	InstigatorActorRef->TeleportTo(GetActorLocation(), InstigatorActorRef->GetActorRotation());
 	FVector PlayerLocation = InstigatorActorRef->GetActorLocation();
-	UE_LOG(LogGame, Error, TEXT("AAR_TeleportProjectile::HandleTeleportation();Player location : %s"), *PlayerLocation.ToString());
+	
+	// UE_LOG(LogGame, Error, TEXT("AAR_TeleportProjectile::HandleTeleportation();Player location : %s"), *PlayerLocation.ToString());
 
 	// Clear projectile from world, can't do this any sooner as that would prevent the timers from running on a valid Actor
 	Destroy();

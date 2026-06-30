@@ -8,6 +8,7 @@
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "PhysicsEngine/RadialForceComponent.h"
 
+
 // Sets default values
 AAR_BlackHoleProjectile::AAR_BlackHoleProjectile()
 {

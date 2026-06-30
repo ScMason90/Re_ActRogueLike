@@ -6,16 +6,40 @@
 #include "GameFramework/Actor.h"
 #include "AR_ExplosiveBarrel.generated.h"
 
+
 class UNiagaraComponent;
 class UNiagaraSystem;
 class UAudioComponent;
 class UStaticMeshComponent;
 class URadialForceComponent;
+
+
+/** May expand this class integrating 'DamageSystem' so that it can 'Radiating Damage' Actor in radial scope.
+ *
+ */
 UCLASS(Abstract)
 class RE_ACTROGUELIKE_API AAR_ExplosiveBarrel : public AActor
 {
 	
 	GENERATED_BODY()
+	
+public:
+	
+	// Sets default values for this actor's properties
+	AAR_ExplosiveBarrel();
+	
+	/** Apply damage to this actor.
+	 *	@param DamageAmount		How much damage to apply.
+	 *	@param DamageEvent		Data package that fully describes the damage received.
+	 *	@param EventInstigator	The Controller responsible for the damage.
+	 *	@param DamageCauser		The Actor that directly caused the damage (e.g. the projectile that exploded, the rock that landed on you)
+	 *	@return					The amount of damage actually applied.
+	 */
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, 
+		class AController* EventInstigator, AActor* DamageCauser) override;
+	
+	// Bind hit event after components are initialized
+	virtual void PostInitializeComponents() override;
 
 protected:
 	
@@ -42,31 +66,16 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Explosive Barrel")
 	TObjectPtr<USoundBase> ExplosionSFX;
 	
-	void Explode();
-	bool bExploded = false;
-	FTimerHandle ExplosionTimerHandle;
-	
 	UPROPERTY()
 	TObjectPtr<UNiagaraComponent> ActiveBurningVFXComp = nullptr;
 	UPROPERTY()
 	TObjectPtr<UAudioComponent> ActiveBurningSFXComp = nullptr;
 	
-public:
-	// Sets default values for this actor's properties
-	AAR_ExplosiveBarrel();
+	bool bExploded = false;
 	
-	/** Apply damage to this actor.
-	 *	@param DamageAmount		How much damage to apply.
-	 *	@param DamageEvent		Data package that fully describes the damage received.
-	 *	@param EventInstigator	The Controller responsible for the damage.
-	 *	@param DamageCauser		The Actor that directly caused the damage (e.g. the projectile that exploded, the rock that landed on you)
-	 *	@return					The amount of damage actually applied.
-	 */
-	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, 
-		class AController* EventInstigator, AActor* DamageCauser) override;
+	FTimerHandle ExplosionTimerHandle;
 	
-	// Bind hit event after components are initialized
-	virtual void PostInitializeComponents() override;
+	void Explode();
 	
 	// TODO: Considering make a explosive object base cpp class and implement 'DamageSystem' when explode after hit?
 	// virtual void OnImpact(AActor* Instigator, const FHitResult& Hit);
