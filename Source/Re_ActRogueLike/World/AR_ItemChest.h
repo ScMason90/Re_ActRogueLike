@@ -20,6 +20,7 @@ class RE_ACTROGUELIKE_API AAR_ItemChest : public AActor, public IAR_InteractionI
 	GENERATED_BODY()
 
 public:
+	
 	// Sets default values for this actor's properties
 	AAR_ItemChest();
 

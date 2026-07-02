@@ -35,8 +35,10 @@ void AAR_AICharacter::PostInitializeComponents()
 	FOnAttributeChanged& Event = ActionSystemComponent->GetAttributeListener(SharedGameplayTags::Attribute_Health);
 	DelHandle_OnHealthChanged = Event.AddUObject(this, &ThisClass::OnHealthChanged);
 	
+	// Set AutoPossessAI to 'Disabled' or 'Spawned' if you want debug 'MinionRanged' through place it in level and dont want it do anything else
 	ActionSystemComponent->OnGameplayTagCountUpdated.AddDynamic(this, &ThisClass::AAR_AICharacter::OnGameplayTagCountUpdated);
 	
+	// When debugging or testing BehaviorTree, ensure AutoPossessAI corresponding your way of 'run' AIChar BP class.
 }
 
 // Cache BTComp and AIC conveniently and safely.

@@ -3,10 +3,14 @@
 
 #include "AR_TargetDummy.h"
 
+// Necessary compilation header files
 #include "Re_ActRogueLike/SharedGameplayTags.h"
 #include "Re_ActRogueLike/ActionSystem/AR_ActionSystemComponent.h"
 #include "Re_ActRogueLike/ActionSystem/AR_AttributeSet.h"
 #include "Re_ActRogueLike/Core/AR_GameplayStatics.h"
+
+// Temporarily headers enables Intelligent Completion & Highlighting functions of JetbrainsRider IDE to operate, thereby enhancing development efficiency
+
 
 
 // Sets default values
@@ -30,7 +34,7 @@ float AAR_TargetDummy::TakeDamage(float DamageAmount, struct FDamageEvent const&
 {
 	float ActualDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	
-	// UE_LOG(LogGame, Log, TEXT("AAR_TargetDummy::TakeDamage, ActualDamage = %.2f"), ActualDamage);
+	// UE_LOG(LogGame, Log, TEXT("AAR_TargetDummy::TakeDamage, ActualDamage = %.4f"), ActualDamage);
 	
 	ActionSystemComponent->ApplyAttributeChanged(SharedGameplayTags::Attribute_Health, -ActualDamage, Base);
 	

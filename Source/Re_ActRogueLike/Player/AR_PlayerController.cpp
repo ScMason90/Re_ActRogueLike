@@ -9,7 +9,11 @@
 
 AAR_PlayerController::AAR_PlayerController()
 {
+	// In derived data only BP class - ClassDefaults - Controller - Transform...
+	// Set '...Attach to Pawn' as true so that the InteractionComponent will match the position of this Controller Class's PawnOwner 
+	
 	InteractionComponent = CreateDefaultSubobject<UAR_InteractionComponent>(TEXT("InteractionComp"));
+	
 }
 
 void AAR_PlayerController::BeginPlay()

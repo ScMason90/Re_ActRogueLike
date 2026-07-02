@@ -63,6 +63,9 @@ void UAR_WorldUserWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaT
 	const float ScaleFactor = FMath::Clamp(DistRenderScaleMultiplier / Distance, 0.5f, 1.0f);
 	if (ParentSizeBox) ParentSizeBox->SetRenderScale(FVector2D(ScaleFactor, ScaleFactor));
 	
+	// TODO: Visibility Check - Delayed hide if it's blocked from player viewport to this UMG instance ... 
+	// Reference the DamageUI & GameTime-Marking system in APEX-Legends, It's a good design that you can learn and try.
+	
 	SetRenderOpacity(1.0f);
 }
 
