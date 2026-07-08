@@ -7,7 +7,6 @@
 #include "NiagaraComponent.h"
 #include "Components/AudioComponent.h"
 #include "NiagaraFunctionLibrary.h"
-#include "Components/SphereComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "PhysicsEngine/RadialForceComponent.h"
 #include "Re_ActRogueLike/Re_ActRoguelikeTypes.h"

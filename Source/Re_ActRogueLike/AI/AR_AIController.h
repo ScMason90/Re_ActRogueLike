@@ -6,6 +6,13 @@
 #include "Runtime/AIModule/Classes/AIController.h"
 #include "AR_AIController.generated.h"
 
+class UAR_ActionSystemComponent;
+struct FGameplayTag;
+
+
+/**
+ *
+ */
 UCLASS()
 class RE_ACTROGUELIKE_API AAR_AIController : public AAIController
 {
@@ -15,20 +22,35 @@ public:
 	
 	// Sets default values for this actor's properties
 	AAR_AIController();
-
-protected:
-	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "AI")
-	TObjectPtr<UBehaviorTree> BehaviorTree;
-
-public:
-	
-	UFUNCTION(BlueprintCallable, Category = "AI|Target")
-	void SetTargetActor(AActor* NewTarget);
 	
 protected:
 	
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	
+public:
+	
+	/** Set a new 'TargetActor' BlackBoard value
+	 * @param NewTarget New Actor with a 'ASComp'  that should be a 'APawn' derived actor. 
+	 */
+	void SetTargetActorBB(AActor* NewTarget);
+	
+	// TODO: Decouple 'void SetTargetActorBB(AActor* NewTarget)'? e.g...
+	// AActor ValidateNewTarget(AActor* NewTarget);
+	// void BindTargetHealthChangedEvent(AActor* Target);
+	// void UpdateBlackboardTargetActor(AActor* Target);
+	// void UpdateFocus(AActor* Target);
+
+protected:
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "AI")
+	TObjectPtr<UBehaviorTree> BehaviorTree;
+	
+	TWeakObjectPtr<APawn> LocalPlayerRef = nullptr;
+	TWeakObjectPtr<UAR_ActionSystemComponent> TargetActorASComp = nullptr;
+	
+	FDelegateHandle DelHandle_OnTargetActorHealthChanged;
+	
+	void OnTargetActorHealthChanged(FGameplayTag AttributeTag, float NewHealth, float OldHealth);
 	
 };

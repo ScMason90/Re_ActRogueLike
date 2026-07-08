@@ -6,17 +6,16 @@
 #include "GameFramework/Character.h"
 #include "AR_AICharacter.generated.h"
 
+
 struct FGameplayTag;
 class UAR_WorldUserWidget;
 class UAR_ActionSystemComponent;
 class UMaterialInstanceDynamic;
 
-/** Run in DebugMode with Rider.Then any operation to instances BP asset derived from this class will get warning of 
- * constructing variables in AAR_AICharacter::AAR_AICharacter(). And I don't know why.
- * Keep pressing 'ResumeProgram' would simply skipp warning. And you might luckily get the rid of it temporarily. - 2026.6.23
- * This case is still ambiguous and unclear. It happens from time to time.
- * May need to settle all warning/error that pause PIE when run in a debug mode with Rider.
- * ...->However I didn't trigger this today. It's an 'unstable' bug? - 2026.6.27 20:02
+
+/** Run in DebugMode with Rider.Then any operation to instances BP asset derived from this class will get warning of constructing variables in AAR_AICharacter::AAR_AICharacter(). - 2026.6.23 
+ * This case is still ambiguous and unclear. It happens from time to time.However I didn't trigger this today. It's an 'unstable' bug? - 2026.6.27 20:02
+ * It won't trigger at all now. I think it might be because I cleared the redundant header files including the fixes? - 2026.7.7 16:29
  */
 UCLASS(Abstract)
 class RE_ACTROGUELIKE_API AAR_AICharacter : public ACharacter

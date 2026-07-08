@@ -3,6 +3,7 @@
 
 #include "AR_PrimaryGameMode.h"
 
+// Necessary compilation header files
 #include "EngineUtils.h"
 #include "EnvironmentQuery/EnvQueryManager.h"
 #include "Re_ActRogueLike/Re_ActRogueLike.h"
@@ -12,6 +13,9 @@
 #include "Re_ActRogueLike/Core/AR_GameInstance.h"
 #include "Re_ActRogueLike/Core/AR_GameplayStatics.h"
 #include "Re_ActRogueLike/Player/AR_PlayerState.h"
+
+// Temporarily headers enables Intelligent Completion & Highlighting functions of JetbrainsRider IDE to operate, thereby enhancing development efficiency
+
 
 
 static TAutoConsoleVariable<bool> CVarSpawnEnemy(TEXT("game.mode.spawn enemy"), true, 

@@ -3,16 +3,21 @@
 
 #include "AR_AICharacter.h"
 
+// Necessary compilation header files
 #include "AR_AIController.h"
 #include "BehaviorTree/BehaviorTreeComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Re_ActRogueLike/Re_ActRoguelikeTypes.h"
 #include "Re_ActRogueLike/SharedGameplayTags.h"
 #include "Re_ActRogueLike/ActionSystem/AR_ActionSystemComponent.h"
 #include "Re_ActRogueLike/ActionSystem/AR_AttributeSet.h"
 #include "Re_ActRogueLike/Core/AR_GameInstance.h"
 #include "Re_ActRogueLike/Core/AR_GameplayStatics.h"
 #include "Re_ActRogueLike/UI/AR_WorldUserWidget.h"
+
+// Temporarily headers enables Intelligent Completion & Highlighting functions of JetbrainsRider IDE to operate, thereby enhancing development efficiency
+
 
 // Sets default values
 AAR_AICharacter::AAR_AICharacter()
@@ -108,8 +113,11 @@ float AAR_AICharacter::TakeDamage(float DamageAmount, struct FDamageEvent const&
 	float ActualDamage =  Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	
 	// Target the 'InstigatorActor' who damaged self.
-	if (AAR_AIController* AICon = Cast<AAR_AIController>(GetController()))
-		AICon->SetTargetActor(DamageCauser);
+	if (EventInstigator && DamageCauser)
+	{
+		if (AAR_AIController* AICon = Cast<AAR_AIController>(GetController()))
+			AICon->SetTargetActorBB(DamageCauser);
+	}
 	
 	ActionSystemComponent->ApplyAttributeChanged(SharedGameplayTags::Attribute_Health, -ActualDamage, Base);
 	
@@ -181,7 +189,6 @@ void AAR_AICharacter::HandleDeath()
 	
 	// Disable Collision...Honestly all post-death appearances depend on your game type/design
 	CapsuleComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	// MeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	
 	// Disable Movement
 	GetMovementComponent()->StopActiveMovement();
@@ -194,11 +201,12 @@ void AAR_AICharacter::HandleDeath()
 	{
 		if (!IsValid(this) || IsPendingKillPending()) return;
 		
-		// Optional
-		// --Play ragdoll--	
-		CapsuleComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		// Optional - Play ragdoll
 		MeshComp->SetAllBodiesSimulatePhysics(true);
-		MeshComp->SetCollisionProfileName("Ragdoll");
+		MeshComp->SetCollisionProfileName("Ragdoll");	
+		
+		// Set "Ragdoll" response to Object Type 'Projectile' as 'Ignore' in ProjectSettings if you want?
+		MeshComp->SetCollisionResponseToChannel(COLLISION_PROJECTILE, ECR_Ignore);
 		
 		// Dissolve mesh material and destroy current AR_AICharacter instance
 		StartDissolve();

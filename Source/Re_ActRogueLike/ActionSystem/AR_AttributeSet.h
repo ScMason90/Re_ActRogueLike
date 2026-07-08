@@ -6,7 +6,9 @@
 #include "UObject/Object.h"
 #include "AR_AttributeSet.generated.h"
 
+
 class UAR_ActionSystemComponent;
+
 
 /**
  * Attribute unit structure.

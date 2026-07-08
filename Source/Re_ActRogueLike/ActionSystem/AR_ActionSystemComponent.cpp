@@ -3,6 +3,7 @@
 
 #include "AR_ActionSystemComponent.h"
 
+// Necessary compilation header files
 #include "AR_Action.h"
 #include "AR_AttributeSet.h"
 #include "AR_Effect.h"
@@ -10,6 +11,9 @@
 #include "../SharedGameplayTags.h"
 #include "Re_ActRogueLike/Re_ActRogueLike.h"
 #include "Re_ActRogueLike/Core/AR_GameplayStatics.h"
+
+// Temporarily headers enables Intelligent Completion & Highlighting functions of JetbrainsRider IDE to operate, thereby enhancing development efficiency
+
 
 
 static TAutoConsoleVariable<float> CVarDamageMultiplier(TEXT("game.DamageMultiplier"), 1.0f, TEXT("Global Damage Modifier for ASComponent."), ECVF_Cheat);

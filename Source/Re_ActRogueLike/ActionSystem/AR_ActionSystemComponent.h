@@ -11,6 +11,8 @@ struct FAR_Attribute;
 class UAR_AttributeSet;
 class UAR_Action;
 
+
+
 UENUM(BlueprintType)
 enum EAttributeModifyType
 {
@@ -19,6 +21,8 @@ enum EAttributeModifyType
 	/* Specify a new value to override 'Base'*/OverrideBase,
 	/* ErrorType */Invalid
 };
+
+
 
 // Native C++ Delegates
 DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnAttributeChanged, 
@@ -29,6 +33,8 @@ DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnAttributeDynamicChanged,
 	FGameplayTag, AttributeTag, float, NewAttributeValue, float, OldAttributeValue);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnGameplayTagCountChanged, FGameplayTag, UpdatedTag, int32, NewCount);
+
+
 
 /*
  *
