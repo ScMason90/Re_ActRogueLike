@@ -37,8 +37,8 @@ void AAR_AICharacter::PostInitializeComponents()
 	
 	GetMesh()->SetOverlayMaterialMaxDrawDistance(1);
 	
-	FOnAttributeChanged& Event = ActionSystemComponent->GetAttributeListener(SharedGameplayTags::Attribute_Health);
-	DelHandle_OnHealthChanged = Event.AddUObject(this, &ThisClass::OnHealthChanged);
+	UAR_GameplayStatics_BIND_ATTR_MULTICAST(
+		this, &AAR_AICharacter::OnHealthChanged, ActionSystemComponent, SharedGameplayTags::Attribute_Health);
 	
 	// Set AutoPossessAI to 'Disabled' or 'Spawned' if you want debug 'MinionRanged' through place it in level and dont want it do anything else
 	ActionSystemComponent->OnGameplayTagCountUpdated.AddDynamic(this, &ThisClass::AAR_AICharacter::OnGameplayTagCountUpdated);
@@ -85,7 +85,7 @@ void AAR_AICharacter::OnGameplayTagCountUpdated(FGameplayTag UpdatedTag, int32 N
 		{	
 			// Might directly freeze after 'StunEnded' since AIChar doesn't "actively seek out available targets" now
 			BTComp->ResumeLogic("StunRemoved");
-			// BTComp->StartLogic();
+			BTComp->StartLogic();	// Uncomment this if temporarily want MinionRanged to behavior after Stunned
 		}
 	}
 	
@@ -112,10 +112,12 @@ float AAR_AICharacter::TakeDamage(float DamageAmount, struct FDamageEvent const&
 {
 	float ActualDamage =  Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	
+	// Implement GameplayTag for BP class to match. e.g. Ignore damage if DamageCauser is friendly
 	// Target the 'InstigatorActor' who damaged self.
 	if (EventInstigator && DamageCauser)
 	{
-		if (AAR_AIController* AICon = Cast<AAR_AIController>(GetController()))
+		// Target switching when new damaged should be designed better participating in a Hatred System. 
+		if (AAR_AIController* AICon = Cast<AAR_AIController>(GetController())) 
 			AICon->SetTargetActorBB(DamageCauser);
 	}
 	
@@ -172,7 +174,7 @@ void AAR_AICharacter::HandleDeath()
 	}
 	
 	// Remove multicast attribute delegate.
-	ActionSystemComponent->GetAttributeListener(SharedGameplayTags::Attribute_Health).Remove(DelHandle_OnHealthChanged);
+	UAR_GameplayStatics_UNBIND_ATTR_MULTICAST(ActionSystemComponent, SharedGameplayTags::Attribute_Health, DelHandle_OnHealthChanged);
 	
 	// Disable AI Behavior Tree
 	if (AAR_AIController* AIController = Cast<AAR_AIController>(GetController()))

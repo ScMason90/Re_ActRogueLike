@@ -24,8 +24,11 @@ AAR_TargetDummy::AAR_TargetDummy()
 	ActionSystemComponent->SetDefaultAttributeSet(UAR_HealthAttributeSet::StaticClass());
 	
 	// Trigger when health is changed (damage/healing)
-	FOnAttributeChanged& Event = ActionSystemComponent->GetAttributeListener(SharedGameplayTags::Attribute_Health);
-	DelHandle_OnHealthChanged = Event.AddUObject(this, &ThisClass::OnHealthChanged);
+	DelHandle_OnHealthChanged = UAR_GameplayStatics::BindOnMulticastAttrChangedLambda(
+		ActionSystemComponent, SharedGameplayTags::Attribute_Health, [this](FGameplayTag Tag, float NewV, float OldV)
+		{
+			OnHealthChanged(Tag, NewV, OldV);
+		});
 	
 }
 
@@ -68,7 +71,7 @@ void AAR_TargetDummy::HandleDeath() const
 	}
 	
 	// Remove multicast attribute delegate.
-	ActionSystemComponent->GetAttributeListener(SharedGameplayTags::Attribute_Health).Remove(DelHandle_OnHealthChanged);
+	UAR_GameplayStatics_UNBIND_ATTR_MULTICAST(ActionSystemComponent, SharedGameplayTags::Attribute_Health, DelHandle_OnHealthChanged);
 	
 	// Disable Collision...Honestly all post-death appearances depend on your game type/design
 	MeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);

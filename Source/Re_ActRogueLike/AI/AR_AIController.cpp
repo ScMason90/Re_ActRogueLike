@@ -11,7 +11,6 @@
 #include "Re_ActRogueLike/SharedGameplayTags.h"
 #include "Re_ActRogueLike/ActionSystem/AR_ActionSystemComponent.h"
 #include "Re_ActRogueLike/Core/AR_GameplayStatics.h"
-#include "Re_ActRogueLike/Projectiles/AR_ProjectileBase.h"
 
 // Temporarily headers enables Intelligent Completion & Highlighting functions of JetbrainsRider IDE to operate, thereby enhancing development efficiency
 
@@ -36,6 +35,7 @@ void AAR_AIController::BeginPlay()
 	
 	// Temporarily hard-coded only for local single play and early learning. 
 	LocalPlayerRef = UGameplayStatics::GetPlayerPawn(this, 0);
+	// if (!LocalPlayerRef.IsValid()) return;	// Do not trigger fatal-assert if you want run DebugGame after 'LocalPlayer' dead
 	check(LocalPlayerRef.Get());	// This's wrong behavior when introduce Multiplay / Server network replication.
 	
 	GetBlackboardComponent()->SetValueAsVector(MoveToLocation, LocalPlayerRef->GetActorLocation());
@@ -44,73 +44,52 @@ void AAR_AIController::BeginPlay()
 
 void AAR_AIController::SetTargetActorBB(AActor* NewTarget)
 {
-	if (!IsValid(NewTarget))return;
-
-	UBlackboardComponent* BB = GetBlackboardComponent();	// Switch target only when current dying
-	if (!BB || IsValid(BB->GetValueAsObject(NAME_TargetActor))) return;
+	if (NewTarget->IsPendingKillPending() || !IsValid(NewTarget)) return;	// Ignore if invalid
+	TargetActorASComp = NewTarget->FindComponentByClass<UAR_ActionSystemComponent>();
+	if (!TargetActorASComp.IsValid()) return;
 	
-	AActor* ValidTarget = NewTarget;
-	TargetActorASComp = ValidTarget->FindComponentByClass<UAR_ActionSystemComponent>();
+	// UE_LOG(LogController, Log, TEXT("AAR_AIController::SetTargetActorBB, %s of %s"), *GetNameSafe(TargetActorASComp), *GetNameSafe(NewTarget));
 	
-	if (NewTarget->IsPendingKillPending() || !IsValid(NewTarget) || NewTarget->IsA(AAR_ProjectileBase::StaticClass()))
+	UBlackboardComponent* BB = GetBlackboardComponent();	// Switch target only NEW
+	if (!BB || BB->GetValueAsObject(NAME_TargetActor) == NewTarget) return;
+	
+	// Survival check
+	if (UAR_GameplayStatics::IsDying(TargetActorASComp.Get()))
 	{
-		ValidTarget = NewTarget->GetInstigator();
+		UAR_GameplayStatics_UNBIND_ATTR_MULTICAST(
+			TargetActorASComp.Get(), SharedGameplayTags::Attribute_Health, DelHandle_OnTargetActorHealthChanged);
+		return;
 	}
-	
-	// UE_LOG(LogController, Log, TEXT("AAR_AIController::SetTargetActor, %s of %s"), *GetNameSafe(TargetActorASComp), *GetNameSafe(ValidTarget));
-	
-	if (TargetActorASComp.Get())
-	{
-		FOnAttributeChanged& TargetHealthChangedEvent = 
-			TargetActorASComp->GetAttributeListener(SharedGameplayTags::Attribute_Health);
 		
-		// Survival check
-		if (UAR_GameplayStatics::IsDying(TargetActorASComp.Get()))
-		{
-			TargetHealthChangedEvent.Remove(DelHandle_OnTargetActorHealthChanged);
-			return;
-		}
-		
-		// Delegate Subscribed 'Health == 0.0f'-'IsDying' event of TargetActor
-		DelHandle_OnTargetActorHealthChanged = TargetHealthChangedEvent.AddUObject(this, &ThisClass::OnTargetActorHealthChanged);
-		
-		// UE_LOG(LogController, Log, TEXT("AAR_AIController::SetTargetActor, DelHandle_OnTargetActorHealthChanged ? %d"), DelHandle_OnTargetActorHealthChanged.IsValid());
-	}
+	// Subscribed for health changed event of 'NewTarget'
+	DelHandle_OnTargetActorHealthChanged = UAR_GameplayStatics_BIND_ATTR_MULTICAST(
+		this, &AAR_AIController::OnTargetActorHealthChanged, TargetActorASComp.Get(), SharedGameplayTags::Attribute_Health);
+	// UE_LOG(LogController, Log, TEXT("AAR_AIController::SetTargetActorBB, DelHandle_OnTargetActorHealthChanged ? %d"), DelHandle_OnTargetActorHealthChanged.IsValid());
 
-	BB->SetValueAsObject(NAME_TargetActor, ValidTarget);
-	SetFocus(ValidTarget, EAIFocusPriority::Gameplay);
+	BB->SetValueAsObject(NAME_TargetActor, NewTarget);
+	SetFocus(NewTarget, EAIFocusPriority::Gameplay);
 
 	StopMovement();   // Optional, according to needs
 
-	// UE_LOG(LogGame, Log, TEXT("AAR_AIController::SetTargetActor -> %s"), *ValidTarget->GetActorNameOrLabel());
+	// UE_LOG(LogGame, Log, TEXT("AAR_AIController::SetTargetActorBB -> %s"), *NewTarget->GetActorNameOrLabel());
 }
 
 void AAR_AIController::OnTargetActorHealthChanged(FGameplayTag AttributeTag, float NewHealth, float OldHealth)
 {
-	// UE_LOG(LogController, Log, TEXT("AAR_AIController::OnTargetActorHealthChanged, Entered this member function"));
-	
 	if (FMath::IsNearlyZero(NewHealth))
 	{
-		// UE_LOG(LogController, Log, TEXT("AAR_AIController::OnTargetActorHealthChanged, FMath::IsNearlyZero(NewHealth) is true"));
-		
 		UBlackboardComponent* BB = GetBlackboardComponent();
 		if (!BB) return;
 		
+		//...Find/Switch to another alive player as new target, actively bind its health changed ?
 		// Cancel Targeting, set to default
 		BB->SetValueAsObject(NAME_TargetActor, LocalPlayerRef.Get());
 		SetFocus(LocalPlayerRef.Get(), EAIFocusPriority::Gameplay);
 		
-		if (TargetActorASComp.Get())
-		{
-			FOnAttributeChanged& TargetHealthChangedEvent = 
-				TargetActorASComp->GetAttributeListener(SharedGameplayTags::Attribute_Health);
-			
-			if (DelHandle_OnTargetActorHealthChanged.IsValid())	// if (TargetHealthChangedEvent.IsBoundToObject(this))
-			{
-				TargetHealthChangedEvent.Remove(DelHandle_OnTargetActorHealthChanged);
-				DelHandle_OnTargetActorHealthChanged.Reset();
-			}
-		}
+		UAR_GameplayStatics_UNBIND_ATTR_MULTICAST(
+			TargetActorASComp.Get(), SharedGameplayTags::Attribute_Health, DelHandle_OnTargetActorHealthChanged);
+		
+		
 	}
 	
 	// ...

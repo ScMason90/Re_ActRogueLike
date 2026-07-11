@@ -3,6 +3,7 @@
 
 #include "AR_PlayerCharacter.h"
 
+// Necessary compilation header files
 #include "EnhancedInputComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameplayTagContainer.h"
@@ -12,6 +13,10 @@
 #include "Re_ActRogueLike/ActionSystem/AR_ActionSystemComponent.h"
 #include "Re_ActRogueLike/ActionSystem/AR_AttributeSet.h"
 #include "Re_ActRogueLike/Core/AR_GameplayStatics.h"
+
+// Temporarily headers enables Intelligent Completion & Highlighting functions of JetbrainsRider IDE to operate, thereby enhancing development efficiency
+
+
 
 // @Redundant: Already have 'God' command provided by UE5 - true, DamageSystem on our 'PlayerCharacter' wouldn't apply any damage
 static TAutoConsoleVariable<bool> CVarGodMode(TEXT("game.cheat.god"), false,
@@ -52,8 +57,8 @@ void AAR_PlayerCharacter::PostInitializeComponents()
 	
 	GetMesh()->SetOverlayMaterialMaxDrawDistance(1);
 	
-	FOnAttributeChanged& Event = ActionSystemComponent->GetAttributeListener(SharedGameplayTags::Attribute_Health);
-	DelHandle_OnHealthChanged = Event.AddUObject(this, &ThisClass::OnHealthChanged);
+	UAR_GameplayStatics_BIND_ATTR_MULTICAST(
+		this, &AAR_PlayerCharacter::OnHealthChanged, ActionSystemComponent, SharedGameplayTags::Attribute_Health);
 	
 }
 
@@ -189,7 +194,7 @@ void AAR_PlayerCharacter::HandleDeath()
 	}
 	
 	// Remove multicast attribute delegate.
-	ActionSystemComponent->GetAttributeListener(SharedGameplayTags::Attribute_Health).Remove(DelHandle_OnHealthChanged);
+	UAR_GameplayStatics_UNBIND_ATTR_MULTICAST(ActionSystemComponent, SharedGameplayTags::Attribute_Health, DelHandle_OnHealthChanged);
 	
 	USkeletalMeshComponent* MeshComp = GetMesh(); 
 	// UCapsuleComponent* CapsuleComp = GetCapsuleComponent();

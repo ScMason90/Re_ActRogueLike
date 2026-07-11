@@ -34,12 +34,6 @@ public:
 	 * @param NewTarget New Actor with a 'ASComp'  that should be a 'APawn' derived actor. 
 	 */
 	void SetTargetActorBB(AActor* NewTarget);
-	
-	// TODO: Decouple 'void SetTargetActorBB(AActor* NewTarget)'? e.g...
-	// AActor ValidateNewTarget(AActor* NewTarget);
-	// void BindTargetHealthChangedEvent(AActor* Target);
-	// void UpdateBlackboardTargetActor(AActor* Target);
-	// void UpdateFocus(AActor* Target);
 
 protected:
 	

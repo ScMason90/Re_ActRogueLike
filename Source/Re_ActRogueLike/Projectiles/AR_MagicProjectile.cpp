@@ -35,9 +35,9 @@ void AAR_MagicProjectile::OnImpact(AActor* OtherActor, const FHitResult& Hit)
 {
 	Super::OnImpact(OtherActor, Hit);
 	
-	FVector HitFromDirection = GetActorRotation().Vector();
+	FVector HitFromDirection = GetActorRotation().Vector();	// Well we now want to pass the actual DamageCauser, the owner of this.
 	UGameplayStatics::ApplyPointDamage(OtherActor, DamageAmount, HitFromDirection, Hit, 
-		InstigatorActorRef->GetInstigatorController(), this, DmgTypeClass);
+		InstigatorActorRef->GetInstigatorController(), InstigatorActorRef, DmgTypeClass);
 	
 	if (EffectOnHit)
 	{
