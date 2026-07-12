@@ -6,10 +6,12 @@
 // Necessary compilation header files
 #include "EngineUtils.h"
 #include "EnvironmentQuery/EnvQueryManager.h"
+#include "Kismet/GameplayStatics.h"
 #include "Re_ActRogueLike/Re_ActRogueLike.h"
 #include "Re_ActRogueLike/Re_ActRoguelikeTypes.h"
 #include "Re_ActRogueLike/ActionSystem/AR_ActionSystemComponent.h"
 #include "Re_ActRogueLike/AI/AR_AICharacter.h"
+#include "Re_ActRogueLike/AI/AR_EnemyData.h"
 #include "Re_ActRogueLike/Core/AR_GameInstance.h"
 #include "Re_ActRogueLike/Core/AR_GameplayStatics.h"
 #include "Re_ActRogueLike/Player/AR_PlayerState.h"
@@ -54,7 +56,7 @@ void AAR_PrimaryGameMode::StartPlay()
 		{
 			TArray<FEnemySpawnData*> AllRows;	// All rows of 'EnemySpawnTable'
 			Director.EnemySpawnTable->GetAllRows(
-				"AAR_PrimaryGameMode::StartPlay, 'AllRows' of one Director.EnemySpawnTable", AllRows);
+				"AAR_PrimaryGameMode::StartPlay, init a 'Director.TotalSpawnWeight'", AllRows);
 			
 			Director.TotalSpawnWeight = 0.0f;
 			for (FEnemySpawnData* Row : AllRows) Director.TotalSpawnWeight += Row->SpawnWeight;
@@ -125,7 +127,7 @@ bool AAR_PrimaryGameMode::TrySpawnEnemy(FAR_DirectorData& Director)
 {
 	TArray<FEnemySpawnData*> AllRows;	// All rows of 'EnemySpawnTable'
 	Director.EnemySpawnTable->GetAllRows(
-		"AAR_PrimaryGameMode::TrySpawnEnemy, 'AllRows' of one Director.EnemySpawnTable", AllRows);
+		"AAR_PrimaryGameMode::TrySpawnEnemy, Calculate 'SelectedRow' of one Director.EnemySpawnTable", AllRows);
 	
 	// int32 SelectedIndex = Director.RandomStream_EnemySelection.RandRange(0, AllRows.Num()-1);	// use FMath::RandRange(...) only temporarily 
 	// FEnemySpawnData* SelectedRow = AllRows[SelectedIndex];
@@ -151,8 +153,8 @@ bool AAR_PrimaryGameMode::TrySpawnEnemy(FAR_DirectorData& Director)
 
 	if (Director.CurrentCredits < SelectedRow->SpawnCosts)
 	{
-		UE_LOG(LogGameMode, Log, TEXT("AAR_PrimaryGameMode::TrySpawnEnemy, Not enough credits to spawn enemy %s"), 
-			*SelectedRow->EnemyClass.GetAssetName());
+		UE_LOG(LogGameMode, Log, TEXT("AAR_PrimaryGameMode::TrySpawnEnemy, Lack of credits to spawn enemy using data asset; %s"), 
+			*SelectedRow->EnemyData.GetAssetName());
 		return false;
 	}
 	Director.CurrentCredits -= SelectedRow->SpawnCosts;
@@ -174,25 +176,40 @@ void AAR_PrimaryGameMode::SpawnEnemyQueryCompleted(TSharedPtr<FEnvQueryResult> Q
 	
 	// UE_LOG(LogGameMode, Log, TEXT("AAR_PrimaryGameMode::SpawnEnemyQueryCompleted, SpawnLocation = %s"), *SpawnLocation.ToString());
 	
-	SelectedEnemy->EnemyClass.LoadAsync(FLoadSoftObjectPathAsyncDelegate::CreateUObject(this, 
-		&ThisClass::OnEnemyClassLoaded, SpawnLocation, SelectedEnemy));
+	SelectedEnemy->EnemyData.LoadAsync(FLoadSoftObjectPathAsyncDelegate::CreateUObject(this, 
+		&ThisClass::OnEnemyDataLoaded, SpawnLocation, SelectedEnemy));
 }
 
-void AAR_PrimaryGameMode::OnEnemyClassLoaded(const FSoftObjectPath& LoadedObjectPath, UObject* LoadedObject,
+void AAR_PrimaryGameMode::OnEnemyDataLoaded(const FSoftObjectPath& LoadedObjectPath, UObject* LoadedObject,
 	FVector SpawnLocation, FEnemySpawnData* SelectedEnemy)
 {
 	FActorSpawnParameters EnemySpawnParams = FActorSpawnParameters();
+	FTransform SpawnTM = FTransform(SpawnLocation);
 	
-	AAR_AICharacter* NewEnemy = GetWorld()->SpawnActor<AAR_AICharacter>(
-		SelectedEnemy->EnemyClass.Get(), SpawnLocation, FRotator::ZeroRotator, EnemySpawnParams);
+	UAR_EnemyData* EnemyData = SelectedEnemy->EnemyData.Get();
 	
-	// UE_LOG(LogGameMode, Log, TEXT("AAR_PrimaryGameMode::SpawnEnemyQueryCompleted, NewEnemy = %s"), *GetNameSafe(NewEnemy));
+	AAR_AICharacter* NewEnemy = GetWorld()->SpawnActorDeferred<AAR_AICharacter>(EnemyData->EnemyClass, FTransform::Identity);
+	NewEnemy->SetEnemyData(EnemyData);
+	
+	// UE_LOG(LogGameMode, Log, TEXT("AAR_PrimaryGameMode::OnEnemyDataLoaded, NewEnemy = %s"), *GetNameSafe(NewEnemy));
+	
+	// Apply attributes override
+	
+	// Manually call to run construction script
+	UGameplayStatics::FinishSpawningActor(NewEnemy, SpawnTM);
 	
 	UE_VLOG_SPHERE(this, LogGameMode, Log, SpawnLocation, 32.0f, FColor::Orange, 
-		TEXT("void AAR_PrimaryGameMode::SpawnEnemyQueryCompleted,\nFEnemySpawnData* SelectedEnemy;  SrcClass:%s | SpawnCosts:%s"),
-		*GetNameSafe(SelectedEnemy->EnemyClass.Get()), *FString::SanitizeFloat(SelectedEnemy->SpawnCosts));
+		TEXT("AAR_PrimaryGameMode::OnEnemyDataLoaded,\nSelectedEnemy;  EnemyClass:%s | SpawnCosts:%s"),
+		*GetNameSafe(EnemyData->EnemyClass), *FString::SanitizeFloat(SelectedEnemy->SpawnCosts));
 	
-	// Set Attributes, add Buffs/Debuffs, etc. 
+	// Add Buffs/Debuffs, etc.
+	
+	UAR_ActionSystemComponent* ASComp = NewEnemy->GetASComp();
+	
+	for (TSubclassOf<UAR_Action> ActionClass : EnemyData->Actions)
+	{
+		ASComp->GrantAction(ActionClass);
+	}
 }
 
 void AAR_PrimaryGameMode::OnPickupSpawnQueryFinished(UEnvQueryInstanceBlueprintWrapper* QueryInstance,

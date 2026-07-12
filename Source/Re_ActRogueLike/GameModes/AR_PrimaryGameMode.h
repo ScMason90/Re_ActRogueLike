@@ -47,7 +47,7 @@ protected:
 	
 	void SpawnEnemyQueryCompleted(TSharedPtr<FEnvQueryResult> QueryResult, FEnemySpawnData* SelectedEnemy);
 	
-	void OnEnemyClassLoaded(const FSoftObjectPath& LoadedObjectPath, UObject* LoadedObject, FVector SpawnLocation, FEnemySpawnData* SelectedEnemy);
+	void OnEnemyDataLoaded(const FSoftObjectPath& LoadedObjectPath, UObject* LoadedObject, FVector SpawnLocation, FEnemySpawnData* SelectedEnemy);
 	
 	bool TrySpawnEnemy(FAR_DirectorData& Director);
 

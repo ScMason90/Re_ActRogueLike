@@ -10,6 +10,7 @@
 #define COLLISION_PROJECTILE ECC_GameTraceChannel1
 
 
+class UAR_EnemyData;
 class UEnvQuery;
 class UDataTable;
 class AAR_AICharacter;
@@ -22,7 +23,7 @@ struct FEnemySpawnData : public FTableRowBase
 public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	TSoftClassPtr<AAR_AICharacter> EnemyClass;
+	TSoftObjectPtr<UAR_EnemyData> EnemyData;
 	
 	/* Points required by GameMode to spawn this unit.*/
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)

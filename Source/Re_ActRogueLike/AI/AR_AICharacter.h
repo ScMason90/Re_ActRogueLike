@@ -7,6 +7,7 @@
 #include "AR_AICharacter.generated.h"
 
 
+class UAR_EnemyData;
 struct FGameplayTag;
 class UAR_WorldUserWidget;
 class UAR_ActionSystemComponent;
@@ -62,12 +63,26 @@ protected:
 
 public:
 	
+	// Get the ActionSystemComponent of an AR_AICharacter class derived instance
+	UAR_ActionSystemComponent* GetASComp() const {return ActionSystemComponent;}
+	
+	UAR_EnemyData* GetEnemyData() const {return EnemyData;}
+	
+	void SetEnemyData(UAR_EnemyData* NewEnemyData)
+	{
+		check(NewEnemyData);
+		EnemyData = NewEnemyData;
+	}
+
+protected:
+	
 	// Try adding 'AI Perception' ue5 module? It's a component
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<UAR_ActionSystemComponent> ActionSystemComponent;
-
-protected:
+	
+	UPROPERTY(Transient)
+	TObjectPtr<UAR_EnemyData> EnemyData;
 	
 	/* ------------- UI/UMG Widget Relative ---------------- */
 	
