@@ -85,6 +85,9 @@ void UAR_CoinPickupSubsystem::RemoveCoinPickup(int32 IndexToRemove)
 	TRACE_CPUPROFILER_EVENT_SCOPE(UAR_CoinPickupSubsystem::RemoveCoinPickup());
 	
 #if 1
+	// Specified init 'TArray<T, FNonshrinkingAllocator>' to get global shrinking control 
+	// instead of manually pass 'EAllowShrinking::No' while execute removal operation
+	
 	CoinLocations.RemoveAtSwap(IndexToRemove, EAllowShrinking::No);
 	CoinAmounts.RemoveAtSwap(IndexToRemove, EAllowShrinking::No);
 	

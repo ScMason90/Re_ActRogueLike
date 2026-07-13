@@ -46,8 +46,8 @@ protected:
 	 * Corresponding in specific 'USoundBase' MetaSound asset set as 'WorldAudioComponent'.*/
 	FName CoinPickupTriggerParamName;
 	
-	TArray<FVector> CoinLocations;
-	TArray<int32> CoinAmounts;
+	TArray<FVector/*, FNonshrinkingAllocator*/> CoinLocations;
+	TArray<int32/*, FNonshrinkingAllocator*/> CoinAmounts;
 	TArray<FPrimitiveInstanceId> MeshIDs;
 	
 public:

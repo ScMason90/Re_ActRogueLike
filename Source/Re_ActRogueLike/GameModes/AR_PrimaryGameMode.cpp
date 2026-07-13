@@ -5,6 +5,7 @@
 
 // Necessary compilation header files
 #include "EngineUtils.h"
+#include "Engine/Engine.h"
 #include "EnvironmentQuery/EnvQueryManager.h"
 #include "Kismet/GameplayStatics.h"
 #include "Re_ActRogueLike/Re_ActRogueLike.h"
@@ -54,12 +55,24 @@ void AAR_PrimaryGameMode::StartPlay()
 		
 		if (Director.EnemySpawnTable)
 		{
-			TArray<FEnemySpawnData*> AllRows;	// All rows of 'EnemySpawnTable'
-			Director.EnemySpawnTable->GetAllRows(
-				"AAR_PrimaryGameMode::StartPlay, init a 'Director.TotalSpawnWeight'", AllRows);
+			Director.EnemySpawnTable->GetAllRows<FEnemySpawnData>(
+				"AAR_PrimaryGameMode::StartPlay, init a 'Director.CachedRows'", Director.CachedRows);
+			
+			/* '.Empty()'&'.Reserver(.Num())' the Director.PrefixWeights and D..r.CachedRows then ensure async calculate and allocate them again
+			, if FAR_DirectorData supports dynamic (SpawnWeight/EnemyPool/WaveChanges) or activating GameMode::StartPlay() need to be called not only once*/
+			
+			// Rebuild after any of 'Director' that have an impact on 'D.PrefixWeights & D.CachedRows' change 
+			// Director.PrefixWeights.Empty();
+			// Director.PrefixWeights.Reserve(Director.PrefixWeights.Num());
+			// Director.CachedRows.Empty();
+			// Director.CachedRows.Reserve(Director.CachedRows.Num());
 			
 			Director.TotalSpawnWeight = 0.0f;
-			for (FEnemySpawnData* Row : AllRows) Director.TotalSpawnWeight += Row->SpawnWeight;
+			for (FEnemySpawnData* Row : Director.CachedRows)
+			{
+				Director.TotalSpawnWeight += Row->SpawnWeight;
+				Director.PrefixWeights.Add(Director.TotalSpawnWeight);
+			}
 		}
 	}
 	
@@ -125,12 +138,9 @@ void AAR_PrimaryGameMode::Tick(float DeltaSeconds)
 
 bool AAR_PrimaryGameMode::TrySpawnEnemy(FAR_DirectorData& Director)
 {
-	TArray<FEnemySpawnData*> AllRows;	// All rows of 'EnemySpawnTable'
-	Director.EnemySpawnTable->GetAllRows(
-		"AAR_PrimaryGameMode::TrySpawnEnemy, Calculate 'SelectedRow' of one Director.EnemySpawnTable", AllRows);
-	
-	// int32 SelectedIndex = Director.RandomStream_EnemySelection.RandRange(0, AllRows.Num()-1);	// use FMath::RandRange(...) only temporarily 
-	// FEnemySpawnData* SelectedRow = AllRows[SelectedIndex];
+	// Director.EnemySpawnTable->GetAllRows("AAR_PrimaryGameMode::TrySpawnEnemy, Calculate 'SelectedRow' of one Director.EnemySpawnTable", Director.CachedRows);
+	// int32 SelectedIndex = Director.RandomStream_EnemySelection.RandRange(0, Director.CachedRows.Num()-1);	// use FMath::RandRange(...) only temporarily 
+	// FEnemySpawnData* SelectedRow = Director.CachedRows[SelectedIndex];
 	
 	float SelectedWeight = Director.RandomStream_EnemySelection.FRandRange(0.0f, Director.TotalSpawnWeight);
 	
@@ -139,17 +149,23 @@ bool AAR_PrimaryGameMode::TrySpawnEnemy(FAR_DirectorData& Director)
 	// row 2 - 5 weight (30 total)
 	// e.g. SelectedWeight (28) selects row 2, which ranges from 26-30 weight.
 	
-	FEnemySpawnData* SelectedRow = nullptr;
-	float PrefixWeights = 0.0f;
-	for (FEnemySpawnData* Row : AllRows)
-	{
-		PrefixWeights += Row->SpawnWeight;
-		if (SelectedWeight <= PrefixWeights)
-		{
-			SelectedRow = Row;
-			break;
-		}
-	}
+	// Result a index of binary search 'Director.PrefixWeights'. Corresponding a FEnemySpawnData row of 'Director.CachedRow'
+	int32 SelectedIndex = Algo::LowerBound(Director.PrefixWeights, SelectedWeight);	
+	FEnemySpawnData* SelectedRow = Director.CachedRows[SelectedIndex];
+	
+	UE_LOG(LogGameMode, Log, TEXT("AAR_PrimaryGameMode::TrySpawnEnemy\tSelectedWeight = %s, SelectedIndex = %d"), 
+		*FString::SanitizeFloat(SelectedWeight), SelectedIndex);
+	
+	// float PrefixWeights = 0.0f;
+	// for (FEnemySpawnData* Row : Director.CachedRows)
+	// {
+	// 	PrefixWeights += Row->SpawnWeight;
+	// 	if (SelectedWeight <= PrefixWeights)
+	// 	{
+	// 		SelectedRow = Row;
+	// 		break;
+	// 	}
+	// }
 
 	if (Director.CurrentCredits < SelectedRow->SpawnCosts)
 	{

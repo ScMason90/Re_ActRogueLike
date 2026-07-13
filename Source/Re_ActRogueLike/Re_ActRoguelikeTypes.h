@@ -62,7 +62,13 @@ public:
 	
 	FRandomStream RandomStream_EnemySelection;
 	
+	// Prefix array and binary search optimization for calculating 'SelectedRow' in AAR_PrimaryGameMode::TrySpawnEnemy
+	
 	UPROPERTY(Transient)
-	float TotalSpawnWeight;	// Total quantity of 'SpawnWeight'(in FEnemySpawnData) within 'EnemySpawnTable'
+	float TotalSpawnWeight;	// Total quantity of 'SpawnWeight'(in FEnemySpawnData row) within 'EnemySpawnTable'
+	
+	TArray<float> PrefixWeights;	// Each index mapping prefix(0-index) accumulated SpawnCost of rows of 'EnemySpawnTable'
+	
+	TArray<FEnemySpawnData*> CachedRows;	// All rows of 'EnemySpawnTable' in the same parent USTRUCT FAR_DirectorData
 	
 };
