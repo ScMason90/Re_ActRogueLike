@@ -16,9 +16,6 @@
 
 
 
-static TAutoConsoleVariable<float> CVarDamageMultiplier(TEXT("game.DamageMultiplier"), 1.0f, TEXT("Global Damage Modifier for ASComponent."), ECVF_Cheat);
-
-
 // Sets default values for this component's properties
 UAR_ActionSystemComponent::UAR_ActionSystemComponent()
 {
@@ -167,8 +164,6 @@ void UAR_ActionSystemComponent::RemoveDynamicAttributeListener(FOnAttributeDynam
 
 void UAR_ActionSystemComponent::GrantAction(TSubclassOf<UAR_Action> NewActionClass)
 {
-	FString NewEffectName = "Undefined";
-	
 	const bool bIsEffectClass = NewActionClass->IsChildOf(UAR_Effect::StaticClass());
 	if (bIsEffectClass)
 	{
@@ -178,7 +173,6 @@ void UAR_ActionSystemComponent::GrantAction(TSubclassOf<UAR_Action> NewActionCla
 		{
 			if (UAR_Effect* Effect = Cast<UAR_Effect>(Action))
 			{
-				NewEffectName = Effect->GetActionName().ToString();
 				if (Effect->GetClass() == NewActionClass)
 				{
 					Effect->IncrementStackSize();
@@ -194,12 +188,11 @@ void UAR_ActionSystemComponent::GrantAction(TSubclassOf<UAR_Action> NewActionCla
 	if (bIsEffectClass)
 	{
 		// Sanity check that buffs are allowed to run. We do not handle this case yet.
-		if (ensureMsgf(NewAction->CanStart(), TEXT("UAR_ActionSystemComponent::GrantAction, "
-											 "an Effect can not start CanStart() returns FALSE. Case not handled.")))
-		{
-			UE_LOG(LogGame, Log, TEXT("UAR_ActionSystemComponent::GrantAction,"
-							 "This Effect has name(ActionName in UAR_Action.h): %s."), *NewEffectName);	
-		}	
+		ensureMsgf(NewAction->CanStart(), TEXT("UAR_ActionSystemComponent::GrantAction, "
+										 "an Effect can not start CanStart() returns FALSE. Case not handled."));
+		
+		UE_LOG(LogGame, Log, TEXT("UAR_ActionSystemComponent::GrantAction, Owner:%s NewActionNameOrGrantTags : %s."), 
+			*GetNameSafe(GetOwner()), *GetActionNameOrGrantTags(NewAction));	
 		
 		NewAction->StartAction();
 	}
@@ -210,9 +203,8 @@ void UAR_ActionSystemComponent::RemoveAction(UAR_Action* ActionToRemove)
 	int32 RemoveCount = Actions.RemoveSingle(ActionToRemove);
 	ensure(RemoveCount == 1);
 	
-	FString ActN = ActionToRemove->GetActionName().IsValid() ? ActionToRemove->GetActionName().ToString() : "Undefined Action Name";
-	UE_LOG(LogGame, Verbose, TEXT("UAR_ActionSystemComponent::RemoveAction(UAR_Action* ActionToRemove), Remove Action %s from %s"), 
-		*ActN, *GetNameSafe(GetOwner()));
+	UE_LOG(LogGame, Verbose, TEXT("UAR_ActionSystemComponent::RemoveAction, Removed Action %s from %s"), 
+		*GetActionNameOrGrantTags(ActionToRemove), *GetNameSafe(GetOwner()));
 	
 	ActionToRemove->MarkAsGarbage();
 }
@@ -253,7 +245,7 @@ void UAR_ActionSystemComponent::CheckAgainstBlockedTags(const FGameplayTagContai
 			
 			UE_LOGFMT(LogGame, Log, "UAR_ActionSystemComponent::CheckAgainstBlockedTags, "
 						   "Stopped {ActionName} due to any matching tag {BlockedTags} for {Owner}",
-						   ("ActionName", Action->GetActionName().ToString()),
+						   ("ActionName", GetActionNameOrGrantTags(Action)),
 						   ("BlockedTags", NewTags.ToString()),
 						   ("Owner", GetNameSafe(GetOwner())));
 		}
@@ -290,16 +282,38 @@ void UAR_ActionSystemComponent::StopAction(FGameplayTag InActionName)
 		TEXT("UAR_ActionSystemComponent::StopAction,No Action found with name %s"), *InActionName.ToString());
 }
 
-UAR_ActionSystemComponent* UAR_ActionSystemComponent::GetASComp(AActor* FromActor)
+void UAR_ActionSystemComponent::EndActionsAndEffects()
 {
-	if (FromActor) return Cast<UAR_ActionSystemComponent>(FromActor->GetComponentByClass(StaticClass()));
-	return nullptr;
+	FString OwnerName = GetOwner()->GetActorNameOrLabel();
+	
+	// Actions
+	for (int32 i = Actions.Num() - 1; i >= 0; --i)
+	{
+		UAR_Action* StoredAction = Actions[i];
+		
+		StopAction(StoredAction->GetActionName());
+		
+		UE_LOG(LogGame, Log, TEXT("UAR_ActionSystemComponent::EndActionsAndEffects(), Owner:%s StopAction(StoredAction--%s)"), 
+			*OwnerName, *GetActionNameOrGrantTags(StoredAction));
+	}
+	
+	// Status_Effect/'ActionEffects(Buff/Debuff)'
+	RemoveActiveTags(GetActiveTags());
+	
+	// No need delete 'Actions' that contains all actions or 'ActiveGameplayTags' that records all effects(also action's GrantTags)
+	// As ASComp will be GC together with its OwnerActor (Prerequisite is that you only call this function when OwnerActor is dying) 
 }
 
-bool UAR_ActionSystemComponent::Kill(AActor* InstigatorActor)
+FString UAR_ActionSystemComponent::GetActionNameOrGrantTags(UAR_Action* InAction)
 {
-	ApplyAttributeChanged(SharedGameplayTags::Attribute_Health, 
-		-GetAttribute(SharedGameplayTags::Attribute_HealthMax)->GetValue(), Base);
-	
-	return UAR_GameplayStatics::IsDying(this);
+#if !UE_BUILD_SHIPPING
+	check(InAction);
+	if (InAction->GetActionName().IsValid())
+	{
+		return InAction->GetActionName().ToString();	// InAction is a UAR_Action or its derived.
+	}
+	return InAction->GetGrantTagsAsString();	// InAction is a UAR_Effect or its derived. Make sure you at least specify GrantTags.
+#else
+	return TEXT("");	// Nothing when Shipping as playable game
+#endif
 }

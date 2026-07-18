@@ -90,3 +90,7 @@ Content/
 # Diversion application files
 .diversion/
 .dvignore
+
+# Scripts 
+CleanUEproject.ps1
+CleanUEprojectLaunch.bat

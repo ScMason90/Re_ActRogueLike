@@ -34,16 +34,24 @@ protected:
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Dummy State")
 	bool bDummyDying = false;
+
+public:
+	
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, 
+		class AController* EventInstigator, AActor* DamageCauser) override;
+	
+	virtual void PostInitializeComponents() override;
+	
+protected:
 	
 	FDelegateHandle DelHandle_OnHealthChanged;
 	
 	void OnHealthChanged(FGameplayTag AttributeTag, float NewHealth, float OldHealth);
 	
 	void HandleDeath() const;
-
-public:
 	
-	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, 
-		class AController* EventInstigator, AActor* DamageCauser) override;
+	// Cpp delegate for MULTICAST_DYNAMIC FOnGameplayTagCountUpdated delegate of ASComp. Can also subscribe from BP.
+	UFUNCTION()
+	void OnGameplayTagCountUpdated(FGameplayTag UpdatedTag, int32 NewCount);
 	
 };

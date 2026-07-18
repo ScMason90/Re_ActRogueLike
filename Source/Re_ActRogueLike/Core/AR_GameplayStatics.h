@@ -80,6 +80,12 @@ public:
 	static FDelegateHandle BindOnMulticastAttrChangedLambda(UAR_ActionSystemComponent* ASComp, const FGameplayTag& AttributeTag, 
 		TFunction<void(FGameplayTag, float, float)> Callback);
 	
+	// Getter of Global Damage Multiplier 'CVarDamageMultiplier' define in AR_GameplayStatics.cpp
+	static float GetDmgModifier();		// Expose to BP?
+	
+	UFUNCTION(BlueprintCallable, Category = "ExecInterface")
+	static bool Kill(AActor* InstigatorActor, UAR_ActionSystemComponent* TargetASComp);
+	
 };
 
 template <typename UserClass>

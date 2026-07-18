@@ -110,9 +110,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void ApplyAttributeChanged(FGameplayTag AttributeTag, float Delta, EAttributeModifyType ModifyType);
 	
-	UFUNCTION(BlueprintCallable, Category = "Utilities")
-	static UAR_ActionSystemComponent* GetASComp(AActor* FromActor);
-	
 	/**
 	 * @param NewActionClass Directly apply effect ('NewAction->StartAction()') if it's derived from 'UAR_Effect'
 	 */
@@ -123,6 +120,9 @@ public:
 	
 	void StartAction(FGameplayTag InActionName);
 	void StopAction(FGameplayTag InActionName);
+	
+	// we do you say build TMap<ActionName, TObjectPtr<UAR_Action>> for better performance?
+	// const TArray<TObjectPtr<UAR_Action>>& GetActions() const {return Actions;}  
 	
 	void SetDefaultAttributeSet(TSubclassOf<UAR_AttributeSet> AttributeSetClass);
 	
@@ -135,11 +135,14 @@ public:
 	
 	const FGameplayTagContainer& GetActiveTags() const {return ActiveGameplayTags;}
 	
-	/*------------- Legacy ----------------*/
-	
-	/** @deprecated : Maybe this's not suitable for our new ActionSystemComponent framework.Moved to another?
-	 * Considering its compatibility and application. */ 
-	UFUNCTION(BlueprintCallable, Category = "ExecInterface")
-	bool Kill(AActor* InstigatorActor);
+	/** Manually stop all potential processing/activating 'Actions' or 'Effects'
+	 * @note Mainly called when owner is dying -> lifespan expired / destroying / being GC.
+	 * @warning Create another (world level)'Manager' class of persistent Action/Effect that are cross-character&system or retained after death (Usually destroy/disable outside owner's life cycle) */
+	void EndActionsAndEffects();
+
+	/** Only for debug/development (Log Output). Not sure of embed in ActionSystem.
+	 * @param InAction UAR_Action and its derived object - Could be UAR_Effect and its derived object as that UAR_Action derived UAR_Effect.  
+	 * @return Action as "Action_...". StatusEffect as "StatusEffect_..." */
+	FString GetActionNameOrGrantTags(UAR_Action* InAction);
 	
 };

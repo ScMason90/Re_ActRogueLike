@@ -10,7 +10,6 @@
 #include "Kismet/GameplayStatics.h"
 #include "Re_ActRogueLike/Re_ActRogueLike.h"
 #include "Re_ActRogueLike/Re_ActRoguelikeTypes.h"
-#include "Re_ActRogueLike/ActionSystem/AR_ActionSystemComponent.h"
 #include "Re_ActRogueLike/AI/AR_AICharacter.h"
 #include "Re_ActRogueLike/AI/AR_EnemyData.h"
 #include "Re_ActRogueLike/Core/AR_GameInstance.h"
@@ -138,9 +137,7 @@ void AAR_PrimaryGameMode::Tick(float DeltaSeconds)
 
 bool AAR_PrimaryGameMode::TrySpawnEnemy(FAR_DirectorData& Director)
 {
-	// Director.EnemySpawnTable->GetAllRows("AAR_PrimaryGameMode::TrySpawnEnemy, Calculate 'SelectedRow' of one Director.EnemySpawnTable", Director.CachedRows);
-	// int32 SelectedIndex = Director.RandomStream_EnemySelection.RandRange(0, Director.CachedRows.Num()-1);	// use FMath::RandRange(...) only temporarily 
-	// FEnemySpawnData* SelectedRow = Director.CachedRows[SelectedIndex];
+	// Director.EnemySpawnTable->GetAllRows("AAR_PrimaryGameMode::TrySpawnEnemy, Rebuild Director.CachedRows due to ...EnemySpawnTable changed", Director.CachedRows);
 	
 	float SelectedWeight = Director.RandomStream_EnemySelection.FRandRange(0.0f, Director.TotalSpawnWeight);
 	
@@ -155,17 +152,6 @@ bool AAR_PrimaryGameMode::TrySpawnEnemy(FAR_DirectorData& Director)
 	
 	UE_LOG(LogGameMode, Log, TEXT("AAR_PrimaryGameMode::TrySpawnEnemy\tSelectedWeight = %s, SelectedIndex = %d"), 
 		*FString::SanitizeFloat(SelectedWeight), SelectedIndex);
-	
-	// float PrefixWeights = 0.0f;
-	// for (FEnemySpawnData* Row : Director.CachedRows)
-	// {
-	// 	PrefixWeights += Row->SpawnWeight;
-	// 	if (SelectedWeight <= PrefixWeights)
-	// 	{
-	// 		SelectedRow = Row;
-	// 		break;
-	// 	}
-	// }
 
 	if (Director.CurrentCredits < SelectedRow->SpawnCosts)
 	{
@@ -298,7 +284,7 @@ void AAR_PrimaryGameMode::KillAllOfClass(TSubclassOf<AActor> ClassToKill)
 			SkippedCount++;
 			continue;
 		}
-		UAR_ActionSystemComponent* ASComp = UAR_ActionSystemComponent::GetASComp(ActorToKill);
+		UAR_ActionSystemComponent* ASComp = ActorToKill->FindComponentByClass<UAR_ActionSystemComponent>();
 		if (!ASComp)
 		{
 			SkippedCount++;
@@ -306,8 +292,8 @@ void AAR_PrimaryGameMode::KillAllOfClass(TSubclassOf<AActor> ClassToKill)
 		}
 		if (!UAR_GameplayStatics::IsDying(ASComp))
 		{
-			KilledCount++;
-			ASComp->Kill(ActorToKill/*'Class Suicide'*/);
+			KilledCount++;	// Class suicide
+			UAR_GameplayStatics::Kill(this, ASComp);
 		}
 	}
 	UE_LOG(LogGameMode, Warning, TEXT("AAR_PrimaryGameMode::KillAllOfClass(%s) => Killed: %d | Skipped: %d"),

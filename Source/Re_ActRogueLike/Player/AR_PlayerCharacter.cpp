@@ -6,16 +6,16 @@
 // Necessary compilation header files
 #include "EnhancedInputComponent.h"
 #include "Camera/CameraComponent.h"
-#include "GameplayTagContainer.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Re_ActRogueLike/Re_ActRoguelikeTypes.h"
 #include "Re_ActRogueLike/SharedGameplayTags.h"
+#include "Re_ActRogueLike/ActionSystem/AR_Action.h"
 #include "Re_ActRogueLike/ActionSystem/AR_ActionSystemComponent.h"
 #include "Re_ActRogueLike/ActionSystem/AR_AttributeSet.h"
 #include "Re_ActRogueLike/Core/AR_GameplayStatics.h"
 
 // Temporarily headers enables Intelligent Completion & Highlighting functions of JetbrainsRider IDE to operate, thereby enhancing development efficiency
-
 
 
 // @Redundant: Already have 'God' command provided by UE5 - true, DamageSystem on our 'PlayerCharacter' wouldn't apply any damage
@@ -145,6 +145,7 @@ float AAR_PlayerCharacter::TakeDamage(float DamageAmount, struct FDamageEvent co
 	}
 #endif
 	float ActualDamage =  Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	ActualDamage *= UAR_GameplayStatics::GetDmgModifier();	// Apply 'DamageMultiplier'
 	
 	ActionSystemComponent->ApplyAttributeChanged(SharedGameplayTags::Attribute_Health, -ActualDamage, Base);
 	
@@ -187,11 +188,8 @@ void AAR_PlayerCharacter::OnHealthChanged(FGameplayTag HealthAttributeTag, float
 
 void AAR_PlayerCharacter::HandleDeath()
 {
-	// Manually stop any possible processing 'Actions' or 'ActionEffects(Buff/Debuff)'
-	for (const FGameplayTag& ActiveActionTag : ActionSystemComponent->GetActiveTags())
-	{
-		ActionSystemComponent->StopAction(ActiveActionTag);
-	}
+	// End up all actions and effects of ActionSystemComponent
+	ActionSystemComponent->EndActionsAndEffects();
 	
 	// Remove multicast attribute delegate.
 	UAR_GameplayStatics_UNBIND_ATTR_MULTICAST(ActionSystemComponent, SharedGameplayTags::Attribute_Health, DelHandle_OnHealthChanged);
@@ -216,8 +214,6 @@ void AAR_PlayerCharacter::HandleDeath()
 	 * and you'll fall off the floor if you vertically dead(jump, moving in the air).
 	 * Because default collision profile of 'CapsuleComp' is 'Pawn' different by 'CharacterMesh' for 'MeshComp'  
 	 * This happened sometimes, not steady.Engine level stopping the game is a better one? */
-			
-	// Optional
 		
 	// Play Ragdoll
 	FTimerHandle TimerHandle_Ragdoll;
@@ -228,6 +224,9 @@ void AAR_PlayerCharacter::HandleDeath()
 					
 			MeshComp->SetAllBodiesSimulatePhysics(true);
 			MeshComp->SetCollisionProfileName("Ragdoll");
+			
+			// Set "Ragdoll" response to Object Type 'Projectile' as 'Ignore' in ProjectSettings if you want?
+			MeshComp->SetCollisionResponseToChannel(COLLISION_PROJECTILE, ECR_Ignore);
 		}, 
 		DeathMontageDuration, false);
 

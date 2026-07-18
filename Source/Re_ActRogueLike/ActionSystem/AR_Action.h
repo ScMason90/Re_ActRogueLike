@@ -51,6 +51,9 @@ public:
 	
 	FGameplayTag GetActionName() const {return ActionName;}
 	
+	// Only for debugging now since our 'AR_Effect's are totally GrantTags & BlockTags driven. Not sure of embed in EffectSystem. 
+	FString GetGrantTagsAsString() const;
+	
 	virtual bool ImplementsGetWorld() const override {return true;}
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Actions")

@@ -46,7 +46,7 @@ void AAR_AICharacter::PostInitializeComponents()
 	// When debugging or testing BehaviorTree, ensure AutoPossessAI corresponding your way of 'run' AIChar BP class.
 }
 
-// Cache BTComp and AIC conveniently and safely.
+// Sanity cache BTComp and AIC safely for convenience.
 // void ARogueAICharacter::PossessedBy(AController* NewController)
 // {
 // 	Super::PossessedBy(NewController);
@@ -111,6 +111,7 @@ float AAR_AICharacter::TakeDamage(float DamageAmount, struct FDamageEvent const&
                                   class AController* EventInstigator, AActor* DamageCauser)
 {
 	float ActualDamage =  Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	ActualDamage *= UAR_GameplayStatics::GetDmgModifier();	// Apply 'DamageMultiplier'
 	
 	// Implement GameplayTag for BP class to match. e.g. Ignore damage if DamageCauser is friendly
 	// Target the 'InstigatorActor' who damaged self.
@@ -167,11 +168,8 @@ void AAR_AICharacter::OnHealthChanged(FGameplayTag HealthAttributeTag, float New
 
 void AAR_AICharacter::HandleDeath()
 {
-	// Manually stop any possible processing 'Actions' or 'ActionEffects(Buff/Debuff)'
-	for (const FGameplayTag& ActiveActionTag : ActionSystemComponent->GetActiveTags())
-	{
-		ActionSystemComponent->StopAction(ActiveActionTag);
-	}
+	// End up all actions and effects of ActionSystemComponent
+	ActionSystemComponent->EndActionsAndEffects();
 	
 	// Remove multicast attribute delegate.
 	UAR_GameplayStatics_UNBIND_ATTR_MULTICAST(ActionSystemComponent, SharedGameplayTags::Attribute_Health, DelHandle_OnHealthChanged);

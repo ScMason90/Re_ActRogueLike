@@ -10,6 +10,10 @@
 
 
 
+static TAutoConsoleVariable<float> CVarDamageMultiplier(TEXT("game.DamageMultiplier"), 1.0f, 
+	TEXT("Global Damage Modifier for OnHealthAttrChanged of ASComponent."), ECVF_Cheat);
+
+
 // You can replace all 'ASComp->GetAttribute()' to 'ASComp->GetAttributeValue()' for convenience.
 
 bool UAR_GameplayStatics::IsFullHealth(UAR_ActionSystemComponent* ASComp)
@@ -76,4 +80,17 @@ FDelegateHandle UAR_GameplayStatics::BindOnMulticastAttrChangedLambda(UAR_Action
 	{
 		Callback(Tag, NewV, OldV);
 	});
+}
+
+float UAR_GameplayStatics::GetDmgModifier()
+{
+	return CVarDamageMultiplier.GetValueOnGameThread();
+}
+
+bool UAR_GameplayStatics::Kill(AActor* InstigatorActor, UAR_ActionSystemComponent* TargetASComp)
+{
+	TargetASComp->ApplyAttributeChanged(SharedGameplayTags::Attribute_Health, 
+		-TargetASComp->GetAttributeValue(SharedGameplayTags::Attribute_HealthMax), Base);
+	
+	return IsDying(TargetASComp);
 }

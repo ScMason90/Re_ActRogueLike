@@ -12,6 +12,15 @@ UAR_ActionSystemComponent* UAR_Action::GetOwningASComponent() const
 	return Cast<UAR_ActionSystemComponent>(GetOuter());
 }
 
+FString UAR_Action::GetGrantTagsAsString() const
+{
+#if !UE_BUILD_SHIPPING
+	return GrantTags.ToString();
+#else
+	return TEXT("");	// Nothing when Shipping as playable game  
+#endif
+}
+
 void UAR_Action::StartAction_Implementation()
 {
 	UAR_ActionSystemComponent* OwningComp = GetOwningASComponent();

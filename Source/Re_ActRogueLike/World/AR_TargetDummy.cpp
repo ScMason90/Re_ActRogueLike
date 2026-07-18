@@ -32,10 +32,25 @@ AAR_TargetDummy::AAR_TargetDummy()
 	
 }
 
+void AAR_TargetDummy::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+	
+	// ActionSystemComponent->OnGameplayTagCountUpdated.AddDynamic(this, &ThisClass::AAR_TargetDummy::OnGameplayTagCountUpdated);
+}
+
+void AAR_TargetDummy::OnGameplayTagCountUpdated(FGameplayTag UpdatedTag, int32 NewCount)
+{
+	// To be continued
+}
+
 float AAR_TargetDummy::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent,
 								  AController* EventInstigator, AActor* DamageCauser)
 {
 	float ActualDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	
+	// Apply 'DamageMultiplier'...Development only as it's a console variable?
+	ActualDamage *= UAR_GameplayStatics::GetDmgModifier();
 	
 	// UE_LOG(LogGame, Log, TEXT("AAR_TargetDummy::TakeDamage, ActualDamage = %.4f"), ActualDamage);
 	
@@ -64,11 +79,8 @@ void AAR_TargetDummy::OnHealthChanged(FGameplayTag AttributeTag, float NewHealth
 
 void AAR_TargetDummy::HandleDeath() const
 {
-	// Manually stop any possible processing 'Actions' or 'ActionEffects(Buff/Debuff)'
-	for (const FGameplayTag& ActiveActionTag : ActionSystemComponent->GetActiveTags())
-	{
-		ActionSystemComponent->StopAction(ActiveActionTag);
-	}
+	// End up all actions and effects of ActionSystemComponent
+	ActionSystemComponent->EndActionsAndEffects();
 	
 	// Remove multicast attribute delegate.
 	UAR_GameplayStatics_UNBIND_ATTR_MULTICAST(ActionSystemComponent, SharedGameplayTags::Attribute_Health, DelHandle_OnHealthChanged);
