@@ -37,7 +37,7 @@ bool UAR_GameplayStatics::IsDying(UAR_ActionSystemComponent* ASComp)
 
 bool UAR_GameplayStatics::IsActorAlive(AActor* ActorToCheck)
 {
-	if (ActorToCheck)
+	if (IsValid(ActorToCheck))
 	{
 		if (UAR_ActionSystemComponent* ASComp = ActorToCheck->FindComponentByClass<UAR_ActionSystemComponent>())
 		{

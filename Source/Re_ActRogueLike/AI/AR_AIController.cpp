@@ -84,7 +84,7 @@ void AAR_AIController::OnTargetActorHealthChanged(FGameplayTag AttributeTag, flo
 		//...Find/Switch to another alive player as new target, actively bind its health changed ?
 		// Cancel Targeting, set to default
 		BB->SetValueAsObject(NAME_TargetActor, LocalPlayerRef.Get());
-		SetFocus(LocalPlayerRef.Get(), EAIFocusPriority::Gameplay);
+		SetFocus(LocalPlayerRef.Get(), EAIFocusPriority::LastFocusPriority);
 		
 		UAR_GameplayStatics_UNBIND_ATTR_MULTICAST(
 			TargetActorASComp.Get(), SharedGameplayTags::Attribute_Health, DelHandle_OnTargetActorHealthChanged);

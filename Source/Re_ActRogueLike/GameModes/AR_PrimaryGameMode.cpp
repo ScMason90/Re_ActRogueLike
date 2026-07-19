@@ -5,7 +5,6 @@
 
 // Necessary compilation header files
 #include "EngineUtils.h"
-#include "Engine/Engine.h"
 #include "EnvironmentQuery/EnvQueryManager.h"
 #include "Kismet/GameplayStatics.h"
 #include "Re_ActRogueLike/Re_ActRogueLike.h"
@@ -91,14 +90,6 @@ void AAR_PrimaryGameMode::Tick(float DeltaSeconds)
 	
 	float TotalElapsedTime = GetWorld()->TimeSeconds;
 	
-	UAR_GameInstance* GI = GetGameInstance<UAR_GameInstance>();
-	int32 MaxBotLimit = 5;	// This is hard-coded for 'SpawnEnemy(MinionRanged)'. didn't expose to Editor
-	if (GI->AliveEnemies.Num() >= MaxBotLimit)
-	{
-		UE_LOG(LogGameMode, Log, TEXT("AAR_PrimaryGameMode::Tick, Reached bot spawn limit at %d"), MaxBotLimit);
-		return;
-	}
-	
 	int32 KeyID = ONSCREENDEBUGKEY_SPAWNDIRECTOR;
 	for (FAR_DirectorData& Director : Directors)
 	{
@@ -107,14 +98,14 @@ void AAR_PrimaryGameMode::Tick(float DeltaSeconds)
 		if (!CVarSpawnEnemy.GetValueOnGameThread())
 		{
 			UE_LOG(LogGameMode, Log, TEXT("AAR_PrimaryGameMode::Tick, EnemySpawn disabled via CVarSpawnEnemy as false!"));
-			return;
+			break;
 		}
 #endif
 		
 		if (Director.EnemySpawnTable == nullptr)
 		{
 			UE_LOG(LogGameMode, Warning, TEXT("AAR_PrimaryGameMode::Tick, one Director.EnemySpawnTable is nullptr!"));
-			return;
+			continue;
 		}
 		
 		float CreditPerSecond = Director.CreditGainCurve.GetRichCurveConst()->Eval(TotalElapsedTime);
@@ -137,6 +128,14 @@ void AAR_PrimaryGameMode::Tick(float DeltaSeconds)
 
 bool AAR_PrimaryGameMode::TrySpawnEnemy(FAR_DirectorData& Director)
 {
+	const int32 MaxBotLimit = 5;	// This is hard-coded for 'SpawnEnemy(MinionRanged)'. didn't expose to Editor
+	UAR_GameInstance* GI = GetGameInstance<UAR_GameInstance>();
+	if (GI->AliveEnemies.Num() >= MaxBotLimit)
+	{
+		UE_LOG(LogGameMode, Log, TEXT("AAR_PrimaryGameMode::TrySpawnEnemy, Reached bot spawn limit at %d"), MaxBotLimit);
+		return false;
+	}
+	
 	// Director.EnemySpawnTable->GetAllRows("AAR_PrimaryGameMode::TrySpawnEnemy, Rebuild Director.CachedRows due to ...EnemySpawnTable changed", Director.CachedRows);
 	
 	float SelectedWeight = Director.RandomStream_EnemySelection.FRandRange(0.0f, Director.TotalSpawnWeight);
@@ -206,11 +205,14 @@ void AAR_PrimaryGameMode::OnEnemyDataLoaded(const FSoftObjectPath& LoadedObjectP
 	
 	// Add Buffs/Debuffs, etc.
 	
-	UAR_ActionSystemComponent* ASComp = NewEnemy->GetASComp();
-	
-	for (TSubclassOf<UAR_Action> ActionClass : EnemyData->Actions)
+	if (IsValid(NewEnemy))
 	{
-		ASComp->GrantAction(ActionClass);
+		UAR_ActionSystemComponent* ASComp = NewEnemy->GetASComp();
+	
+		for (TSubclassOf<UAR_Action> ActionClass : EnemyData->Actions)
+		{
+			ASComp->GrantAction(ActionClass);
+		}
 	}
 }
 

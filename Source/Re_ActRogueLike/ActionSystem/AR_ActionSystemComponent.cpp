@@ -47,12 +47,6 @@ void UAR_ActionSystemComponent::InitializeComponent()
 		CachedAttributes.Add(AttributeTag, FoundAttribute);
 	}
 	
-	// UE_LOGFMT(LogGame, Error, 
-	// 	"UAR_ActionSystemComponent::InitializeComponent(), Is DefaultActions empty?{Answer}", DefaultActions.IsEmpty()?"Yes":"No");
-	for (TSubclassOf<UAR_Action> ActionClass : DefaultActions)
-	{
-		if (ensure(ActionClass)) GrantAction(ActionClass);
-	}
 }
 
 void UAR_ActionSystemComponent::SetDefaultAttributeSet(TSubclassOf<UAR_AttributeSet> AttributeSetClass)
@@ -71,6 +65,11 @@ void UAR_ActionSystemComponent::BeginPlay()
 	
 	Attributes->InitializeAttributes();
 	
+	// UE_LOGFMT(LogGame, Warning, "UAR_ActionSystemComponent::InitializeComponent(), DefaultActions.IsEmpty()? {Answer}", DefaultActions.IsEmpty()?"Yes":"No");
+	for (TSubclassOf<UAR_Action> ActionClass : DefaultActions)
+	{
+		if (ensure(ActionClass)) GrantAction(ActionClass);
+	}
 }
 
 void UAR_ActionSystemComponent::ApplyAttributeChanged(FGameplayTag AttributeTag, float Delta,
