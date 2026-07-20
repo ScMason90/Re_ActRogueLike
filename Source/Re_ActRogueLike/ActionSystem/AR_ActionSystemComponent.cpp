@@ -7,7 +7,7 @@
 #include "AR_Action.h"
 #include "AR_AttributeSet.h"
 #include "AR_Effect.h"
-#include "Re_ActRogueLike/Core/AR_GameModeBase.h"
+#include "Re_ActRogueLike/GameModes/AR_GameModeBase.h"
 #include "../SharedGameplayTags.h"
 #include "Re_ActRogueLike/Re_ActRogueLike.h"
 #include "Re_ActRogueLike/Core/AR_GameplayStatics.h"

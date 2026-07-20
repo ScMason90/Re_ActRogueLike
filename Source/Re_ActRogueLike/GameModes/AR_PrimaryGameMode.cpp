@@ -19,8 +19,11 @@
 
 
 
-static TAutoConsoleVariable<bool> CVarSpawnEnemy(TEXT("game.mode.spawn enemy"), true, 
-	TEXT("Enable Enemy Spawning. false = disabled.Set before PIE in editor"), ECVF_Default);
+static TAutoConsoleVariable<bool> CVarGameEnemySpawningEnabled(TEXT("game.EnemySpawningEnabled"), true, 
+	TEXT("Disabling enemy spawning if debugging on purposes."), ECVF_Default);
+
+static TAutoConsoleVariable<int32> CVarGameEnemyLimit(TEXT("game.EnemyLimit"), 5, 
+	TEXT("Define the maximum number of alive enemies in the level with this 'GameModeClass' activating."),ECVF_Default);
 
 
 AAR_PrimaryGameMode::AAR_PrimaryGameMode()
@@ -48,8 +51,8 @@ void AAR_PrimaryGameMode::StartPlay()
 		int32 NewSeed = GlobalRandomStream.RandRange(0, MAX_int32 - 1);
 		Director.RandomStream_EnemySelection = FRandomStream(NewSeed);
 		
-		UE_LOG(LogGameMode, Log, TEXT("void AAR_PrimaryGameMode::StartPlay(), "
-			"Seed of one Director.RandomStream_EnemySelection = %d"), Director.RandomStream_EnemySelection.GetInitialSeed());
+		UE_LOG(LogGameMode, Log, TEXT("void AAR_PrimaryGameMode::StartPlay(), Init Seed: %d of Director: %s"), 
+			Director.RandomStream_EnemySelection.GetInitialSeed(), *Director.DebugDisplayName);
 		
 		if (Director.EnemySpawnTable)
 		{
@@ -93,15 +96,6 @@ void AAR_PrimaryGameMode::Tick(float DeltaSeconds)
 	int32 KeyID = ONSCREENDEBUGKEY_SPAWNDIRECTOR;
 	for (FAR_DirectorData& Director : Directors)
 	{
-		
-#if !UE_BUILD_SHIPPING
-		if (!CVarSpawnEnemy.GetValueOnGameThread())
-		{
-			UE_LOG(LogGameMode, Log, TEXT("AAR_PrimaryGameMode::Tick, EnemySpawn disabled via CVarSpawnEnemy as false!"));
-			break;
-		}
-#endif
-		
 		if (Director.EnemySpawnTable == nullptr)
 		{
 			UE_LOG(LogGameMode, Warning, TEXT("AAR_PrimaryGameMode::Tick, one Director.EnemySpawnTable is nullptr!"));
@@ -111,10 +105,10 @@ void AAR_PrimaryGameMode::Tick(float DeltaSeconds)
 		float CreditPerSecond = Director.CreditGainCurve.GetRichCurveConst()->Eval(TotalElapsedTime);
 		Director.CurrentCredits += CreditPerSecond * DeltaSeconds;
 		
-		FString DebugMsg = FString::Printf(TEXT("void AAR_PrimaryGameMode::Tick, Director with 'KeyID' %d"
-			"\nCurrentCredits:%f\tNextTickTime:%f"), KeyID, Director.CurrentCredits, Director.NextTickTime);
-		GEngine->AddOnScreenDebugMessage(KeyID, PrimaryActorTick.TickInterval, FColor::Orange, DebugMsg);
-		KeyID++;	// Actually you can use Director.RandomStream_EnemySelection.GetInitialSeed() as Debug Key.
+		FString DebugMsg = FString::Printf(TEXT("void AAR_PrimaryGameMode::Tick, Director:%s with KeyID:%d"
+			"\nCurrentCredits:%f\tNextTickTime:%f\n"), *Director.DebugDisplayName, KeyID, Director.CurrentCredits, Director.NextTickTime);
+		GEngine->AddOnScreenDebugMessage(KeyID, PrimaryActorTick.TickInterval, Director.DebugColor, DebugMsg);
+		KeyID++;	// Actually Director.RandomStream_EnemySelection.GetInitialSeed() can be used as Debug 'KeyID'...that would be hard to recognize.
 		
 		if (Director.NextTickTime > TotalElapsedTime) continue;
 		
@@ -128,11 +122,11 @@ void AAR_PrimaryGameMode::Tick(float DeltaSeconds)
 
 bool AAR_PrimaryGameMode::TrySpawnEnemy(FAR_DirectorData& Director)
 {
-	const int32 MaxBotLimit = 5;	// This is hard-coded for 'SpawnEnemy(MinionRanged)'. didn't expose to Editor
+	const int32 MaxEnemiesLimit = CVarGameEnemyLimit.GetValueOnGameThread();
 	UAR_GameInstance* GI = GetGameInstance<UAR_GameInstance>();
-	if (GI->AliveEnemies.Num() >= MaxBotLimit)
+	if (GI->AliveEnemies.Num() >= MaxEnemiesLimit)
 	{
-		UE_LOG(LogGameMode, Log, TEXT("AAR_PrimaryGameMode::TrySpawnEnemy, Reached bot spawn limit at %d"), MaxBotLimit);
+		UE_LOG(LogGameMode, Log, TEXT("AAR_PrimaryGameMode::TrySpawnEnemy, Reached CVarGameEnemyLimit at %d"), MaxEnemiesLimit);
 		return false;
 	}
 	
@@ -184,6 +178,15 @@ void AAR_PrimaryGameMode::SpawnEnemyQueryCompleted(TSharedPtr<FEnvQueryResult> Q
 void AAR_PrimaryGameMode::OnEnemyDataLoaded(const FSoftObjectPath& LoadedObjectPath, UObject* LoadedObject,
 	FVector SpawnLocation, FEnemySpawnData* SelectedEnemy)
 {
+#if !UE_BUILD_SHIPPING
+	if (!CVarGameEnemySpawningEnabled.GetValueOnGameThread())
+	{
+		UE_LOG(LogGameMode, Log, TEXT("AAR_PrimaryGameMode::OnEnemyDataLoaded, "
+								"EnemySpawn disabled via CVarGameEnemySpawningEnabled as false!"));
+		return;
+	}
+#endif
+	
 	FActorSpawnParameters EnemySpawnParams = FActorSpawnParameters();
 	FTransform SpawnTM = FTransform(SpawnLocation);
 	
@@ -200,8 +203,8 @@ void AAR_PrimaryGameMode::OnEnemyDataLoaded(const FSoftObjectPath& LoadedObjectP
 	UGameplayStatics::FinishSpawningActor(NewEnemy, SpawnTM);
 	
 	UE_VLOG_SPHERE(this, LogGameMode, Log, SpawnLocation, 32.0f, FColor::Orange, 
-		TEXT("AAR_PrimaryGameMode::OnEnemyDataLoaded,\nSelectedEnemy;  EnemyClass:%s | SpawnCosts:%s"),
-		*GetNameSafe(EnemyData->EnemyClass), *FString::SanitizeFloat(SelectedEnemy->SpawnCosts));
+		TEXT("AAR_PrimaryGameMode::OnEnemyDataLoaded,\nSelectedEnemy;  EnemyClass:%s | SpawnCosts:%.2f"),
+		*GetNameSafe(EnemyData->EnemyClass), SelectedEnemy->SpawnCosts);
 	
 	// Add Buffs/Debuffs, etc.
 	

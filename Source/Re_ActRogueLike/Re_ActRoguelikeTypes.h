@@ -26,10 +26,10 @@ public:
 	TSoftObjectPtr<UAR_EnemyData> EnemyData;
 	
 	/* Points required by GameMode to spawn this unit.*/
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (ClampMin = 0.0f))
 	float SpawnCosts = 0.0f;
 	
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, meta = (ClampMin = 0.0f))
 	float SpawnWeight = 1.0f;
 	
 };
@@ -61,6 +61,12 @@ public:
 	float TimeBetweenWaves = 6.0f;
 	
 	FRandomStream RandomStream_EnemySelection;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Spawn System")
+	FString DebugDisplayName = TEXT("DirectorNameDefault");
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Spawn System")
+	FColor DebugColor = FColor::White;
 	
 	// Prefix array and binary search optimization for calculating 'SelectedRow' in AAR_PrimaryGameMode::TrySpawnEnemy
 	

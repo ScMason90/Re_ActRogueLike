@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Re_ActRogueLike/Core/AR_GameModeBase.h"
+#include "Re_ActRogueLike/GameModes/AR_GameModeBase.h"
 #include "AR_PrimaryGameMode.generated.h"
 
 
@@ -39,7 +39,7 @@ public:
 
 protected:
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Spawn System")
+	UPROPERTY(EditDefaultsOnly, Category = "Spawn System", meta = (TitleProperty = "DebugDisplayName"))
 	TArray<FAR_DirectorData> Directors;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Spawn System")
