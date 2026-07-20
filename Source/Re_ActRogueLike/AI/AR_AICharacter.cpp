@@ -8,6 +8,7 @@
 #include "BehaviorTree/BehaviorTreeComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Perception/AISense_Damage.h"
 #include "Re_ActRogueLike/Re_ActRoguelikeTypes.h"
 #include "Re_ActRogueLike/SharedGameplayTags.h"
 #include "Re_ActRogueLike/ActionSystem/AR_ActionSystemComponent.h"
@@ -112,6 +113,12 @@ float AAR_AICharacter::TakeDamage(float DamageAmount, struct FDamageEvent const&
 {
 	float ActualDamage =  Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	ActualDamage *= UAR_GameplayStatics::GetDmgModifier();	// Apply 'DamageMultiplier'
+	
+	if (IsValid(EventInstigator))
+	{
+		UAISense_Damage::ReportDamageEvent(this, this, EventInstigator->GetPawn(),
+			FMath::Abs(ActualDamage), EventInstigator->GetPawn()->GetActorLocation(), GetActorLocation());
+	}
 	
 	// Implement GameplayTag for BP class to match. e.g. Ignore damage if DamageCauser is friendly
 	// Target the 'InstigatorActor' who damaged self.
