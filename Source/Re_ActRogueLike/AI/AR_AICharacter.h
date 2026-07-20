@@ -76,7 +76,7 @@ public:
 
 protected:
 	
-	// Try adding 'AI Perception' ue5 module? It's a component
+	// 'PerceptionComponent' created in AR_AIController class
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<UAR_ActionSystemComponent> ActionSystemComponent;

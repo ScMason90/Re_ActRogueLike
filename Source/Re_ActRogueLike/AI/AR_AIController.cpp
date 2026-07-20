@@ -7,6 +7,7 @@
 #include "AR_AICharacter.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Perception/AIPerceptionComponent.h"
 #include "Re_ActRogueLike/Re_ActRoguelikeTypes.h"
 #include "Re_ActRogueLike/SharedGameplayTags.h"
 #include "Re_ActRogueLike/ActionSystem/AR_ActionSystemComponent.h"
@@ -19,7 +20,7 @@
 // Sets default values
 AAR_AIController::AAR_AIController()
 {
-	
+	PerceptionComp = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("PerceptionComp"));
 }
 
 // Called when the game starts or when spawned
@@ -31,15 +32,15 @@ void AAR_AIController::BeginPlay()
 	
 	RunBehaviorTree(BehaviorTree);
 	
-	FName TargetActor = NAME_TargetActor, MoveToLocation = FName("MoveToLocation");
-	
-	// Temporarily hard-coded only for local single play and early learning. 
-	LocalPlayerRef = UGameplayStatics::GetPlayerPawn(this, 0);
-	// if (!LocalPlayerRef.IsValid()) return;	// Do not trigger fatal-assert if you want run DebugGame after 'LocalPlayer' dead
-	check(LocalPlayerRef.Get());	// This's wrong behavior when introduce Multiplay / Server network replication.
-	
-	GetBlackboardComponent()->SetValueAsVector(MoveToLocation, LocalPlayerRef->GetActorLocation());
-	GetBlackboardComponent()->SetValueAsObject(TargetActor, LocalPlayerRef.Get());
+	// FName TargetActor = NAME_TargetActor, MoveToLocation = FName("MoveToLocation");
+	//
+	// // Temporarily hard-coded only for local single play and early learning. 
+	// LocalPlayerRef = UGameplayStatics::GetPlayerPawn(this, 0);
+	// // if (!LocalPlayerRef.IsValid()) return;	// Do not trigger fatal-assert if you want run DebugGame after 'LocalPlayer' dead
+	// check(LocalPlayerRef.Get());	// This's wrong behavior when introduce Multiplay / Server network replication.
+	//
+	// GetBlackboardComponent()->SetValueAsVector(MoveToLocation, LocalPlayerRef->GetActorLocation());
+	// GetBlackboardComponent()->SetValueAsObject(TargetActor, LocalPlayerRef.Get());
 }
 
 void AAR_AIController::SetTargetActorBB(AActor* NewTarget)

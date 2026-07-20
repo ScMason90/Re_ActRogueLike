@@ -19,7 +19,7 @@
 
 
 
-static TAutoConsoleVariable<bool> CVarGameEnemySpawningEnabled(TEXT("game.EnemySpawningEnabled"), true, 
+static TAutoConsoleVariable<bool> CVarGameEnemySpawningEnabled(TEXT("game.EnemySpawningEnabled"), false, 
 	TEXT("Disabling enemy spawning if debugging on purposes."), ECVF_Default);
 
 static TAutoConsoleVariable<int32> CVarGameEnemyLimit(TEXT("game.EnemyLimit"), 5, 

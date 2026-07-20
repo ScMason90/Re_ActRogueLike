@@ -31,13 +31,15 @@ protected:
 public:
 	
 	/** Set a new 'TargetActor' BlackBoard value
-	 * @param NewTarget New Actor with a 'ASComp'  that should be a 'APawn' derived actor. 
-	 */
+	 * @param NewTarget New Actor with a 'ASComp'  that should be a 'APawn' derived actor. */
 	void SetTargetActorBB(AActor* NewTarget);
 
 protected:
 	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "AI")
+	UPROPERTY(VisibleAnywhere, Category = "Components")
+	TObjectPtr<UAIPerceptionComponent> PerceptionComp;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "AI")
 	TObjectPtr<UBehaviorTree> BehaviorTree;
 	
 	TWeakObjectPtr<APawn> LocalPlayerRef = nullptr;
