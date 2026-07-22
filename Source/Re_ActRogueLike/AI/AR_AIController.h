@@ -23,6 +23,8 @@ public:
 	// Sets default values for this actor's properties
 	AAR_AIController();
 	
+	virtual void PreRegisterAllComponents() override;
+	
 protected:
 	
 	// Called when the game starts or when spawned

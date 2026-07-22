@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GenericTeamAgentInterface.h"
 #include "GameFramework/Character.h"
 #include "AR_PlayerCharacter.generated.h"
 
@@ -19,7 +20,7 @@ class USpringArmComponent;
  * 
  */
 UCLASS()
-class RE_ACTROGUELIKE_API AAR_PlayerCharacter : public ACharacter
+class RE_ACTROGUELIKE_API AAR_PlayerCharacter : public ACharacter, public IGenericTeamAgentInterface
 {
 	GENERATED_BODY()
 	
@@ -96,6 +97,8 @@ public:
 	virtual void BeginPlay() override;
 	
 	virtual void PostInitializeComponents() override;
+	
+	virtual FGenericTeamId GetGenericTeamId() const override;
 	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

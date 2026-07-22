@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GenericTeamAgentInterface.h"
 #include "GameFramework/Character.h"
 #include "AR_AICharacter.generated.h"
 
@@ -19,7 +20,7 @@ class UMaterialInstanceDynamic;
  * It won't trigger at all now. I think it might be because I cleared the redundant header files including the fixes? - 2026.7.7 16:29
  */
 UCLASS(Abstract)
-class RE_ACTROGUELIKE_API AAR_AICharacter : public ACharacter
+class RE_ACTROGUELIKE_API AAR_AICharacter : public ACharacter, public IGenericTeamAgentInterface
 {
 	GENERATED_BODY()
 
@@ -27,6 +28,8 @@ public:
 	
 	// Sets default values for this character's properties
 	AAR_AICharacter();
+	
+	virtual FGenericTeamId GetGenericTeamId() const override;
 	
 	virtual void PostInitializeComponents() override;
 	

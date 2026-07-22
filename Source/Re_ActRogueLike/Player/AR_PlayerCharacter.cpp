@@ -62,6 +62,11 @@ void AAR_PlayerCharacter::PostInitializeComponents()
 	
 }
 
+FGenericTeamId AAR_PlayerCharacter::GetGenericTeamId() const
+{
+	return FGenericTeamId(TEAM_ID_PLAYERS);
+}
+
 // Called every frame
 void AAR_PlayerCharacter::Tick(float DeltaTime)
 {

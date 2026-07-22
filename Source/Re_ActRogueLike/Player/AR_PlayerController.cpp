@@ -5,6 +5,7 @@
 
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "Re_ActRogueLike/Re_ActRoguelikeTypes.h"
 #include "Re_ActRogueLike/Player/AR_InteractionComponent.h"
 
 AAR_PlayerController::AAR_PlayerController()
@@ -34,6 +35,11 @@ void AAR_PlayerController::SetupInputComponent()
 	UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(InputComponent);
 	
 	EnhancedInputComponent->BindAction(IA_Interact, ETriggerEvent::Triggered, this, &AAR_PlayerController::StartInteract);
+}
+
+FGenericTeamId AAR_PlayerController::GetGenericTeamId() const
+{
+	return FGenericTeamId(TEAM_ID_PLAYERS);
 }
 
 void AAR_PlayerController::StartInteract()

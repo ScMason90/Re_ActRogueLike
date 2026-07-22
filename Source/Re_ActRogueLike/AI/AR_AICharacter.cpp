@@ -30,6 +30,16 @@ AAR_AICharacter::AAR_AICharacter()
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 }
 
+FGenericTeamId AAR_AICharacter::GetGenericTeamId() const
+{
+	if (AAIController* AIC = GetController<AAIController>())
+	{
+		return AIC->GetGenericTeamId();
+	}
+	
+	return FGenericTeamId::NoTeam;
+}
+
 void AAR_AICharacter::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
@@ -114,7 +124,8 @@ float AAR_AICharacter::TakeDamage(float DamageAmount, struct FDamageEvent const&
 	float ActualDamage =  Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	ActualDamage *= UAR_GameplayStatics::GetDmgModifier();	// Apply 'DamageMultiplier'
 	
-	if (IsValid(EventInstigator))
+	const ETeamAttitude::Type Attitude = GetTeamAttitudeTowards(*EventInstigator);
+	if (IsValid(EventInstigator) && Attitude != ETeamAttitude::Friendly)
 	{
 		UAISense_Damage::ReportDamageEvent(this, this, EventInstigator->GetPawn(),
 			FMath::Abs(ActualDamage), EventInstigator->GetPawn()->GetActorLocation(), GetActorLocation());

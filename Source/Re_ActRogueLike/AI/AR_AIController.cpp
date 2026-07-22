@@ -23,6 +23,14 @@ AAR_AIController::AAR_AIController()
 	PerceptionComp = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("PerceptionComp"));
 }
 
+void AAR_AIController::PreRegisterAllComponents()
+{
+	Super::PreRegisterAllComponents();
+	
+	// Needs to be super early before pawn is registered or perception system has the wrong teamID
+	SetGenericTeamId(FGenericTeamId(TEAM_ID_BOTS));
+}
+
 // Called when the game starts or when spawned
 void AAR_AIController::BeginPlay()
 {
