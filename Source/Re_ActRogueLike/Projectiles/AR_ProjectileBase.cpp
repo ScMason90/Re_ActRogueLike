@@ -51,16 +51,16 @@ void AAR_ProjectileBase::PostInitializeComponents()
 void AAR_ProjectileBase::OnProjBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	HandleImpact(OtherActor, SweepResult);
+	HandleImpact(OtherComp, OtherActor, SweepResult);
 }
 
 void AAR_ProjectileBase::OnProjHit(UPrimitiveComponent* ComponentBeenHit, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	HandleImpact(OtherActor, Hit);
+	HandleImpact(OtherComp, OtherActor, Hit);
 }
 
-void AAR_ProjectileBase::HandleImpact(AActor* OtherActor, const FHitResult& Hit)
+void AAR_ProjectileBase::HandleImpact(UPrimitiveComponent* OtherComp, AActor* OtherActor, const FHitResult& Hit)
 {
 	if (!OtherActor || OtherActor == InstigatorActorRef || bExploded)
 		return;
@@ -69,12 +69,12 @@ void AAR_ProjectileBase::HandleImpact(AActor* OtherActor, const FHitResult& Hit)
 	if (LoopedNiagaraComponent)LoopedNiagaraComponent->Deactivate();
 
 	PlayExplosionFXs(Hit);
-	OnImpact(OtherActor, Hit);
+	OnImpact(OtherComp, OtherActor, Hit);
 
 	Destroy();
 }
 
-void AAR_ProjectileBase::OnImpact(AActor* OtherActor, const FHitResult& Hit)
+void AAR_ProjectileBase::OnImpact(UPrimitiveComponent* OtherComp, AActor* OtherActor, const FHitResult& Hit)
 {
 	// The base class does no harm, while the subclass overrides
 }

@@ -32,6 +32,11 @@ protected:
 	float DamageAmount;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Damage")
+	float ImpulseIntensity = 2e5f;
+
+	/** @deprecated idk, but TomLooman deleted this class member variable in 
+	 * UE5.6-CourseProject commit (July 21, 2026 at 10:49 PM) Added HandleKilled & Ragdolling for monsters - 2026.7.22 16:23 */
+	UPROPERTY(EditDefaultsOnly, Category = "Damage")
 	TSubclassOf<UDamageType> DmgTypeClass;
 	
 	/* ----- Action System Relative ----- */
@@ -41,6 +46,6 @@ protected:
 	TSubclassOf<UAR_Effect> EffectOnHit;	
 	
 	
-	virtual void OnImpact(AActor* OtherActor, const FHitResult& Hit) override;
+	virtual void OnImpact(UPrimitiveComponent* OtherComp, AActor* OtherActor, const FHitResult& Hit) override;
 	
 };

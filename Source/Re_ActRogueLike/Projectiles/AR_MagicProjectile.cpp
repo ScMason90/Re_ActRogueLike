@@ -31,13 +31,21 @@ void AAR_MagicProjectile::LifeSpanExpired()
 	Super::LifeSpanExpired();
 }
 
-void AAR_MagicProjectile::OnImpact(AActor* OtherActor, const FHitResult& Hit)
+void AAR_MagicProjectile::OnImpact(UPrimitiveComponent* OtherComp, AActor* OtherActor, const FHitResult& Hit)
 {
-	Super::OnImpact(OtherActor, Hit);
+	Super::OnImpact(OtherComp, OtherActor, Hit);
 	
-	FVector HitFromDirection = GetActorRotation().Vector();	// Well we now want to pass the actual DamageCauser, the owner of this.
+	FVector HitFromDirection = GetActorRotation().Vector();	
+	// FVector TravelDirection = (Hit.TraceEnd - Hit.TraceStart).GetSafeNormal();
+	
+	// Well we now want to pass the actual DamageCauser, the owner of this.
 	UGameplayStatics::ApplyPointDamage(OtherActor, DamageAmount, HitFromDirection, Hit, 
 		InstigatorActorRef->GetInstigatorController(), InstigatorActorRef, DmgTypeClass);
+	
+	if (OtherComp->IsSimulatingPhysics(Hit.BoneName))
+	{
+		OtherComp->AddImpulseAtLocation(HitFromDirection * ImpulseIntensity, Hit.Location, Hit.BoneName);
+	}
 	
 	if (EffectOnHit)
 	{

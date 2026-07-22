@@ -105,9 +105,9 @@ protected:
 	void PlayExplosionFXs(const FHitResult& Hit);
 	
 	// Unified entry point: Both Hit and Overlap will call it
-	void HandleImpact(AActor* OtherActor, const FHitResult& Hit);
+	void HandleImpact(UPrimitiveComponent* OtherComp, AActor* OtherActor, const FHitResult& Hit);
 
 	// Subclass extension point: The damage logic is written here
-	virtual void OnImpact(AActor* OtherActor, const FHitResult& Hit);
+	virtual void OnImpact(UPrimitiveComponent* OtherComp, AActor* OtherActor, const FHitResult& Hit);
 	
 };

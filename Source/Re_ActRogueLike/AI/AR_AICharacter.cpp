@@ -20,6 +20,7 @@
 // Temporarily headers enables Intelligent Completion & Highlighting functions of JetbrainsRider IDE to operate, thereby enhancing development efficiency
 
 
+
 // Sets default values
 AAR_AICharacter::AAR_AICharacter()
 {
@@ -51,7 +52,6 @@ void AAR_AICharacter::PostInitializeComponents()
 	UAR_GameplayStatics_BIND_ATTR_MULTICAST(
 		this, &AAR_AICharacter::OnHealthChanged, ActionSystemComponent, SharedGameplayTags::Attribute_Health);
 	
-	// Set AutoPossessAI to 'Disabled' or 'Spawned' if you want debug 'MinionRanged' through place it in level and dont want it do anything else
 	ActionSystemComponent->OnGameplayTagCountUpdated.AddDynamic(this, &ThisClass::AAR_AICharacter::OnGameplayTagCountUpdated);
 	
 	// When debugging or testing BehaviorTree, ensure AutoPossessAI corresponding your way of 'run' AIChar BP class.
@@ -149,10 +149,10 @@ void AAR_AICharacter::OnHealthChanged(FGameplayTag HealthAttributeTag, float New
 {
 	if (bAIPawnDying) return;
 	
-	// Only execute death logic/appearance immediately when dead (on performance optimization purpose) 
+	// Death checkpoint
 	if (const bool bIsDying = UAR_GameplayStatics::IsDying(ActionSystemComponent))
 	{
-		bAIPawnDying = bIsDying;	// Marked as already dead
+		bAIPawnDying = bIsDying;
 		HandleDeath();
 		return;		// Remove this line, and migrate this snippet under 'HandleDamaged()' if you want both.
 	}
@@ -166,7 +166,7 @@ void AAR_AICharacter::OnHealthChanged(FGameplayTag HealthAttributeTag, float New
 			if (ActiveHealthBar)
 			{
 				ActiveHealthBar->AttachedActor = this;
-				ActiveHealthBar->AddToViewport();	// So, we could do some UMG logic in CPP rather in BP?
+				ActiveHealthBar->AddToViewport();	// More UMG logic within cpp To be continued...
 			}
 		}
 		
@@ -180,8 +180,8 @@ void AAR_AICharacter::OnHealthChanged(FGameplayTag HealthAttributeTag, float New
 			GetMesh()->SetOverlayMaterialMaxDrawDistance(1);
 		}, 1.0f/* Overlay Flash Duration*/, false);
 		
-		// GEngine->AddOnScreenDebugMessage(01, 3, FColor::Emerald, FString::Printf(TEXT("AAR_AICharacter::OnHealthChanged(), Current health: %.2f"), ActionSystemComponent->GetAttributeValue(SharedGameplayTags::Attribute_Health)));
 	}
+	
 }
 
 void AAR_AICharacter::HandleDeath()
@@ -192,16 +192,15 @@ void AAR_AICharacter::HandleDeath()
 	// Remove multicast attribute delegate.
 	UAR_GameplayStatics_UNBIND_ATTR_MULTICAST(ActionSystemComponent, SharedGameplayTags::Attribute_Health, DelHandle_OnHealthChanged);
 	
+	// If you need to "update the number of enemies" immediately...Defensive programming but repeats in EndPlay() call
+	// UAR_GameInstance* GI = GetGameInstance<UAR_GameInstance>();
+	// GI->AliveEnemies.RemoveSingle(this);
+	
 	// Disable AI Behavior Tree
-	if (AAR_AIController* AIController = Cast<AAR_AIController>(GetController()))
-	{
-		if (UBehaviorTreeComponent* AI_BT = AIController->FindComponentByClass<UBehaviorTreeComponent>())
-		{
-			AI_BT->StopTree(EBTStopMode::Safe);
-		}
-		AIController->StopMovement();
-		AIController->UnPossess();	// Optional?
-	}
+	AAR_AIController* AIController = GetController<AAR_AIController>();
+	check(AIController->GetBrainComponent());	// Usually won't trigger this line?
+	AIController->GetBrainComponent()->StopLogic("Dead");
+	
 	USkeletalMeshComponent* MeshComp = GetMesh();
 	UCapsuleComponent* CapsuleComp = GetCapsuleComponent();
 	
@@ -209,7 +208,7 @@ void AAR_AICharacter::HandleDeath()
 	CapsuleComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	
 	// Disable Movement
-	GetMovementComponent()->StopActiveMovement();
+	GetMovementComponent()->StopActiveMovement();	// GetCharacterMovement()->DisableMovement();
 		
 	// Play a noob Death Anim
 	PlayAnimMontage(DeathMontage);
@@ -219,6 +218,7 @@ void AAR_AICharacter::HandleDeath()
 	{
 		if (!IsValid(this) || IsPendingKillPending()) return;
 		
+		MeshComp->bPauseAnims = true;
 		// Optional - Play ragdoll
 		MeshComp->SetAllBodiesSimulatePhysics(true);
 		MeshComp->SetCollisionProfileName("Ragdoll");	
