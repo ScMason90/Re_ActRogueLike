@@ -253,3 +253,8 @@ void AAR_PlayerCharacter::HealSelf(float Amount /* = 100.0f */)
 {
 	ActionSystemComponent->ApplyAttributeChanged(SharedGameplayTags::Attribute_Health, Amount, Base);
 }
+
+void AAR_PlayerCharacter::GetCredits(float Amount/* = 1000.0f */)
+{
+	ActionSystemComponent->ApplyAttributeChanged(SharedGameplayTags::Attribute_Credit, Amount, Base);
+}

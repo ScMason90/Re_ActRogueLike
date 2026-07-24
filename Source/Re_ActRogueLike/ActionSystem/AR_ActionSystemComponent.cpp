@@ -72,8 +72,7 @@ void UAR_ActionSystemComponent::BeginPlay()
 	}
 }
 
-void UAR_ActionSystemComponent::ApplyAttributeChanged(FGameplayTag AttributeTag, float Delta,
-                                                      EAttributeModifyType ModifyType)
+void UAR_ActionSystemComponent::ApplyAttributeChanged(FGameplayTag AttributeTag, float Delta, EAttributeModifyType ModifyType)
 {
 	FAR_Attribute* FoundAttribute = GetAttribute(AttributeTag);
 	check(FoundAttribute);

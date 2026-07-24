@@ -28,22 +28,20 @@ void AAR_HealthPotion::OnActorOverlapped(UPrimitiveComponent* OverlappedComponen
 	
 	UAR_ActionSystemComponent* ASComp = OtherActor->FindComponentByClass<UAR_ActionSystemComponent>();
 	
-	AAR_PlayerState* PS = Cast<APawn>(OtherActor)->GetController()->GetPlayerState<AAR_PlayerState>();
-	if (!PS) return;
-	
 	// Skip Health Potion pickup if already full health or lacking of required credits
 	if (IsValid(ASComp) && !UAR_GameplayStatics::IsFullHealth(ASComp))
-	{	// Should we open to AI Pawn for pickup this?
-		if (PS->RemoveCredits(CreditCost))	// -> Integrating within legacy CoinSystem(CreditPickup)
+	{
+		float OwnedCredits = ASComp->GetAttributeValue(SharedGameplayTags::Attribute_Credit);	// Note that 'MinionRanged' doesn't have Attribute.Credit
+		if (OwnedCredits >= CreditCost)	
 		{
 			// TODO: Considering add heal up material flash VFX...or SFX for both damaged and healed?
 			ASComp->ApplyAttributeChanged(SharedGameplayTags::Attribute_Health, HealingAmount, Base);
-		
-			// Play(valid context and location) before destroying actor
+			ASComp->ApplyAttributeChanged(SharedGameplayTags::Attribute_Credit, -CreditCost, Base);
+			
+			// Pickup success feedback
 			UGameplayStatics::PlaySoundAtLocation(
 				this, PickupSound, GetActorLocation(), FRotator::ZeroRotator);
-		
-			// Remove Actor from world, eventually memory will be freed (garbage collection)
+			
 			Destroy();
 		} else 
 		{
@@ -51,7 +49,7 @@ void AAR_HealthPotion::OnActorOverlapped(UPrimitiveComponent* OverlappedComponen
 			GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Magenta, 
 				TEXT("AAR_HealthPotion::OnActorOverlapped, Lack of Credit to pickup"));
 		
-			// Play(valid context and location)
+			// Pickup failed feedback
 			UGameplayStatics::PlaySoundAtLocation(
 				this, PickupFailedSound, GetActorLocation(), FRotator::ZeroRotator);
 		

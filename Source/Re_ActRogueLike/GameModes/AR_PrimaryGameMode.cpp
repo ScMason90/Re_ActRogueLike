@@ -33,8 +33,6 @@ AAR_PrimaryGameMode::AAR_PrimaryGameMode()
 	
 	PlayerStateClass = AAR_PlayerState::StaticClass();
 	
-	CreditsPerKill = 20;
-	
 	DesiredPickupCount = 10;
 	RequiredPickupDistance = 1000;
 	
@@ -77,6 +75,7 @@ void AAR_PrimaryGameMode::StartPlay()
 		}
 	}
 	
+#if 0
 	// Make sure we have assigned at least one pickup class - legacy credit system (spawn coins)
 	if (PickupClasses.Num() > 0)
 	{
@@ -85,6 +84,8 @@ void AAR_PrimaryGameMode::StartPlay()
 		if (ensure(QueryInstance)) 
 			QueryInstance->GetOnQueryFinishedEvent().AddDynamic(this, &AAR_PrimaryGameMode::OnPickupSpawnQueryFinished);
 	}
+#endif
+	
 }
 
 void AAR_PrimaryGameMode::Tick(float DeltaSeconds)
@@ -305,38 +306,5 @@ void AAR_PrimaryGameMode::KillAllOfClass(TSubclassOf<AActor> ClassToKill)
 		*ClassToKill->GetName(), KilledCount, SkippedCount);
 }
 
-// void AAR_PrimaryGameMode::RespawnPlayerElapsed(AController* Controller)
-// {
-// 	if (ensure(Controller))
-// 	{
-// 		Controller->UnPossess();
-// 		RestartPlayer(Controller);
-// 	}
-// }
-//
-// void AAR_PrimaryGameMode::OnActorKilled(AActor* VictimActor, AActor* Killer)
-// {
-// 	// Deprecated...
-// 	
-// 	// Respawn Player after delay
-// 	AAR_PlayerCharacter* Player = Cast<AAR_PlayerCharacter>(VictimActor);
-// 	if (Player)
-// 	{
-// 		FTimerHandle TimerHandle_RespawnDelay;
-// 		
-// 		FTimerDelegate Delegate;
-// 		Delegate.BindUFunction(this, "RespawnPlayerElapsed", Player->GetController());
-// 		
-// 		float RespawnDelay = 5.0f;	// This depends on how long it will take for player character executing death logic and appearance
-// 		GetWorldTimerManager().SetTimer(TimerHandle_RespawnDelay, Delegate, RespawnDelay, false);
-// 		
-// 		return;
-// 	}
-// 	
-// 	// Give Credits for Kill
-// 	AAR_PlayerState* PS = nullptr;
-// 	Player = Cast<AAR_PlayerCharacter>(Killer);
-// 	// Do not 'UE_LOG' out here or access 'ActorName(Safe)OrLabel' here.It's invalid
-// 	if (Player) PS = Cast<AAR_PlayerState>(Player->GetPlayerState());
-// 	if (PS) PS->AddCredits(CreditsPerKill);
-// }
+// Player respawn... PlayerController
+// Reward credits when player killed an enemy... GameInstance

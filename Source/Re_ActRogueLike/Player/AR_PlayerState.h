@@ -7,12 +7,9 @@
 #include "AR_PlayerState.generated.h"
 
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnCreditsChanged, AAR_PlayerState*, PlayerState, int32, NewCredits, int32, Delta);
-
-
-/** Legacy Class
- * This hole CreditSystem would be refactored in the future.
- * By then, most code would be deprecated. Might need clean up.
+/** This class used to be a part of Legacy Credit System that i followed along with TomLooman's UE4-Tutorial
+ * Now I've already Implemented 'Attribute.Credit' for PlayerCharacter as a shift of Legacy Credit System.
+ * So, this AR_PlayerState class would be empty and i decide to keep it if i will need it. 
  */
 UCLASS()
 class RE_ACTROGUELIKE_API AAR_PlayerState : public APlayerState
@@ -20,21 +17,7 @@ class RE_ACTROGUELIKE_API AAR_PlayerState : public APlayerState
 	GENERATED_BODY()
 	
 public:
-	
-	UPROPERTY(EditDefaultsOnly, Category = "Credits")
-	int32 Credits;
-	
-	UFUNCTION(BlueprintCallable, Category = "Credits")
-	int32 GetCredits() const;
-	
-	UFUNCTION(BlueprintCallable, Category = "Credits")
-	void AddCredits(int32 Delta);
-	
-	UFUNCTION(BlueprintCallable, Category = "Credits")
-	bool RemoveCredits(int32 Delta);
-	
-	UPROPERTY(BlueprintAssignable, Category = "Events")
-	FOnCreditsChanged OnCreditsChanged;
+
 	
 protected:
 	

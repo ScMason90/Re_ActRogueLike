@@ -126,6 +126,11 @@ public:
 	UPROPERTY(EditAnywhere, Category = Resources)
 	FAR_Attribute Rage;
 	
+	UPROPERTY(EditAnywhere, Category = Resources)
+	FAR_Attribute Credit;
+	
+	virtual void PostInitProperties() override;
+	
 };
 
 /**

@@ -8,6 +8,8 @@
 #include "Components/InstancedStaticMeshComponent.h"
 #include "ProfilingDebugging/CountersTrace.h"
 #include "Re_ActRogueLike/Re_ActRogueLike.h"
+#include "Re_ActRogueLike/SharedGameplayTags.h"
+#include "Re_ActRogueLike/ActionSystem/AR_ActionSystemComponent.h"
 #include "Re_ActRogueLike/Core/AR_DeveloperSettings.h"
 #include "Re_ActRogueLike/Player/AR_PlayerCharacter.h"
 
@@ -113,11 +115,13 @@ void UAR_CoinPickupSubsystem::Tick(float DeltaTime)
 	
 	UWorld* World = GetWorld();
 	
-	// This is ambiguous when multiplay/network(players).
 	FVector PlayerLocation = FVector::ZeroVector;
-	for (AAR_PlayerCharacter* PlayerCharacter : TActorRange<AAR_PlayerCharacter>(World))
+	TWeakObjectPtr<UAR_ActionSystemComponent> LocalPlayerASComp = nullptr;
+	// This is ambiguous when multiplay/network(players).
+	for (AAR_PlayerCharacter* PlayerCharacterIterRange : TActorRange<AAR_PlayerCharacter>(World))
 	{
-		PlayerLocation = PlayerCharacter->GetActorLocation();
+		PlayerLocation = PlayerCharacterIterRange->GetActorLocation();
+		LocalPlayerASComp = PlayerCharacterIterRange->GetASComp();
 	}
 	
 	const float PickupRadius = 200.0f;
@@ -150,16 +154,20 @@ void UAR_CoinPickupSubsystem::Tick(float DeltaTime)
 	if (TotalCoinsToGrant > 0)
 	{
 		PlayPickupSound();
+		LocalPlayerASComp.Get()->ApplyAttributeChanged(SharedGameplayTags::Attribute_Credit, TotalCoinsToGrant, Base);
 	}
 	
 #if 0
-	// TODO: grant coins to player(s)
+	// TODO: Multicast RPC(RemoteProcedureCall) and sync 'Spawn/Remove of CoinISM' on server. Server grant players coins by modifying the 'Attribute.Credit' of their ASComp
+	
+	// Log Who picked and its granted amount if Implement Network Replication on some server?
 	UE_CLOG(TotalCoinsToGrant > 0, LogGame, Log, 
-		TEXT("UAR_CoinPickupSubsystem::Tick, Picked up Coin Amount = %d"), TotalCoinsToGrant);
+		TEXT("UAR_CoinPickupSubsystem::Tick, Local Player picked up Coin Amount = %d"), TotalCoinsToGrant);
 	
 	for (int i = 0; i < CoinLocations.Num(); ++i)
 	{
 		DrawDebugPoint(World, CoinLocations[i], 8.0f, FColor::White);
 	}
 #endif
+	
 }

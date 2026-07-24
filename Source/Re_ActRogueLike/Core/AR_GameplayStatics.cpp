@@ -32,7 +32,7 @@ bool UAR_GameplayStatics::IsDying(UAR_ActionSystemComponent* ASComp)
 	
 	float HealthValue = ASComp->GetAttributeValue(SharedGameplayTags::Attribute_Health);
 	
-	return FMath::IsNearlyZero(HealthValue) /*|| HealthValue <= KINDA_SMALL_NUMBER*/;
+	return FMath::IsNearlyZero(HealthValue) /*|| HealthValue <= 0.0f*/;
 }
 
 bool UAR_GameplayStatics::IsActorAlive(AActor* ActorToCheck)

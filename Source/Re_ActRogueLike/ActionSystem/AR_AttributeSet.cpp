@@ -71,6 +71,18 @@ UAR_PlayerAttributeSet::UAR_PlayerAttributeSet()
 	
 }
 
+void UAR_PlayerAttributeSet::PostInitProperties()
+{
+	Super::PostInitProperties();
+	
+	if (Credit.Base < 0.0f)
+	{
+		Credit.Modifier += Credit.Base;	// Transfer liabilities to 'Modifier'
+		Credit.Base = 0.0f;	// Keep Base non-negative
+	}
+	
+}
+
 // class UAR_EnemyAttributeSet : public UAR_PawnAttributeSet
 // ---------------------------------------------------------
 

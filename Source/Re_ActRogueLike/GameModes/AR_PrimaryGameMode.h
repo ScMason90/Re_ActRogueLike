@@ -51,18 +51,12 @@ protected:
 	
 	bool TrySpawnEnemy(FAR_DirectorData& Director);
 
-	/* ------- Legacy ------- */
 
-	UPROPERTY(EditDefaultsOnly, Category = "Legacy Spawn System | Enemy")
-	TObjectPtr<UCurveFloat> DifficultyCurve;
-	
-	UFUNCTION()
+	/** @deprecated All legacy CreditSystem relative code is now deprecated. Please clean up or restore to keep some. */
+	UFUNCTION()	
 	void OnPickupSpawnQueryFinished(UEnvQueryInstanceBlueprintWrapper* QueryInstance, EEnvQueryStatus::Type QueryStatus);
 	
 public:
-	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "AR Player State Relative")
-	int32 CreditsPerKill;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Legacy Spawn System | Pickup")
 	TObjectPtr<UEnvQuery> PickupSpawnQuery;
@@ -76,8 +70,7 @@ public:
 	float RequiredPickupDistance;
 	
 	/** Amount of pickups to spawn during match start 
-	 * Please note that this amount should be larger than actual 'QueryResultLocations' amount of EQS.
-	 */
+	 * Please note that this amount should be larger than actual 'QueryResultLocations' amount of EQS. */
 	UPROPERTY(EditDefaultsOnly, Category = "Legacy Spawn System | Pickup")
 	int32 DesiredPickupCount;
 	

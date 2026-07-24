@@ -9,12 +9,8 @@
 
 class UAR_ActionSystemComponent;
 
-/** @bug : Ambiguous and unclear one 
- * During the recent PIE tests (lasting at least one minute), there were 3 to 10 seconds of lag in some cases where the cause was still unclear. However, the editor itself did not crash, and the game continued to 
- * run as usual after the lag. I guess the reason might come from the ActionSystem... - 2026.6.15 16:34. 
- * It's 'SpawnBots' in AR_GameMode class. - 2026.6.20 19:10
- * It has been solved in recent new 'SpawnEnemy' framework in 'AAR_PrimaryGameMode' class.
- * Check commits during 2026.6.22-23 for more details. - 2026.6.25 12:42
+/** 
+ * 
  */
 UCLASS(Blueprintable, Abstract)
 class RE_ACTROGUELIKE_API UAR_Action : public UObject

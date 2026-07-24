@@ -127,12 +127,21 @@ protected:
 
 public:
 	
+	// Get the ActionSystemComponent of an AR_PlayerCharacter class derived instance
+	UAR_ActionSystemComponent* GetASComp() const {return ActionSystemComponent;}
+	
 	UFUNCTION()
 	void StartAction(const FInputActionInstance& Instance, FGameplayTag InActionName);
 	UFUNCTION()
 	void StopAction(const FInputActionInstance& Instance, FGameplayTag InActionName);
 	
-	UFUNCTION(Exec)
+	
+	/* ------- 'sv_cheat 1' ------- */
+	
+	UFUNCTION(Exec, Category = ConsoleExecutionCheat)
 	void HealSelf(float Amount = 100.0f);
+	
+	UFUNCTION(Exec, Category = ConsoleExecutionCheat)
+	void GetCredits(float Amount = 1000.0f);
 	
 };

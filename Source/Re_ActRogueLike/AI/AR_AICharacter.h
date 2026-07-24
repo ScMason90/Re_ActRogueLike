@@ -18,6 +18,7 @@ class UMaterialInstanceDynamic;
 /** Run in DebugMode with Rider.Then any operation to instances BP asset derived from this class will get warning of constructing variables in AAR_AICharacter::AAR_AICharacter(). - 2026.6.23 
  * This case is still ambiguous and unclear. It happens from time to time.However I didn't trigger this today. It's an 'unstable' bug? - 2026.6.27 20:02
  * It won't trigger at all now. I think it might be because I cleared the redundant header files including the fixes? - 2026.7.7 16:29
+ * Since that we asynchronously RunEQS then spawn 'MinionRanged', I think this bug is no longer exist. 
  */
 UCLASS(Abstract)
 class RE_ACTROGUELIKE_API AAR_AICharacter : public ACharacter, public IGenericTeamAgentInterface

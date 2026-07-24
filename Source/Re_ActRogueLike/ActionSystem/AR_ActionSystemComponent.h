@@ -98,10 +98,10 @@ public:
 	
 	FOnAttributeChanged& GetAttributeListener(FGameplayTag AttributeTag);
 	
-	UFUNCTION(BlueprintCallable, DisplayName = "Add Attribute Listener", meta = (Keywords = "events,delegate"))
+	UFUNCTION(BlueprintCallable, DisplayName = "Add Dynamic Attribute Listener", meta = (Keywords = "events,delegate"))
 	void AddDynamicAttributeListener(FOnAttributeDynamicChanged Event, FGameplayTag AttributeTag);
 	
-	UFUNCTION(BlueprintCallable, DisplayName = "Remove Attribute Listener", meta = (Keywords = "events,delegate"))
+	UFUNCTION(BlueprintCallable, DisplayName = "Remove Dynamic Attribute Listener", meta = (Keywords = "events,delegate"))
 	void RemoveDynamicAttributeListener(FOnAttributeDynamicChanged Event);
 	
 	/**
