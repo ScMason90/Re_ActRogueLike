@@ -7,10 +7,10 @@
 #include "AR_Action.h"
 #include "AR_AttributeSet.h"
 #include "AR_Effect.h"
-#include "Re_ActRogueLike/GameModes/AR_GameModeBase.h"
 #include "../SharedGameplayTags.h"
 #include "Re_ActRogueLike/Re_ActRogueLike.h"
 #include "Re_ActRogueLike/Core/AR_GameplayStatics.h"
+#include "Re_ActRogueLike/Development/AR_DebugUtilities.h"
 
 // Temporarily headers enables Intelligent Completion & Highlighting functions of JetbrainsRider IDE to operate, thereby enhancing development efficiency
 

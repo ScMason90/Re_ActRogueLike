@@ -15,7 +15,7 @@ namespace AR_DebugUtils
 {
 	inline FString MakeDebugLocation(const char* FunctionName, int Line)
 	{
-		return FString::Printf(TEXT("[%s: %d]"), ANSI_TO_TCHAR(FunctionName), Line);	
+		return FString::Printf(TEXT("[%s %d]"), ANSI_TO_TCHAR(FunctionName), Line);	
 	}
 	
 	inline bool CheckAndLogImpl(bool Assert, const FString& Message, const char* FuncName, int Line)

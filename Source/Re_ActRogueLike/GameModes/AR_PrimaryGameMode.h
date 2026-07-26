@@ -21,8 +21,8 @@ class UEnvQuery;
 class UEnvQueryInstanceBlueprintWrapper;
 
 
-/** TODO: Legacy CreditSpawnSystem has not been restructured or cleaned up yet. - 2026.6.25 17:07 
- * you can refer to the new 'SpawnEnemy' framework and combine it with 'ActionSystem' to complete refactor.
+/** TODO: Legacy CreditSpawnSystem now remain an empty shell the AR_PlayerState class. 
+ * And few Pickup EQS asset in this class. 
  */
 UCLASS()
 class RE_ACTROGUELIKE_API AAR_PrimaryGameMode : public AAR_GameModeBase
@@ -52,7 +52,7 @@ protected:
 	bool TrySpawnEnemy(FAR_DirectorData& Director);
 
 
-	/** @deprecated All legacy CreditSystem relative code is now deprecated. Please clean up or restore to keep some. */
+	/** @deprecated Legacy CreditSpawnSystem. Find some way to reuse them? */
 	UFUNCTION()	
 	void OnPickupSpawnQueryFinished(UEnvQueryInstanceBlueprintWrapper* QueryInstance, EEnvQueryStatus::Type QueryStatus);
 	

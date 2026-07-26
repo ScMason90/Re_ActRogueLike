@@ -3,12 +3,16 @@
 
 #include "AR_HealthPotion.h"
 
+// Necessary compilation header files
 #include "Components/SphereComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Re_ActRogueLike/SharedGameplayTags.h"
 #include "Re_ActRogueLike/ActionSystem/AR_ActionSystemComponent.h"
 #include "Re_ActRogueLike/Core/AR_GameplayStatics.h"
-#include "Re_ActRogueLike/Player/AR_PlayerState.h"
+#include "Re_ActRogueLike/Development/AR_DebugUtilities.h"
+
+// Temporarily headers enables Intelligent Completion & Highlighting functions of JetbrainsRider IDE to operate, thereby enhancing development efficiency
+
 
 
 // Sets default values
@@ -28,10 +32,10 @@ void AAR_HealthPotion::OnActorOverlapped(UPrimitiveComponent* OverlappedComponen
 	
 	UAR_ActionSystemComponent* ASComp = OtherActor->FindComponentByClass<UAR_ActionSystemComponent>();
 	
-	// Skip Health Potion pickup if already full health or lacking of required credits
-	if (IsValid(ASComp) && !UAR_GameplayStatics::IsFullHealth(ASComp))
+	// Skip Health Potion pickup if doesn't have 'Attribute.Credit' or already full health 
+	if (IsValid(ASComp) && ASComp->GetAttribute(SharedGameplayTags::Attribute_Credit) && !UAR_GameplayStatics::IsFullHealth(ASComp))
 	{
-		float OwnedCredits = ASComp->GetAttributeValue(SharedGameplayTags::Attribute_Credit);	// Note that 'MinionRanged' doesn't have Attribute.Credit
+		float OwnedCredits = ASComp->GetAttributeValue(SharedGameplayTags::Attribute_Credit);
 		if (OwnedCredits >= CreditCost)	
 		{
 			// TODO: Considering add heal up material flash VFX...or SFX for both damaged and healed?
@@ -45,7 +49,7 @@ void AAR_HealthPotion::OnActorOverlapped(UPrimitiveComponent* OverlappedComponen
 			Destroy();
 		} else 
 		{
-			// UI Hint for 'not enough credit'...?
+			// UI Hint for 'lacking of required credits'...?
 			GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Magenta, 
 				FString::Printf(TEXT("%s Lack of Credit to pickup"), *AR_DEBUG_LOC()));
 		
