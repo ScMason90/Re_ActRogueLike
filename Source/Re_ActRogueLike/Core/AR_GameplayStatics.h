@@ -93,13 +93,11 @@ FDelegateHandle UAR_GameplayStatics::BindOnMulticastAttrChangedDel(UserClass* In
 	void(UserClass::* Func)(FGameplayTag, float, float), UAR_ActionSystemComponent* ASComp,
 	const FGameplayTag& AttributeTag)
 {
-	if (!ASComp || !InUserObj || !Func || !SharedGameplayTags::IsAttributeTag(AttributeTag)) return FDelegateHandle();
-	// TODO: Add independent debug output for each 'true' state returned ?
-	
 	// Temp fatal assert
-	check(ASComp);
-	check(InUserObj);
-	check(Func);
+	checkf(ASComp, TEXT("Unbind failed: ASComp is null!"));
+	checkf(InUserObj, TEXT("Bind failed: InUserObj is null!"));
+	checkf(Func, TEXT("Bind failed: Func is null!"));
+	ensureMsgf(SharedGameplayTags::IsAttributeTag(AttributeTag), TEXT("'AttributeTag' isn't a Attribute"));
 	
 	TWeakObjectPtr<UserClass> WeakThis = InUserObj;
 	TWeakObjectPtr<UAR_ActionSystemComponent> WeakASComp = ASComp;

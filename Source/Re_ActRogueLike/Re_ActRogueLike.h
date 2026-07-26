@@ -5,6 +5,6 @@
 #include "CoreMinimal.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(LogGame, Log, All);
-
+DECLARE_LOG_CATEGORY_EXTERN(LogARDebug, Log, All);
 
 #define ONSCREENDEBUGKEY_SPAWNDIRECTOR 100 // - 199

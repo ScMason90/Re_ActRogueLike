@@ -86,7 +86,7 @@ void AAR_TeleportProjectile::HandleTeleportation()
 	InstigatorActorRef->TeleportTo(GetActorLocation(), InstigatorActorRef->GetActorRotation());
 	FVector PlayerLocation = InstigatorActorRef->GetActorLocation();
 	
-	// UE_LOG(LogGame, Error, TEXT("AAR_TeleportProjectile::HandleTeleportation();Player location : %s"), *PlayerLocation.ToString());
+	// UE_LOG(LogGame, Error, TEXT("%s Player location : %s"), *AR_DEBUG_LOC(), *PlayerLocation.ToString());
 
 	// Clear projectile from world, can't do this any sooner as that would prevent the timers from running on a valid Actor
 	Destroy();

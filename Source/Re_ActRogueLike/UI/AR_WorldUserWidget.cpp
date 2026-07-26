@@ -7,6 +7,7 @@
 #include "Components/SizeBox.h"
 #include "Kismet/GameplayStatics.h"
 #include "Re_ActRogueLike/Re_ActRogueLike.h"
+#include "Re_ActRogueLike/Development/AR_DebugUtilities.h"
 
 
 void UAR_WorldUserWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
@@ -16,8 +17,7 @@ void UAR_WorldUserWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaT
 	if (!IsValid(AttachedActor))
 	{
 		RemoveFromParent();
-		UE_LOG(LogGame, Warning, 
-			TEXT("UAR_WorldUserWidget::NativeTick,AttachedActor no longer valid, removing Health Widget."));
+		UE_LOG(LogGame, Warning, TEXT("%s AttachedActor no longer valid, removing Health Widget."), *AR_DEBUG_LOC());
 		return;
 	}
 	

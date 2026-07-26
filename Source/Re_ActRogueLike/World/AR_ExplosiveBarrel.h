@@ -104,21 +104,18 @@ protected:
 	
 	void Explode();
 	
-	// TODO: Considering make a explosive object base cpp class and implement 'DamageSystem' when explode after hit?
-	// virtual void OnImpact(AActor* Instigator, const FHitResult& Hit);
-	
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	
+	// TODO: Create a base explosive object class integrating 'DamageSystem'? You can refer AR_ProjectileBase class
 	
 	
-	
-	// Temporarily not using. Uncomment 'ApplyDamage' Relative SphereComponent if you want implement with collision collide based solution   
+	// Temporarily not using. Uncomment 'ApplyDamage' Relative SphereComponent if you want implement with collision collide based solution
+	// 
 	// UFUNCTION()
 	// void OnSphereBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, 
 	// 	int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult);
-	
-	// Temporarily not using. Uncomment 'ApplyDamage' Relative SphereComponent if you want implement with collision collide based solution   
+	// 	
 	// UFUNCTION()
 	// void OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, 
 	// 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);

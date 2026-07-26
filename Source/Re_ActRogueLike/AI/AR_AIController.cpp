@@ -36,7 +36,7 @@ void AAR_AIController::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	if (!ensureAlwaysMsgf(BehaviorTree, TEXT("AAR_AIController::BeginPlay(), BehaviorTree is nullptr, please assign it")))return;
+	if (!ensureAlwaysMsgf(BehaviorTree, TEXT("%s BehaviorTree is nullptr, please assign it"), *AR_DEBUG_LOC()))return;
 	
 	RunBehaviorTree(BehaviorTree);
 	
@@ -57,7 +57,7 @@ void AAR_AIController::SetTargetActorBB(AActor* NewTarget)
 	TargetActorASComp = NewTarget->FindComponentByClass<UAR_ActionSystemComponent>();
 	if (!TargetActorASComp.IsValid()) return;
 	
-	// UE_LOG(LogController, Log, TEXT("AAR_AIController::SetTargetActorBB, %s of %s"), *GetNameSafe(TargetActorASComp), *GetNameSafe(NewTarget));
+	// UE_LOG(LogController, Log, TEXT("%s, %s of %s"), *AR_DEBUG_LOC(), *GetNameSafe(TargetActorASComp), *GetNameSafe(NewTarget));
 	
 	UBlackboardComponent* BB = GetBlackboardComponent();	// Switch target only NEW
 	if (!BB || BB->GetValueAsObject(NAME_TargetActor) == NewTarget) return;
@@ -73,14 +73,14 @@ void AAR_AIController::SetTargetActorBB(AActor* NewTarget)
 	// Subscribed for health changed event of 'NewTarget'
 	DelHandle_OnTargetActorHealthChanged = UAR_GameplayStatics_BIND_ATTR_MULTICAST(
 		this, &AAR_AIController::OnTargetActorHealthChanged, TargetActorASComp.Get(), SharedGameplayTags::Attribute_Health);
-	// UE_LOG(LogController, Log, TEXT("AAR_AIController::SetTargetActorBB, DelHandle_OnTargetActorHealthChanged ? %d"), DelHandle_OnTargetActorHealthChanged.IsValid());
+	// UE_LOG(LogController, Log, TEXT("%s DelHandle_OnTargetActorHealthChanged ? %d"), *AR_DEBUG_LOC(), DelHandle_OnTargetActorHealthChanged.IsValid());
 
 	BB->SetValueAsObject(NAME_TargetActor, NewTarget);
 	SetFocus(NewTarget, EAIFocusPriority::Gameplay);
 
 	StopMovement();   // Optional, according to needs
 
-	// UE_LOG(LogGame, Log, TEXT("AAR_AIController::SetTargetActorBB -> %s"), *NewTarget->GetActorNameOrLabel());
+	// UE_LOG(LogGame, Log, TEXT("%s Switch target -> %s"), *AR_DEBUG_LOC(), *NewTarget->GetActorNameOrLabel());
 }
 
 void AAR_AIController::OnTargetActorHealthChanged(FGameplayTag AttributeTag, float NewHealth, float OldHealth)

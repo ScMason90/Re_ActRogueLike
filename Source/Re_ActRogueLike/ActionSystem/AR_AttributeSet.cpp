@@ -26,11 +26,11 @@ UAR_HealthAttributeSet::UAR_HealthAttributeSet()
 
 void UAR_HealthAttributeSet::PostAttributeChanged()
 {
-	// UE_LOG(LogGame, Warning, TEXT("UAR_HealthAttributeSet::PostAttributeChanged(), SomeWhere Health:%.2f before post changed"), Health.Base);
+	// UE_LOG(LogGame, Warning, TEXT("%s SomeWhere Health:%.2f before post changed"), *AR_DEBUG_LOC(), Health.GetValue());
 	
 	Health.Base = FMath::Clamp(Health.Base, 0.0f, HealthMax.GetValue());
 	
-	// UE_LOG(LogGame, Warning, TEXT("UAR_HealthAttributeSet::PostAttributeChanged(), SomeWhere Health:%.2f after post changed"), Health.Base);
+	// UE_LOG(LogGame, Warning, TEXT("%s SomeWhere Health:%.2f after post changed"), *AR_DEBUG_LOC(), Health.GetValue());
 }
 
 // class UAR_PawnAttributeSet : public UAR_HealthAttributeSet

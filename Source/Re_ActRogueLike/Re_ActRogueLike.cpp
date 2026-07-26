@@ -6,3 +6,4 @@
 IMPLEMENT_PRIMARY_GAME_MODULE( FDefaultGameModuleImpl, Re_ActRogueLike, "Re_ActRogueLike" );
 
 DEFINE_LOG_CATEGORY(LogGame);
+DEFINE_LOG_CATEGORY(LogARDebug);

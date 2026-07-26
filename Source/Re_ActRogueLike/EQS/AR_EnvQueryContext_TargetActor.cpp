@@ -8,6 +8,7 @@
 #include "EnvironmentQuery/EnvQueryTypes.h"
 #include "EnvironmentQuery/Items/EnvQueryItemType_Actor.h"
 #include "Re_ActRogueLike/Re_ActRoguelikeTypes.h"
+#include "Re_ActRogueLike/Development/AR_DebugUtilities.h"
 
 void UAR_EnvQueryContext_TargetActor::ProvideContext(FEnvQueryInstance& QueryInstance, FEnvQueryContextData& ContextData) const
 {
@@ -16,7 +17,7 @@ void UAR_EnvQueryContext_TargetActor::ProvideContext(FEnvQueryInstance& QueryIns
 	
 	// Expected Character - QuerierPawn
 	const AActor* OwnerActor = Cast<AActor>(OwnerObj); 
-	ensureMsgf(OwnerActor, TEXT("UAR_EnvQueryContext_TargetActor::ProvideContext, OwnerActor is nullptr!"));
+	ensureMsgf(OwnerActor, TEXT("%s OwnerActor is nullptr!"), *AR_DEBUG_LOC());
 	if (!OwnerActor)return;
 	
 	AAIController* AIController = Cast<AAIController>(OwnerActor->GetInstigatorController());

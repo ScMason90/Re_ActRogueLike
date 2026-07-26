@@ -51,12 +51,12 @@ bool UAR_GameplayStatics::IsActorAlive(AActor* ActorToCheck)
 void UAR_GameplayStatics::UnbindOnMulticastAttrChangedDel(UAR_ActionSystemComponent* ASComp,
 	const FGameplayTag& AttributeTag, FDelegateHandle InDelHandle)
 {
-	if (!ASComp || !InDelHandle.IsValid() || !SharedGameplayTags::IsAttributeTag(AttributeTag)) return;
-	
 	// if (TargetHealthChangedEvent.IsBoundToObject(InUserObject))...
 	
 	// Temp fatal assert
-	check(ASComp);
+	checkf(ASComp, TEXT("Unbind failed: ASComp is null!"));
+	ensureMsgf(SharedGameplayTags::IsAttributeTag(AttributeTag), TEXT("'AttributeTag' isn't a Attribute"));
+	ensureMsgf(InDelHandle.IsValid(), TEXT("Invalid/Unbound DelegateHandle"));
 
 	TWeakObjectPtr<UAR_ActionSystemComponent> WeakASComp = ASComp;
 	
@@ -68,10 +68,9 @@ void UAR_GameplayStatics::UnbindOnMulticastAttrChangedDel(UAR_ActionSystemCompon
 FDelegateHandle UAR_GameplayStatics::BindOnMulticastAttrChangedLambda(UAR_ActionSystemComponent* ASComp,
 	const FGameplayTag& AttributeTag, TFunction<void(FGameplayTag, float, float)> Callback)
 {
-	if (!ASComp || !SharedGameplayTags::IsAttributeTag(AttributeTag)) return FDelegateHandle();
-	
 	// Temp fatal assert
-	check(ASComp);
+	checkf(ASComp, TEXT("Unbind failed: ASComp is null!"));
+	ensureMsgf(SharedGameplayTags::IsAttributeTag(AttributeTag), TEXT("'AttributeTag' isn't a Attribute"));
 	
 	TWeakObjectPtr<UAR_ActionSystemComponent> WeakASComp = ASComp;
 	

@@ -143,6 +143,6 @@ public:
 	/** Only for debug/development (Log Output). Not sure of embed in ActionSystem.
 	 * @param InAction UAR_Action and its derived object - Could be UAR_Effect and its derived object as that UAR_Action derived UAR_Effect.  
 	 * @return Action as "Action_...". StatusEffect as "StatusEffect_..." */
-	FString GetActionNameOrGrantTags(UAR_Action* InAction);
+	static FString GetActionNameOrGrantTags(UAR_Action* InAction);
 	
 };

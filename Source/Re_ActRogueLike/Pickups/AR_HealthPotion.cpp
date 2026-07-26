@@ -47,7 +47,7 @@ void AAR_HealthPotion::OnActorOverlapped(UPrimitiveComponent* OverlappedComponen
 		{
 			// UI Hint for 'not enough credit'...?
 			GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Magenta, 
-				TEXT("AAR_HealthPotion::OnActorOverlapped, Lack of Credit to pickup"));
+				FString::Printf(TEXT("%s Lack of Credit to pickup"), *AR_DEBUG_LOC()));
 		
 			// Pickup failed feedback
 			UGameplayStatics::PlaySoundAtLocation(

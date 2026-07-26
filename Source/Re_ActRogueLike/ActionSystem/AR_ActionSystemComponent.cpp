@@ -33,8 +33,8 @@ void UAR_ActionSystemComponent::InitializeComponent()
 	if (Attributes == nullptr)
 	{
 		Attributes = NewObject<UAR_AttributeSet>(this, UAR_AttributeSet::StaticClass());
-		UE_LOG(LogGame, Warning, TEXT("UAR_ActionSystemComponent::InitializeComponent(),No default 'AttributeSet' defined. Set using 'SetDefaultAttributeSet()'"
-								"during Actor Construction or assign in Blueprint 'ActionComponent' for %s."), *GetNameSafe(GetOwner()));
+		UE_LOG(LogGame, Warning, TEXT("%s No default 'AttributeSet' defined. Set using 'SetDefaultAttributeSet()'"
+			"during Actor Construction or assign in Blueprint 'ActionComponent' for %s."), *AR_DEBUG_LOC(), *GetNameSafe(GetOwner()));
 	}
 	
 	for (TFieldIterator<FStructProperty> PropIt(Attributes.GetClass()); PropIt; ++PropIt)
@@ -65,7 +65,7 @@ void UAR_ActionSystemComponent::BeginPlay()
 	
 	Attributes->InitializeAttributes();
 	
-	// UE_LOGFMT(LogGame, Warning, "UAR_ActionSystemComponent::InitializeComponent(), DefaultActions.IsEmpty()? {Answer}", DefaultActions.IsEmpty()?"Yes":"No");
+	// UE_LOGFMT(LogGame, Warning, "{LogLoc} DefaultActions.IsEmpty()? {Answer}", *AR_DEBUG_LOC(), DefaultActions.IsEmpty()?"Yes":"No");
 	for (TSubclassOf<UAR_Action> ActionClass : DefaultActions)
 	{
 		if (ensure(ActionClass)) GrantAction(ActionClass);
@@ -112,14 +112,14 @@ void UAR_ActionSystemComponent::ApplyAttributeChanged(FGameplayTag AttributeTag,
 			if (!bIsBound)
 			{
 				Events->RemoveAtSwap(i, EAllowShrinking::No);
-				UE_LOG(LogGame, Log, TEXT("UAR_ActionSystemComponent::ApplyAttributeChanged,"
-							  "Clean up expired dynamic(BP) attribute delegate for %s"), *GetNameSafe(GetOwner()));
+				UE_LOG(LogGame, Log, TEXT("%s Clean up expired dynamic(BP) attribute delegate for %s"), 
+					*AR_DEBUG_LOC(), *GetNameSafe(GetOwner()));
 			}
 		}
 	}
 	
-	UE_LOGFMT(LogGame, Log, "UAR_ActionSystemComponent::ApplyAttributeChanged; Owner : {0}; Attribute : {1}, Old : {3}, New : {2}",
-		GetNameSafe(GetOwner()), AttributeTag.ToString(), OldValue, FoundAttribute->GetValue());
+	UE_LOGFMT(LogGame, Log, "{4} Owner : {0}; Attribute : {1}, Old : {3}, New : {2}", GetNameSafe(GetOwner()), 
+		AttributeTag.ToString(), OldValue, FoundAttribute->GetValue(), *AR_DEBUG_LOC());
 }
 
 FAR_Attribute* UAR_ActionSystemComponent::GetAttribute(FGameplayTag InAttributeTag) const
@@ -153,8 +153,7 @@ void UAR_ActionSystemComponent::RemoveDynamicAttributeListener(FOnAttributeDynam
 	{
 		if (Listener.Value.RemoveSingle(Event) > 0)
 		{
-			UE_LOG(LogGame, Warning, TEXT("UAR_ActionSystemComponent::RemoveDynamicAttributeListener,"
-								 "successfully removed blueprint binding."));
+			UE_LOG(LogGame, Warning, TEXT("%s successfully removed blueprint binding."), *AR_DEBUG_LOC());
 			break;
 		}
 	}
@@ -186,11 +185,10 @@ void UAR_ActionSystemComponent::GrantAction(TSubclassOf<UAR_Action> NewActionCla
 	if (bIsEffectClass)
 	{
 		// Sanity check that buffs are allowed to run. We do not handle this case yet.
-		ensureMsgf(NewAction->CanStart(), TEXT("UAR_ActionSystemComponent::GrantAction, "
-										 "an Effect can not start CanStart() returns FALSE. Case not handled."));
+		ensureMsgf(NewAction->CanStart(), TEXT("%s an Effect can not start CanStart() returns FALSE. Case not handled."), *AR_DEBUG_LOC());
 		
-		UE_LOG(LogGame, Log, TEXT("UAR_ActionSystemComponent::GrantAction, Owner:%s NewActionNameOrGrantTags : %s."), 
-			*GetNameSafe(GetOwner()), *GetActionNameOrGrantTags(NewAction));	
+		UE_LOG(LogGame, Log, TEXT("%s, Owner:%s NewActionNameOrGrantTags : %s."), 
+			*AR_DEBUG_LOC(), *GetNameSafe(GetOwner()), *GetActionNameOrGrantTags(NewAction));	
 		
 		NewAction->StartAction();
 	}
@@ -201,7 +199,7 @@ void UAR_ActionSystemComponent::RemoveAction(UAR_Action* ActionToRemove)
 	int32 RemoveCount = Actions.RemoveSingle(ActionToRemove);
 	ensure(RemoveCount == 1);
 	
-	UE_LOG(LogGame, Verbose, TEXT("UAR_ActionSystemComponent::RemoveAction, Removed Action %s from %s"), 
+	UE_LOG(LogGame, Verbose, TEXT("%s Removed Action %s from %s"), *AR_DEBUG_LOC(), 
 		*GetActionNameOrGrantTags(ActionToRemove), *GetNameSafe(GetOwner()));
 	
 	ActionToRemove->MarkAsGarbage();
@@ -241,11 +239,9 @@ void UAR_ActionSystemComponent::CheckAgainstBlockedTags(const FGameplayTagContai
 		{
 			Action->StopAction();
 			
-			UE_LOGFMT(LogGame, Log, "UAR_ActionSystemComponent::CheckAgainstBlockedTags, "
-						   "Stopped {ActionName} due to any matching tag {BlockedTags} for {Owner}",
-						   ("ActionName", GetActionNameOrGrantTags(Action)),
-						   ("BlockedTags", NewTags.ToString()),
-						   ("Owner", GetNameSafe(GetOwner())));
+			UE_LOGFMT(LogGame, Log, "{LogLoc}, Stopped {ActionName} due to any matching tag {BlockedTags} for {Owner}",
+				("LogLoc", *AR_DEBUG_LOC()), ("ActionName", GetActionNameOrGrantTags(Action)), 
+				("BlockedTags", NewTags.ToString()), ("Owner", GetNameSafe(GetOwner())));
 		}
 	}
 }
@@ -261,8 +257,7 @@ void UAR_ActionSystemComponent::StartAction(FGameplayTag InActionName)
 		}
 	}
 	
-	UE_LOG(LogGame, Warning, 
-		TEXT("UAR_ActionSystemComponent::StartAction,No Action found with name %s"), *InActionName.ToString());
+	UE_LOG(LogGame, Warning, TEXT("%s No Action found with name %s"), *AR_DEBUG_LOC(), *InActionName.ToString());
 }
 
 void UAR_ActionSystemComponent::StopAction(FGameplayTag InActionName)
@@ -276,8 +271,7 @@ void UAR_ActionSystemComponent::StopAction(FGameplayTag InActionName)
 		}
 	}
 	
-	UE_LOG(LogGame, Warning, 
-		TEXT("UAR_ActionSystemComponent::StopAction,No Action found with name %s"), *InActionName.ToString());
+	UE_LOG(LogGame, Warning, TEXT("%s No Action found with name %s"), *AR_DEBUG_LOC(), *InActionName.ToString());
 }
 
 void UAR_ActionSystemComponent::EndActionsAndEffects()
@@ -291,8 +285,8 @@ void UAR_ActionSystemComponent::EndActionsAndEffects()
 		
 		StopAction(StoredAction->GetActionName());
 		
-		UE_LOG(LogGame, Log, TEXT("UAR_ActionSystemComponent::EndActionsAndEffects(), Owner:%s StopAction(StoredAction--%s)"), 
-			*OwnerName, *GetActionNameOrGrantTags(StoredAction));
+		UE_LOG(LogGame, Log, TEXT("%s Owner:%s StopAction(StoredAction--%s)"), 
+			*AR_DEBUG_LOC(), *OwnerName, *GetActionNameOrGrantTags(StoredAction));
 	}
 	
 	// Status_Effect/'ActionEffects(Buff/Debuff)'

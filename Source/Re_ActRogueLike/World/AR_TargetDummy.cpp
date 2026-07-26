@@ -52,7 +52,7 @@ float AAR_TargetDummy::TakeDamage(float DamageAmount, struct FDamageEvent const&
 	// Apply 'DamageMultiplier'...Development only as it's a console variable?
 	ActualDamage *= UAR_GameplayStatics::GetDmgModifier();
 	
-	// UE_LOG(LogGame, Log, TEXT("AAR_TargetDummy::TakeDamage, ActualDamage = %.4f"), ActualDamage);
+	// UE_LOG(LogGame, Log, TEXT("%s ActualDamage = %.4f"), *AR_DEBUG_LOC(), ActualDamage);
 	
 	ActionSystemComponent->ApplyAttributeChanged(SharedGameplayTags::Attribute_Health, -ActualDamage, Base);
 	

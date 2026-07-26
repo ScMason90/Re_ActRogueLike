@@ -73,7 +73,7 @@ void AAR_ExplosiveBarrel::BeginPlay()
 	//
 	// for (AActor* Actor : ActorsOverlappedSphere)
 	// {
-	// 	UE_LOG(LogGame, Warning, TEXT("AAR_ExplosiveBarrel::BeginPlay(), added overlapped actor %s"), *GetNameSafe(Actor));
+	// 	UE_LOG(LogGame, Warning, TEXT("%s added overlapped actor %s"), *AR_DEBUG_LOC(), *GetNameSafe(Actor));
 	// }
 }
 
@@ -82,7 +82,7 @@ void AAR_ExplosiveBarrel::BeginPlay()
 // {
 // 	ActorsOverlappedSphere.Add(OtherActor);
 // 	
-// 	UE_LOG(LogGame, Warning, TEXT("AAR_ExplosiveBarrel::OnSphereBeginOverlap, added OtherActor %s"), *GetNameSafe(OtherActor));
+// 	UE_LOG(LogGame, Warning, TEXT("%s added OtherActor %s"), *AR_DEBUG_LOC(), *GetNameSafe(OtherActor));
 // 	
 // }
 //
@@ -91,7 +91,7 @@ void AAR_ExplosiveBarrel::BeginPlay()
 // {
 // 	ActorsOverlappedSphere.RemoveSingleSwap(OtherActor);
 // 	
-// 	UE_LOG(LogGame, Warning, TEXT("AAR_ExplosiveBarrel::OnSphereEndOverlap, Removed OtherActor %s"), *GetNameSafe(OtherActor));
+// 	UE_LOG(LogGame, Warning, TEXT("%s Removed OtherActor %s"), *AR_DEBUG_LOC(), *GetNameSafe(OtherActor));
 // 	
 // }
 
@@ -133,7 +133,7 @@ void AAR_ExplosiveBarrel::Explode()
 	// Apply damage to overlapped actor through sphere collision
 	// for (AActor* OverlappedActor : ActorsOverlappedSphere)
 	// {
-	// 	UE_LOG(LogGame, Warning, TEXT("AAR_ExplosiveBarrel::Explode, apply damage to overlapped actor %s"), *GetNameSafe(OverlappedActor));
+	// 	UE_LOG(LogGame, Warning, TEXT("%s apply damage to overlapped actor %s"), *AR_DEBUG_LOC(), *GetNameSafe(OverlappedActor));
 	// 	// if (OverlappedActor->CanBeDamaged())
 	// 	{
 	// 		UGameplayStatics::ApplyDamage(OverlappedActor, ExplosionDamage, GetInstigatorController(), this, DmgTypeClass);
@@ -154,7 +154,7 @@ void AAR_ExplosiveBarrel::Explode()
 	// 	BarrelLoc + FVector(0.0f, 0.0f, 30.0f), 800.0f, DmgTypeClass, 
 	// 	{this}, this, GetInstigatorController(), false, COLLISION_INTERACTION))
 	// {
-	// 	UE_LOG(LogGame, Warning, TEXT("AAR_ExplosiveBarrel::Explode, ApplyRadialDamage false!"));
+	// 	UE_LOG(LogGame, Warning, TEXT("%s ApplyRadialDamage false!"), *AR_DEBUG_LOC());
 	// }
 	
 	

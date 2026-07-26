@@ -74,7 +74,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Legacy Spawn System | Pickup")
 	int32 DesiredPickupCount;
 	
-	// TODO: Should i move these two legacy function to AR_GameInstance class ?
+	
 	
 	/** Kills all actors of a specific class - Exposed to Exec and Blueprint */
 	UFUNCTION(Exec, BlueprintCallable, Category = "Debug")
