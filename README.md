@@ -14,12 +14,18 @@ Not sure if I will build my own game based on these contents in the future
 
 ## Credits & Attribution
 
-- Original Sample Project: [tomlooman/ActionRoguelike](https://github.com/tomlooman/ActionRoguelike) by **Tom Looman**
+- Original Sample Project: [ActionRoguelike](https://github.com/tomlooman/ActionRoguelike/) by **Tom Looman**
+- Mainly followed branch [tomlooman/ActionRoguelike/UE5.6-CourseProject](https://github.com/tomlooman/ActionRoguelike/tree/UE5.6-CourseProject).
+- May introduce content of other branches under [tomlooman/ActionRoguelike] in the future. Could be experimental.
 - I have implemented **most systems by hand** (typing the code myself) while studying the original architecture.
 - Some original comments are retained for learning purposes.
 - All game assets (meshes, materials, etc.) belong to their respective owners, primarily using Epic Paragon assets licensed for Unreal Engine.
 
 **Note**: This repository is **not a direct fork**. It contains primarily my own C++ implementation, project configuration, and personal modifications/experiments.
+
+## Changing Plan
+
+Since August 2026 beginning, I have started to study and learn about the Lyra Sample project. I have created a new private project locally to gradually disassemble and replicate Lyra. The project is called Retrofit and it may serve as my first personal demo development. So for Re_ActRogueLike, I might not have much progress for the time being.
 
 ## Key Features Implemented / Modified
 
