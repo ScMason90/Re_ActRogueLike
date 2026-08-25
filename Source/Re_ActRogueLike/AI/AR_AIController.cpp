@@ -8,10 +8,11 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Perception/AIPerceptionComponent.h"
-#include "Re_ActRogueLike/Re_ActRoguelikeTypes.h"
-#include "Re_ActRogueLike/SharedGameplayTags.h"
 #include "Re_ActRogueLike/ActionSystem/AR_ActionSystemComponent.h"
 #include "Re_ActRogueLike/Core/AR_GameplayStatics.h"
+#include "Re_ActRogueLike/Re_ActLogChannels.h"
+#include "Re_ActRogueLike/Re_ActRoguelikeTypes.h"
+#include "Re_ActRogueLike/SharedGameplayTags.h"
 
 // Temporarily headers enables Intelligent Completion & Highlighting functions of JetbrainsRider IDE to operate, thereby enhancing development efficiency
 
@@ -36,7 +37,7 @@ void AAR_AIController::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	if (!ensureAlwaysMsgf(BehaviorTree, TEXT("%s BehaviorTree is nullptr, please assign it"), *AR_DEBUG_LOC()))return;
+	if (!ensureAlwaysMsgf(BehaviorTree, TEXT("%s BehaviorTree is nullptr, please assign it"), *AR_LOG_LOC()))return;
 	
 	RunBehaviorTree(BehaviorTree);
 	

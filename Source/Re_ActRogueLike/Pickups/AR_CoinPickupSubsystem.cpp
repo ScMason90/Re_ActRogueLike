@@ -3,16 +3,15 @@
 
 #include "AR_CoinPickupSubsystem.h"
 
-#include "EngineUtils.h"
 #include "Components/AudioComponent.h"
 #include "Components/InstancedStaticMeshComponent.h"
+#include "EngineUtils.h"
 #include "ProfilingDebugging/CountersTrace.h"
-#include "Re_ActRogueLike/Re_ActRogueLike.h"
-#include "Re_ActRogueLike/SharedGameplayTags.h"
+#include "Re_ActRogueLike/Re_ActLogChannels.h"
 #include "Re_ActRogueLike/ActionSystem/AR_ActionSystemComponent.h"
 #include "Re_ActRogueLike/Core/AR_DeveloperSettings.h"
-#include "Re_ActRogueLike/Development/AR_DebugUtilities.h"
 #include "Re_ActRogueLike/Player/AR_PlayerCharacter.h"
+#include "Re_ActRogueLike/SharedGameplayTags.h"
 
 
 TRACE_DECLARE_INT_COUNTER(CoinInstanceCount, TEXT("Coins in World"));
@@ -163,7 +162,7 @@ void UAR_CoinPickupSubsystem::Tick(float DeltaTime)
 	
 	// Log Who picked and its granted amount if Implement Network Replication on some server?
 	UE_CLOG(TotalCoinsToGrant > 0, LogGame, Log, 
-		TEXT("%s Local Player picked up Coin Amount = %d"), *AR_DEBUG_LOC(), TotalCoinsToGrant);
+		TEXT("%s Local Player picked up Coin Amount = %d"), *AR_LOG_LOC(), TotalCoinsToGrant);
 	
 	for (int i = 0; i < CoinLocations.Num(); ++i)
 	{

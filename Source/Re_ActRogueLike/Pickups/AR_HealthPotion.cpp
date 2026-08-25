@@ -6,10 +6,10 @@
 // Necessary compilation header files
 #include "Components/SphereComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "Re_ActRogueLike/SharedGameplayTags.h"
 #include "Re_ActRogueLike/ActionSystem/AR_ActionSystemComponent.h"
 #include "Re_ActRogueLike/Core/AR_GameplayStatics.h"
-#include "Re_ActRogueLike/Development/AR_DebugUtilities.h"
+#include "Re_ActRogueLike/Re_ActLogChannels.h"
+#include "Re_ActRogueLike/SharedGameplayTags.h"
 
 // Temporarily headers enables Intelligent Completion & Highlighting functions of JetbrainsRider IDE to operate, thereby enhancing development efficiency
 
@@ -51,7 +51,7 @@ void AAR_HealthPotion::OnActorOverlapped(UPrimitiveComponent* OverlappedComponen
 		{
 			// UI Hint for 'lacking of required credits'...?
 			GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Magenta, 
-				FString::Printf(TEXT("%s Lack of Credit to pickup"), *AR_DEBUG_LOC()));
+				FString::Printf(TEXT("%s Lack of Credit to pickup"), *AR_LOG_LOC()));
 		
 			// Pickup failed feedback
 			UGameplayStatics::PlaySoundAtLocation(

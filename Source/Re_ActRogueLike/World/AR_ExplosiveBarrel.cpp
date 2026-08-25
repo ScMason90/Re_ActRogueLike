@@ -4,10 +4,10 @@
 #include "AR_ExplosiveBarrel.h"
 
 // Necessary compilation header files
-#include "NiagaraComponent.h"
 #include "Components/AudioComponent.h"
-#include "NiagaraFunctionLibrary.h"
 #include "Kismet/GameplayStatics.h"
+#include "NiagaraComponent.h"
+#include "NiagaraFunctionLibrary.h"
 #include "PhysicsEngine/RadialForceComponent.h"
 #include "Re_ActRogueLike/Re_ActRoguelikeTypes.h"
 

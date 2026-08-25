@@ -5,11 +5,11 @@
 
 // Necessary compilation header files
 #include "AR_ActionSystemComponent.h"
-#include "NiagaraFunctionLibrary.h"
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
-#include "Re_ActRogueLike/Re_ActRoguelikeTypes.h"
+#include "NiagaraFunctionLibrary.h"
 #include "Re_ActRogueLike/Projectiles/AR_ProjectileBase.h"
+#include "Re_ActRogueLike/Re_ActRoguelikeTypes.h"
 
 // Temporarily headers enables Intelligent Completion & Highlighting functions of JetbrainsRider IDE to operate, thereby enhancing development efficiency
 

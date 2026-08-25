@@ -4,13 +4,12 @@
 #include "AR_ActionSystemComponent.h"
 
 // Necessary compilation header files
+#include "../SharedGameplayTags.h"
 #include "AR_Action.h"
 #include "AR_AttributeSet.h"
 #include "AR_Effect.h"
-#include "../SharedGameplayTags.h"
-#include "Re_ActRogueLike/Re_ActRogueLike.h"
 #include "Re_ActRogueLike/Core/AR_GameplayStatics.h"
-#include "Re_ActRogueLike/Development/AR_DebugUtilities.h"
+#include "Re_ActRogueLike/Re_ActLogChannels.h"
 
 // Temporarily headers enables Intelligent Completion & Highlighting functions of JetbrainsRider IDE to operate, thereby enhancing development efficiency
 
@@ -34,7 +33,7 @@ void UAR_ActionSystemComponent::InitializeComponent()
 	{
 		Attributes = NewObject<UAR_AttributeSet>(this, UAR_AttributeSet::StaticClass());
 		UE_LOG(LogGame, Warning, TEXT("%s No default 'AttributeSet' defined. Set using 'SetDefaultAttributeSet()'"
-			"during Actor Construction or assign in Blueprint 'ActionComponent' for %s."), *AR_DEBUG_LOC(), *GetNameSafe(GetOwner()));
+			"during Actor Construction or assign in Blueprint 'ActionComponent' for %s."), *AR_LOG_LOC(), *GetNameSafe(GetOwner()));
 	}
 	
 	for (TFieldIterator<FStructProperty> PropIt(Attributes.GetClass()); PropIt; ++PropIt)
@@ -65,7 +64,7 @@ void UAR_ActionSystemComponent::BeginPlay()
 	
 	Attributes->InitializeAttributes();
 	
-	// UE_LOGFMT(LogGame, Warning, "{LogLoc} DefaultActions.IsEmpty()? {Answer}", *AR_DEBUG_LOC(), DefaultActions.IsEmpty()?"Yes":"No");
+	// UE_LOGFMT(LogGame, Warning, "{LogLoc} DefaultActions.IsEmpty()? {Answer}", *AR_LOG_LOC(), DefaultActions.IsEmpty()?"Yes":"No");
 	for (TSubclassOf<UAR_Action> ActionClass : DefaultActions)
 	{
 		if (ensure(ActionClass)) GrantAction(ActionClass);
@@ -113,13 +112,13 @@ void UAR_ActionSystemComponent::ApplyAttributeChanged(FGameplayTag AttributeTag,
 			{
 				Events->RemoveAtSwap(i, EAllowShrinking::No);
 				UE_LOG(LogGame, Log, TEXT("%s Clean up expired dynamic(BP) attribute delegate for %s"), 
-					*AR_DEBUG_LOC(), *GetNameSafe(GetOwner()));
+					*AR_LOG_LOC(), *GetNameSafe(GetOwner()));
 			}
 		}
 	}
-	
-	UE_LOGFMT(LogGame, Log, "{4} Owner : {0}; Attribute : {1}, Old : {3}, New : {2}", GetNameSafe(GetOwner()), 
-		AttributeTag.ToString(), OldValue, FoundAttribute->GetValue(), *AR_DEBUG_LOC());
+
+	UE_LOGFMT(LogGame, Log, "{0} Owner: {1}; Attribute: {2}, Old - {3}, New - {4}", AR_LOG_LOC(),
+			  GetNameSafe(GetOwner()), AttributeTag.ToString(), OldValue, FoundAttribute->GetValue());
 }
 
 FAR_Attribute* UAR_ActionSystemComponent::GetAttribute(FGameplayTag InAttributeTag) const
@@ -153,7 +152,7 @@ void UAR_ActionSystemComponent::RemoveDynamicAttributeListener(FOnAttributeDynam
 	{
 		if (Listener.Value.RemoveSingle(Event) > 0)
 		{
-			UE_LOG(LogGame, Warning, TEXT("%s successfully removed blueprint binding."), *AR_DEBUG_LOC());
+			UE_LOG(LogGame, Warning, TEXT("%s successfully removed blueprint binding."), *AR_LOG_LOC());
 			break;
 		}
 	}
@@ -185,10 +184,10 @@ void UAR_ActionSystemComponent::GrantAction(TSubclassOf<UAR_Action> NewActionCla
 	if (bIsEffectClass)
 	{
 		// Sanity check that buffs are allowed to run. We do not handle this case yet.
-		ensureMsgf(NewAction->CanStart(), TEXT("%s an Effect can not start CanStart() returns FALSE. Case not handled."), *AR_DEBUG_LOC());
+		ensureMsgf(NewAction->CanStart(), TEXT("%s an Effect can not start CanStart() returns FALSE. Case not handled."), *AR_LOG_LOC());
 		
 		UE_LOG(LogGame, Log, TEXT("%s, Owner:%s NewActionNameOrGrantTags : %s."), 
-			*AR_DEBUG_LOC(), *GetNameSafe(GetOwner()), *GetActionNameOrGrantTags(NewAction));	
+			*AR_LOG_LOC(), *GetNameSafe(GetOwner()), *GetActionNameOrGrantTags(NewAction));	
 		
 		NewAction->StartAction();
 	}
@@ -199,7 +198,7 @@ void UAR_ActionSystemComponent::RemoveAction(UAR_Action* ActionToRemove)
 	int32 RemoveCount = Actions.RemoveSingle(ActionToRemove);
 	ensure(RemoveCount == 1);
 	
-	UE_LOG(LogGame, Verbose, TEXT("%s Removed Action %s from %s"), *AR_DEBUG_LOC(), 
+	UE_LOG(LogGame, Verbose, TEXT("%s Removed Action %s from %s"), *AR_LOG_LOC(), 
 		*GetActionNameOrGrantTags(ActionToRemove), *GetNameSafe(GetOwner()));
 	
 	ActionToRemove->MarkAsGarbage();
@@ -240,7 +239,7 @@ void UAR_ActionSystemComponent::CheckAgainstBlockedTags(const FGameplayTagContai
 			Action->StopAction();
 			
 			UE_LOGFMT(LogGame, Log, "{LogLoc}, Stopped {ActionName} due to any matching tag {BlockedTags} for {Owner}",
-				("LogLoc", *AR_DEBUG_LOC()), ("ActionName", GetActionNameOrGrantTags(Action)), 
+				("LogLoc", *AR_LOG_LOC()), ("ActionName", GetActionNameOrGrantTags(Action)), 
 				("BlockedTags", NewTags.ToString()), ("Owner", GetNameSafe(GetOwner())));
 		}
 	}
@@ -257,7 +256,7 @@ void UAR_ActionSystemComponent::StartAction(FGameplayTag InActionName)
 		}
 	}
 	
-	UE_LOG(LogGame, Warning, TEXT("%s No Action found with name %s"), *AR_DEBUG_LOC(), *InActionName.ToString());
+	UE_LOG(LogGame, Warning, TEXT("%s No Action found with name %s"), *AR_LOG_LOC(), *InActionName.ToString());
 }
 
 void UAR_ActionSystemComponent::StopAction(FGameplayTag InActionName)
@@ -271,7 +270,7 @@ void UAR_ActionSystemComponent::StopAction(FGameplayTag InActionName)
 		}
 	}
 	
-	UE_LOG(LogGame, Warning, TEXT("%s No Action found with name %s"), *AR_DEBUG_LOC(), *InActionName.ToString());
+	UE_LOG(LogGame, Warning, TEXT("%s No Action found with name %s"), *AR_LOG_LOC(), *InActionName.ToString());
 }
 
 void UAR_ActionSystemComponent::EndActionsAndEffects()
@@ -286,7 +285,7 @@ void UAR_ActionSystemComponent::EndActionsAndEffects()
 		StopAction(StoredAction->GetActionName());
 		
 		UE_LOG(LogGame, Log, TEXT("%s Owner:%s StopAction(StoredAction--%s)"), 
-			*AR_DEBUG_LOC(), *OwnerName, *GetActionNameOrGrantTags(StoredAction));
+			*AR_LOG_LOC(), *OwnerName, *GetActionNameOrGrantTags(StoredAction));
 	}
 	
 	// Status_Effect/'ActionEffects(Buff/Debuff)'

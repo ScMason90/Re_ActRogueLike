@@ -7,14 +7,13 @@
 #include "EngineUtils.h"
 #include "EnvironmentQuery/EnvQueryManager.h"
 #include "Kismet/GameplayStatics.h"
-#include "Re_ActRogueLike/Re_ActRogueLike.h"
-#include "Re_ActRogueLike/Re_ActRoguelikeTypes.h"
 #include "Re_ActRogueLike/AI/AR_AICharacter.h"
 #include "Re_ActRogueLike/AI/AR_EnemyData.h"
 #include "Re_ActRogueLike/Core/AR_GameInstance.h"
 #include "Re_ActRogueLike/Core/AR_GameplayStatics.h"
-#include "Re_ActRogueLike/Development/AR_DebugUtilities.h"
 #include "Re_ActRogueLike/Player/AR_PlayerState.h"
+#include "Re_ActRogueLike/Re_ActLogChannels.h"
+#include "Re_ActRogueLike/Re_ActRoguelikeTypes.h"
 
 // Temporarily headers enables Intelligent Completion & Highlighting functions of JetbrainsRider IDE to operate, thereby enhancing development efficiency
 
@@ -50,13 +49,13 @@ void AAR_PrimaryGameMode::StartPlay()
 		int32 NewSeed = GlobalRandomStream.RandRange(0, MAX_int32 - 1);
 		Director.RandomStream_EnemySelection = FRandomStream(NewSeed);
 		
-		UE_LOG(LogGameMode, Log, TEXT("%s Init Seed: %d of Director: %s"), *AR_DEBUG_LOC(),  
+		UE_LOG(LogGameMode, Log, TEXT("%s Init Seed: %d of Director: %s"), *AR_LOG_LOC(),  
 			Director.RandomStream_EnemySelection.GetInitialSeed(), *Director.DebugDisplayName);
 		
 		if (Director.EnemySpawnTable)
 		{
 			Director.EnemySpawnTable->GetAllRows<FEnemySpawnData>(
-				FString::Printf(TEXT("%s init a 'Director.CachedRows'"), *AR_DEBUG_LOC()), Director.CachedRows);
+				FString::Printf(TEXT("%s init a 'Director.CachedRows'"), *AR_LOG_LOC()), Director.CachedRows);
 			
 			/* '.Empty()'&'.Reserver(.Num())' the Director.PrefixWeights and D..r.CachedRows then ensure async calculate and allocate them again
 			, if FAR_DirectorData supports dynamic (SpawnWeight/EnemyPool/WaveChanges) or activating GameMode::StartPlay() need to be called not only once*/
@@ -100,7 +99,7 @@ void AAR_PrimaryGameMode::Tick(float DeltaSeconds)
 	{
 		if (Director.EnemySpawnTable == nullptr)
 		{
-			UE_LOG(LogGameMode, Warning, TEXT("%s one Director.EnemySpawnTable is nullptr!"), *AR_DEBUG_LOC());
+			UE_LOG(LogGameMode, Warning, TEXT("%s one Director.EnemySpawnTable is nullptr!"), *AR_LOG_LOC());
 			continue;
 		}
 		
@@ -108,7 +107,7 @@ void AAR_PrimaryGameMode::Tick(float DeltaSeconds)
 		Director.CurrentCredits += CreditPerSecond * DeltaSeconds;
 		
 		FString DebugMsg = FString::Printf(TEXT("%s Director:%s with KeyID:%d\nCurrentCredits:%f\tNextTickTime:%f\n"), 
-			*AR_DEBUG_LOC(), *Director.DebugDisplayName, KeyID, Director.CurrentCredits, Director.NextTickTime);
+			*AR_LOG_LOC(), *Director.DebugDisplayName, KeyID, Director.CurrentCredits, Director.NextTickTime);
 		GEngine->AddOnScreenDebugMessage(KeyID, PrimaryActorTick.TickInterval, Director.DebugColor, DebugMsg);
 		KeyID++;	// Actually Director.RandomStream_EnemySelection.GetInitialSeed() can be used as Debug 'KeyID'...that would be hard to recognize.
 		
@@ -117,7 +116,7 @@ void AAR_PrimaryGameMode::Tick(float DeltaSeconds)
 		bool bSuccessSpawn = TrySpawnEnemy(Director);
 		Director.NextTickTime = TotalElapsedTime + (bSuccessSpawn ? Director.TickInterval : Director.TimeBetweenWaves);
 		
-		// UE_LOG(LogGameMode, Log, TEXT("%s one Director.CurrentCredits: %f"), *AR_DEBUG_LOC(), Director.CurrentCredits);
+		// UE_LOG(LogGameMode, Log, TEXT("%s one Director.CurrentCredits: %f"), *AR_LOG_LOC(), Director.CurrentCredits);
 	}
 	
 }
@@ -128,11 +127,11 @@ bool AAR_PrimaryGameMode::TrySpawnEnemy(FAR_DirectorData& Director)
 	UAR_GameInstance* GI = GetGameInstance<UAR_GameInstance>();
 	if (GI->AliveEnemies.Num() >= MaxEnemiesLimit)
 	{
-		UE_LOG(LogGameMode, Log, TEXT("%s Reached CVarGameEnemyLimit at %d"), *AR_DEBUG_LOC(), MaxEnemiesLimit);
+		UE_LOG(LogGameMode, Log, TEXT("%s Reached CVarGameEnemyLimit at %d"), *AR_LOG_LOC(), MaxEnemiesLimit);
 		return false;
 	}
 	
-	// Director.EnemySpawnTable->GetAllRows(FString::Printf(TEXT("%s Rebuild Director.CachedRows due to ...EnemySpawnTable changed"), *AR_DEBUG_LOC()), Director.CachedRows);
+	// Director.EnemySpawnTable->GetAllRows(FString::Printf(TEXT("%s Rebuild Director.CachedRows due to ...EnemySpawnTable changed"), *AR_LOG_LOC()), Director.CachedRows);
 	
 	float SelectedWeight = Director.RandomStream_EnemySelection.FRandRange(0.0f, Director.TotalSpawnWeight);
 	
@@ -145,13 +144,13 @@ bool AAR_PrimaryGameMode::TrySpawnEnemy(FAR_DirectorData& Director)
 	int32 SelectedIndex = Algo::LowerBound(Director.PrefixWeights, SelectedWeight);	
 	FEnemySpawnData* SelectedRow = Director.CachedRows[SelectedIndex];
 	
-	UE_LOG(LogGameMode, Log, TEXT("%s\tSelectedWeight = %s, SelectedIndex = %d"), *AR_DEBUG_LOC(), 
+	UE_LOG(LogGameMode, Log, TEXT("%s\tSelectedWeight = %s, SelectedIndex = %d"), *AR_LOG_LOC(), 
 		*FString::SanitizeFloat(SelectedWeight), SelectedIndex);
 
 	if (Director.CurrentCredits < SelectedRow->SpawnCosts)
 	{
 		UE_LOG(LogGameMode, Log, TEXT("%s Lack of credits to spawn enemy using data asset; %s"), 
-			*AR_DEBUG_LOC(), *SelectedRow->EnemyData.GetAssetName());
+			*AR_LOG_LOC(), *SelectedRow->EnemyData.GetAssetName());
 		return false;
 	}
 	Director.CurrentCredits -= SelectedRow->SpawnCosts;
@@ -171,7 +170,7 @@ void AAR_PrimaryGameMode::SpawnEnemyQueryCompleted(TSharedPtr<FEnvQueryResult> Q
 	FVector SpawnLocation = QueryResult->GetItemAsLocation(0);
 	SpawnLocation.Z += 100.0f;	// Land to the ground instead of stuck in it due to spawning failed. Randomize this?
 	
-	// UE_LOG(LogGameMode, Log, TEXT("%s SpawnLocation = %s"), *AR_DEBUG_LOC(), *SpawnLocation.ToString());
+	// UE_LOG(LogGameMode, Log, TEXT("%s SpawnLocation = %s"), *AR_LOG_LOC(), *SpawnLocation.ToString());
 	
 	SelectedEnemy->EnemyData.LoadAsync(FLoadSoftObjectPathAsyncDelegate::CreateUObject(this, 
 		&ThisClass::OnEnemyDataLoaded, SpawnLocation, SelectedEnemy));
@@ -183,7 +182,7 @@ void AAR_PrimaryGameMode::OnEnemyDataLoaded(const FSoftObjectPath& LoadedObjectP
 #if !UE_BUILD_SHIPPING
 	if (!CVarGameEnemySpawningEnabled.GetValueOnGameThread())
 	{
-		UE_LOG(LogGameMode, Log, TEXT("%s EnemySpawn disabled via CVarGameEnemySpawningEnabled as false!"), *AR_DEBUG_LOC());
+		UE_LOG(LogGameMode, Log, TEXT("%s EnemySpawn disabled via CVarGameEnemySpawningEnabled as false!"), *AR_LOG_LOC());
 		return;
 	}
 #endif
@@ -196,7 +195,7 @@ void AAR_PrimaryGameMode::OnEnemyDataLoaded(const FSoftObjectPath& LoadedObjectP
 	AAR_AICharacter* NewEnemy = GetWorld()->SpawnActorDeferred<AAR_AICharacter>(EnemyData->EnemyClass, FTransform::Identity);
 	NewEnemy->SetEnemyData(EnemyData);
 	
-	// UE_LOG(LogGameMode, Log, TEXT("%s NewEnemy = %s"), *AR_DEBUG_LOC(), *GetNameSafe(NewEnemy));
+	// UE_LOG(LogGameMode, Log, TEXT("%s NewEnemy = %s"), *AR_LOG_LOC(), *GetNameSafe(NewEnemy));
 	
 	// Apply attributes override
 	
@@ -204,7 +203,7 @@ void AAR_PrimaryGameMode::OnEnemyDataLoaded(const FSoftObjectPath& LoadedObjectP
 	UGameplayStatics::FinishSpawningActor(NewEnemy, SpawnTM);
 	
 	UE_VLOG_SPHERE(this, LogGameMode, Log, SpawnLocation, 32.0f, FColor::Orange, 
-		TEXT("%s \nSelectedEnemy;  EnemyClass:%s | SpawnCosts:%.2f"), *AR_DEBUG_LOC(),
+		TEXT("%s \nSelectedEnemy;  EnemyClass:%s | SpawnCosts:%.2f"), *AR_LOG_LOC(),
 		*GetNameSafe(EnemyData->EnemyClass), SelectedEnemy->SpawnCosts);
 	
 	// Add Buffs/Debuffs, etc.
@@ -225,7 +224,7 @@ void AAR_PrimaryGameMode::OnPickupSpawnQueryFinished(UEnvQueryInstanceBlueprintW
 {
 	if (QueryStatus != EEnvQueryStatus::Success)
 	{
-		UE_LOG(LogGameMode, Warning, TEXT("%s, Spawn bot EQS Query Failed!"), *AR_DEBUG_LOC());
+		UE_LOG(LogGameMode, Warning, TEXT("%s, Spawn bot EQS Query Failed!"), *AR_LOG_LOC());
 		return;
 	}
 	
@@ -277,7 +276,7 @@ void AAR_PrimaryGameMode::KillAllOfClass(TSubclassOf<AActor> ClassToKill)
 	UWorld* World = GetWorld();
 	if (!World || !ClassToKill)
 	{
-		UE_LOG(LogGameMode, Warning, TEXT("%s Invalid World or Class"), *AR_DEBUG_LOC());
+		UE_LOG(LogGameMode, Warning, TEXT("%s Invalid World or Class"), *AR_LOG_LOC());
 		return;
 	}
 	
@@ -302,7 +301,7 @@ void AAR_PrimaryGameMode::KillAllOfClass(TSubclassOf<AActor> ClassToKill)
 			UAR_GameplayStatics::Kill(this, ASComp);
 		}
 	}
-	UE_LOG(LogGameMode, Warning, TEXT("%s(%s) => Killed: %d | Skipped: %d"), *AR_DEBUG_LOC(), *ClassToKill->GetName(), 
+	UE_LOG(LogGameMode, Warning, TEXT("%s(%s) => Killed: %d | Skipped: %d"), *AR_LOG_LOC(), *ClassToKill->GetName(), 
 		KilledCount, SkippedCount);
 }
 

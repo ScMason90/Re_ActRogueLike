@@ -5,8 +5,8 @@
 
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
-#include "Re_ActRogueLike/Re_ActRoguelikeTypes.h"
 #include "Re_ActRogueLike/Player/AR_InteractionComponent.h"
+#include "Re_ActRogueLike/Re_ActRoguelikeTypes.h"
 
 AAR_PlayerController::AAR_PlayerController()
 {

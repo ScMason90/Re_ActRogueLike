@@ -4,9 +4,8 @@
 #include "AR_Action.h"
 
 // Necessary compilation header files
-#include "Re_ActRogueLike/Re_ActRogueLike.h"
 #include "AR_ActionSystemComponent.h"
-#include "Re_ActRogueLike/Development/AR_DebugUtilities.h"
+#include "Re_ActRogueLike/Re_ActLogChannels.h"
 
 // Temporarily headers enables Intelligent Completion & Highlighting functions of JetbrainsRider IDE to operate, thereby enhancing development efficiency
 
@@ -41,7 +40,7 @@ void UAR_Action::StartAction_Implementation()
 	float GameTime = GetWorld()->TimeSeconds;
 	
 	UE_LOGFMT(LogGame, Log, 
-		"{LogLoc}, {OwnerActor}, Started {ActionName} - {WorldTime}", ("LogLoc", AR_DEBUG_LOC()),
+		"{LogLoc}, {OwnerActor}, Started {ActionName} - {WorldTime}", ("LogLoc", AR_LOG_LOC()),
 		("ActionName", ActionName.IsValid() ? ActionName.ToString()/*Action*/ : GrantTags.ToString()/*Effect*/), 
 		("WorldTime", GameTime), ("OwnerActor", GetNameSafe(OwningComp->GetOwner())));
 }
@@ -57,7 +56,7 @@ void UAR_Action::StopAction_Implementation()
 	OwningComp->RemoveActiveTags(GrantTags);
 	
 	UE_LOGFMT(LogGame, Log, 
-		"{LogLoc}, {OwnerActor}, Started {ActionName} - {WorldTime}", ("LogLoc", AR_DEBUG_LOC()),
+		"{LogLoc}, {OwnerActor}, Started {ActionName} - {WorldTime}", ("LogLoc", AR_LOG_LOC()),
 		("ActionName", ActionName.IsValid() ? ActionName.ToString()/*Action*/ : GrantTags.ToString()/*Effect*/), 
 		("WorldTime", GameTime), ("OwnerActor", GetNameSafe(OwningComp->GetOwner())));
 	
@@ -68,7 +67,7 @@ bool UAR_Action::CanStart() const
 	if (IsRunning()) return false;
 	if (GetCooldownTimeRemaining() > 0.0f)
 	{
-		UE_LOG(LogGame, Log, TEXT("%s Cooldown remaining: %f"), *AR_DEBUG_LOC(), GetCooldownTimeRemaining());
+		UE_LOG(LogGame, Log, TEXT("%s Cooldown remaining: %f"), *AR_LOG_LOC(), GetCooldownTimeRemaining());
 		return false;
 	}
 	
@@ -82,7 +81,7 @@ bool UAR_Action::CanStart() const
 		{
 			// Not enough resources
 			UE_LOGFMT(LogGame, Log, "{LogLoc}, Not enough {AttributeName} to activate {Action}, "
-						   "Have {AvailableAttributeAmount} and need {RequiredAttributeValue}", ("LogLoc", AR_DEBUG_LOC()), 
+						   "Have {AvailableAttributeAmount} and need {RequiredAttributeValue}", ("LogLoc", AR_LOG_LOC()), 
 						   ("AttributeName", Cost.Key.ToString()), ("Action", ActionName.ToString()),
 						   ("AvailableAttributeAmount", AvailableAttributeAmount), ("RequiredAttributeValue", Cost.Value));
 			

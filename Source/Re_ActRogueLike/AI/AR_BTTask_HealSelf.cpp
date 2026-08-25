@@ -4,8 +4,8 @@
 #include "AR_BTTask_HealSelf.h"
 
 #include "AIController.h"
-#include "Re_ActRogueLike/SharedGameplayTags.h"
 #include "Re_ActRogueLike/ActionSystem/AR_ActionSystemComponent.h"
+#include "Re_ActRogueLike/SharedGameplayTags.h"
 
 UAR_BTTask_HealSelf::UAR_BTTask_HealSelf()
 {

@@ -5,7 +5,7 @@
 # Rider / JetBrains
 .idea/
 Plugins/Developer/RiderLink
-Re_ActRogueLike.uproject.DotSettings.user
+*.uproject.DotSettings.user
 
 # Compiled Object files
 *.slo

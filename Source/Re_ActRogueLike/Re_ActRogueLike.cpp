@@ -1,9 +1,20 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "Re_ActRogueLike.h"
 #include "Modules/ModuleManager.h"
 
-IMPLEMENT_PRIMARY_GAME_MODULE( FDefaultGameModuleImpl, Re_ActRogueLike, "Re_ActRogueLike" );
+/**
+ * FRe_ActGameModule
+ */
+class FRe_ActGameModule : public FDefaultGameModuleImpl
+{
+	virtual void StartupModule() override
+	{
+	}
+	
+	virtual void ShutdownModule() override
+	{
+	}
+	
+};
 
-DEFINE_LOG_CATEGORY(LogGame);
-DEFINE_LOG_CATEGORY(LogARDebug);
+IMPLEMENT_PRIMARY_GAME_MODULE( FRe_ActGameModule, Re_ActRogueLike, "Re_ActRogueLike" );

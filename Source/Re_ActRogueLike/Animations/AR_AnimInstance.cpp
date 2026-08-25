@@ -3,8 +3,8 @@
 
 #include "AR_AnimInstance.h"
 
-#include "Re_ActRogueLike/SharedGameplayTags.h"
 #include "Re_ActRogueLike/ActionSystem/AR_ActionSystemComponent.h"
+#include "Re_ActRogueLike/SharedGameplayTags.h"
 
 void UAR_AnimInstance::NativeInitializeAnimation()
 {

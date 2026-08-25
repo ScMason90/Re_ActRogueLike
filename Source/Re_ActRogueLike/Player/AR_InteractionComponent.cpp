@@ -4,8 +4,8 @@
 #include "AR_InteractionComponent.h"
 
 #include "Engine/OverlapResult.h"
-#include "Re_ActRogueLike/Re_ActRoguelikeTypes.h"
 #include "Re_ActRogueLike/Core/AR_InteractionInterface.h"
+#include "Re_ActRogueLike/Re_ActRoguelikeTypes.h"
 
 static TAutoConsoleVariable<bool> CVarInteractionDebugDrawing(TEXT("game.interaction.DebugDraw"), false,
 	TEXT("Enable interaction component debug rendering. (0 = off, 1 = enabled)"), ECVF_Cheat);

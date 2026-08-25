@@ -4,8 +4,8 @@
 #include "AR_Effect.h"
 
 #include "AR_ActionSystemComponent.h"
-#include "Re_ActRogueLike/Re_ActRogueLike.h"
-#include "Re_ActRogueLike/Development/AR_DebugUtilities.h"
+#include "Re_ActRogueLike/Re_ActLogChannels.h"
+
 
 void UAR_Effect::StartAction_Implementation()
 {
@@ -62,6 +62,6 @@ void UAR_Effect::IncrementStackSize()
 		ResetDuration();
 	}
 	
-	UE_LOG(LogGame, Log, TEXT("%s Incremented %s (%s) StackCount to %d"), *AR_DEBUG_LOC(), *GetName(), 
+	UE_LOG(LogGame, Log, TEXT("%s Incremented %s (%s) StackCount to %d"), *AR_LOG_LOC(), *GetName(), 
 		*GetNameSafe(GetOwningASComponent()->GetOwner()), StackCount);
 }

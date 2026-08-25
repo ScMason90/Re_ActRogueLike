@@ -3,8 +3,8 @@
 
 #include "AR_TeleportProjectile.h"
 
-#include "GameFramework/ProjectileMovementComponent.h"
 #include "Components/AudioComponent.h"
+#include "GameFramework/ProjectileMovementComponent.h"
 #include "NiagaraComponent.h"
 
 AAR_TeleportProjectile::AAR_TeleportProjectile()

@@ -4,16 +4,16 @@
 #include "AR_PlayerCharacter.h"
 
 // Necessary compilation header files
-#include "EnhancedInputComponent.h"
 #include "Camera/CameraComponent.h"
+#include "EnhancedInputComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
-#include "Re_ActRogueLike/Re_ActRoguelikeTypes.h"
-#include "Re_ActRogueLike/SharedGameplayTags.h"
 #include "Re_ActRogueLike/ActionSystem/AR_Action.h"
 #include "Re_ActRogueLike/ActionSystem/AR_ActionSystemComponent.h"
 #include "Re_ActRogueLike/ActionSystem/AR_AttributeSet.h"
 #include "Re_ActRogueLike/Core/AR_GameplayStatics.h"
+#include "Re_ActRogueLike/Re_ActRoguelikeTypes.h"
+#include "Re_ActRogueLike/SharedGameplayTags.h"
 
 // Temporarily headers enables Intelligent Completion & Highlighting functions of JetbrainsRider IDE to operate, thereby enhancing development efficiency
 
