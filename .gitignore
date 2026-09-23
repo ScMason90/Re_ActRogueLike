@@ -58,7 +58,7 @@ SourceArt/**/*.tga
 Binaries/*/*
 Plugins/*/Binaries/*
 # Whitelist game dll to skip compilation for new users
-!UnrealEditor-ActionRoguelike.dll
+!UnrealEditor-Re_ActRogueLike.dll
 
 # Builds
 Build/*

@@ -1,6 +1,6 @@
 MIT License
 
-Copyright (c) 2026 Sc_Mason
+Copyright (c) 2026 ScMason90
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -11,6 +11,28 @@ furnished to do so, subject to the following conditions:
 
 The above copyright notice and this permission notice shall be included in all
 copies or substantial portions of the Software.
+
+---
+
+IMPORTANT NOTICE:
+
+This MIT License applies ONLY to the original source code written by
+ScMason90 in this repository.
+
+It does NOT cover:
+
+1. The original ActionRoguelike sample project by Tom Looman
+   (<https://github.com/tomlooman/ActionRoguelike>), which is subject to
+   its own license terms.
+2. Any game assets (meshes, materials, textures, sounds, etc.) used in
+   this project, which belong to their respective owners and are
+   primarily licensed under the Unreal Engine EULA (e.g., Epic Paragon
+   assets).
+
+Any use of third-party code or assets must comply with their respective
+licenses.
+
+---
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,

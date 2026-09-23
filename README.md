@@ -42,3 +42,18 @@ Since August 2026 beginning, I have started to study and learn about the Lyra Sa
 - C++ (Primary)
 - Blueprints (Minimal, for UI/Assets)
 - Enhanced Input, Gameplay Tags, Data Assets, etc.
+
+## License Scope
+
+The **MIT License** in this repository applies **only to the original
+source code written by me (ScMason90)**.
+
+It does **not** cover:
+
+- The original ActionRoguelike sample project by Tom Looman, which is
+  subject to its own license terms.
+- Any game assets (meshes, materials, textures, sounds, etc.), which
+  belong to their respective owners and are primarily licensed under
+  the Unreal Engine EULA (e.g., Epic Paragon assets).
+
+Please refer to the `LICENSE` file for the full notice.
